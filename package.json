@@ -1,0 +1,44 @@
+{
+  "name": "skillnav",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server/server.js",
+    "server:dev": "nodemon server/server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.52.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "firebase": "^12.18.0",
+    "firebase-admin": "^14.3.0",
+    "framer-motion": "^13.2.0",
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.18.3",
+    "recharts": "^2.12.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@vitejs/plugin-react": "^6.1.1",
+    "autoprefixer": "^10.4.18",
+    "nodemon": "^3.1.14",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^8.2.2"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "@firebase/util@1.15.3": true,
+    "protobufjs@7.6.6": true,
+    "@google/genai@1.52.0": true
+  }
+}
