@@ -51,10 +51,12 @@ app.use('/api/projects', projectRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-// ── Start ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n🚀 GTech API running on http://localhost:${PORT}`);
-  console.log(`   Health: http://localhost:${PORT}/api/health\n`);
-});
+// ── Start (Only run listen when not in serverless/Vercel environment) ──────────
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 GTech API running on http://localhost:${PORT}`);
+    console.log(`   Health: http://localhost:${PORT}/api/health\n`);
+  });
+}
 
 export default app;
