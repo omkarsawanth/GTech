@@ -40,7 +40,25 @@ export const MilestoneSchema = z.object({
   }).optional(),
 });
 
+export const DailyTaskSchema = z.object({
+  id: z.string(),
+  milestoneId: z.string(),
+  dayNumber: z.number().int().positive(),
+  title: z.string(),
+  description: z.string(),
+  durationMinutes: z.number().int().min(10).max(60).default(20),
+  resourceUrl: z.string().url().optional().default('https://developer.mozilla.org/'),
+  resourceTitle: z.string().optional().default('Learning Resource'),
+  status: z.enum(['completed', 'unlocked', 'locked']).default('locked'),
+  completedAt: z.any().nullable().default(null),
+});
+
 // ── Response schemas ────────────────────────────────────────────────────────
+
+export const DailyRoadmapResponseSchema = z.object({
+  roadmap: z.array(MilestoneSchema),
+  tasks: z.array(DailyTaskSchema),
+});
 
 export const SkillGapResponseSchema = z.object({
   readinessScore: z.number().min(0).max(100),

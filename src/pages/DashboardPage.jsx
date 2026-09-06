@@ -12,8 +12,12 @@ import {
   FolderGit2,
   BookOpen,
   Award,
-  Zap
+  Zap,
+  Lock,
+  CalendarCheck,
+  Flame
 } from 'lucide-react';
+import { TaskCard } from '../components/common/TaskCard';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -37,7 +41,7 @@ import { motion } from 'framer-motion';
 import { MentorChatModal } from '../components/common/MentorChatModal';
 
 export const DashboardPage = () => {
-  const { activeCareerProfile, analysisResult } = useApp();
+  const { activeCareerProfile, analysisResult, dailyTasks, dailyTasksLoading, markTaskComplete } = useApp();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isMentorModalOpen, setIsMentorModalOpen] = React.useState(false);
@@ -151,6 +155,57 @@ export const DashboardPage = () => {
           trendValue="+1 this week"
         />
 
+      </div>
+
+      {/* TODAY'S TASKS — Daily Retention Loop */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-solar-coral/20 text-rose-300 border border-solar-coral/30">
+              <CalendarCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-display font-bold text-white">Today's Tasks</h2>
+              <p className="text-xs text-slate-400">Complete your daily learning tasks to stay on track</p>
+            </div>
+          </div>
+          {dailyTasks?.activeTasks?.length > 0 && (
+            <Badge variant="coral" size="sm" className="font-mono">
+              {dailyTasks.activeTasks.length} active
+            </Badge>
+          )}
+        </div>
+
+        {dailyTasksLoading ? (
+          <div className="text-center py-8 text-slate-400 text-sm">Loading today's tasks...</div>
+        ) : dailyTasks?.activeTasks?.length === 0 && dailyTasks?.previewTasks?.length === 0 ? (
+          <Card className="p-6 text-center border-dashed border-slate-700">
+            <p className="text-slate-400 text-sm">No tasks yet. Generate a roadmap to get started!</p>
+            <Button variant="solar" size="sm" className="mt-3" onClick={() => navigate('/roadmap')}>
+              Generate Roadmap
+            </Button>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {/* Active / unlocked tasks */}
+            {dailyTasks?.activeTasks?.map((task) => (
+              <TaskCard key={task.id} task={task} onComplete={markTaskComplete} isLocked={false} />
+            ))}
+
+            {/* Locked preview tasks */}
+            {dailyTasks?.previewTasks?.length > 0 && (
+              <>
+                <div className="flex items-center gap-2 mt-6 mb-2">
+                  <Lock className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="text-xs text-slate-500 font-mono uppercase tracking-wider">Coming up next</span>
+                </div>
+                {dailyTasks.previewTasks.map((task) => (
+                  <TaskCard key={task.id} task={task} onComplete={() => {}} isLocked={true} />
+                ))}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* AI CAREER MENTOR FEATURE CARD */}

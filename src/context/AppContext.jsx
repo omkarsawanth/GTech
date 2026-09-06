@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { analyzeSkills, generateRoadmap, CAREER_PROFILES } from '../services/aiService';
+import { analyzeSkills, generateRoadmap, CAREER_PROFILES, fetchTodaysTasks, completeTaskAPI } from '../services/aiService';
 import { useAuth } from './AuthContext';
 import { apiGet, apiPut, apiPost } from '../services/api';
 
@@ -77,7 +77,8 @@ export const AppProvider = ({ children }) => {
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) { /* fall through */ }
     }
-    return generateRoadmap(user.targetCareer);
+    const result = generateRoadmap(user.targetCareer);
+    return Array.isArray(result) ? result : result.roadmap;
   });
 
   // Job Description Analyses State
@@ -140,6 +141,49 @@ export const AppProvider = ({ children }) => {
     }
   }, [user.targetCareer, user.skills, assessment]);
 
+  const [dailyTasks, setDailyTasks] = useState(() => {
+    const saved = localStorage.getItem('skillnav_daily_tasks');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { /* fall through */ }
+    }
+    return { activeTasks: [], previewTasks: [], career: null };
+  });
+  const [dailyTasksLoading, setDailyTasksLoading] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('skillnav_daily_tasks', JSON.stringify(dailyTasks));
+  }, [dailyTasks]);
+
+  const fetchDailyTasks = useCallback(async () => {
+    if (!backendAvailable || !isAuthenticated) return;
+    setDailyTasksLoading(true);
+    try {
+      const result = await fetchTodaysTasks();
+      setDailyTasks(result || { activeTasks: [], previewTasks: [], career: null });
+    } catch (err) {
+      console.warn('[AppContext] Failed to fetch daily tasks:', err.message);
+    } finally {
+      setDailyTasksLoading(false);
+    }
+  }, [backendAvailable, isAuthenticated]);
+
+  const markTaskComplete = useCallback(async (taskId) => {
+    try {
+      const result = await completeTaskAPI(taskId);
+      await fetchDailyTasks();
+      return result;
+    } catch (err) {
+      console.error('[AppContext] Failed to complete task:', err.message);
+      throw err;
+    }
+  }, [fetchDailyTasks]);
+
+  useEffect(() => {
+    if (backendAvailable && isAuthenticated) {
+      fetchDailyTasks();
+    }
+  }, [backendAvailable, isAuthenticated, fetchDailyTasks]);
+
   // ── Actions ────────────────────────────────────────────────────────────────
 
   const updateUserProfile = useCallback((updates) => {
@@ -148,7 +192,8 @@ export const AppProvider = ({ children }) => {
       const result = analyzeSkills(nextUser.skills, nextUser.targetCareer, assessment.answers || {});
       setAnalysisResult(result);
       if (updates.targetCareer && updates.targetCareer !== prev.targetCareer) {
-        setRoadmap(generateRoadmap(nextUser.targetCareer));
+        const generated = generateRoadmap(nextUser.targetCareer);
+        setRoadmap(Array.isArray(generated) ? generated : generated.roadmap);
       }
       return nextUser;
     });
@@ -167,8 +212,8 @@ export const AppProvider = ({ children }) => {
     const result = analyzeSkills(user.skills, user.targetCareer, answers);
     setAnalysisResult(result);
 
-    const updatedRoadmap = generateRoadmap(user.targetCareer);
-    setRoadmap(updatedRoadmap);
+    const generated = generateRoadmap(user.targetCareer);
+    setRoadmap(Array.isArray(generated) ? generated : generated.roadmap);
 
     setIsLoading(false);
     return result;
@@ -237,7 +282,11 @@ export const AppProvider = ({ children }) => {
       toggleRoadmapStep,
       addSkillsToRoadmap,
       saveJobAnalysis,
-      CAREER_PROFILES
+      CAREER_PROFILES,
+      dailyTasks,
+      dailyTasksLoading,
+      fetchDailyTasks,
+      markTaskComplete
     }}>
       {children}
     </AppContext.Provider>

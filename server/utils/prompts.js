@@ -85,16 +85,16 @@ Return ONLY valid JSON:
 You are a GTech AI roadmap generator. Create a personalized learning roadmap.
 
 USER PROFILE:
-Name: ${profile.name || 'Student'}
-Experience: ${profile.experienceLevel || 'Entry-Level'}
-Current Skills: ${(profile.skills || []).join(', ') || 'None listed'}
+Name: \${profile.name || 'Student'}
+Experience: \${profile.experienceLevel || 'Entry-Level'}
+Current Skills: \${(profile.skills || []).join(', ') || 'None listed'}
 
-TARGET CAREER: ${career || 'Software Engineer'}
+TARGET CAREER: \${career || 'Software Engineer'}
 
 SKILL GAPS TO ADDRESS:
-${skillGap ? JSON.stringify(skillGap.missingSkills?.slice(0, 5), null, 2) : 'General skill development needed'}
+\${skillGap ? JSON.stringify(skillGap.missingSkills?.slice(0, 5), null, 2) : 'General skill development needed'}
 
-Return ONLY valid JSON:
+Return ONLY valid JSON with both milestones AND daily tasks:
 {
   "roadmap": [
     {
@@ -115,10 +115,27 @@ Return ONLY valid JSON:
         "description": "<project description>"
       }
     }
+  ],
+  "tasks": [
+    {
+      "id": "task-1",
+      "milestoneId": "step-1",
+      "dayNumber": 1,
+      "title": "<concise task title>",
+      "description": "<what to do in 15-30 min>",
+      "durationMinutes": <15-30>,
+      "resourceUrl": "<real URL to a free learning resource>",
+      "resourceTitle": "<resource name>"
+    }
   ]
 }
 
-Generate 6-8 milestones ordered from foundation to advanced. First 1-2 should be completed/in-progress based on user's existing skills.
+- Generate 6-8 milestones ordered from foundation to advanced. First 1-2 should be completed/in-progress based on user's existing skills.
+- Create 5-8 small daily tasks per milestone, each 15-30 minutes.
+- Tasks should be sequential learning steps within each milestone.
+- Each task has exactly one resource link (real URLs to free resources).
+- dayNumber should be globally sequential across all milestones (1, 2, 3, ... up to total).
+- Generate 30-50 total tasks across all milestones.
 `,
 
   JOB_ANALYSIS: ({ jobDescription, profile, career }) => `

@@ -15,10 +15,13 @@ import { Card, Badge, ProgressBar, Button } from '../components/common/UICompone
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { TaskCard } from '../components/common/TaskCard';
 
 export const RoadmapPage = () => {
-  const { roadmap, toggleRoadmapStep, activeCareerProfile } = useApp();
+  const { roadmap, toggleRoadmapStep, activeCareerProfile, dailyTasks, markTaskComplete } = useApp();
   const navigate = useNavigate();
+
+  const allTasks = roadmap?.tasks || (dailyTasks?.activeTasks || []).concat(dailyTasks?.previewTasks || []) || [];
 
   const completedStepsCount = roadmap.filter(r => r.status === 'Completed').length;
   const totalStepsCount = roadmap.length;
@@ -180,6 +183,33 @@ export const RoadmapPage = () => {
                   )}
 
                 </div>
+
+                {/* Task Progress Dots */}
+                {allTasks.filter(t => t.milestoneId === step.id).length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-slate-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">Daily Tasks</span>
+                      <span className="text-xs text-slate-500">
+                        {allTasks.filter(t => t.milestoneId === step.id && t.status === 'completed').length} / {allTasks.filter(t => t.milestoneId === step.id).length}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {allTasks.filter(t => t.milestoneId === step.id).map(task => (
+                        <div
+                          key={task.id}
+                          title={task.title}
+                          className={`w-3 h-3 rounded-full transition-all ${
+                            task.status === 'completed'
+                              ? 'bg-emerald-500 shadow-sm shadow-emerald-500/30'
+                              : task.status === 'unlocked'
+                              ? 'bg-solar-coral animate-pulse shadow-sm shadow-rose-500/30'
+                              : 'bg-slate-700'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
               </Card>
             </motion.div>

@@ -377,7 +377,28 @@ export function generateRoadmap(targetCareerId = 'ai-engineer', customSkillsToAd
     });
   }
 
-  return baseRoadmap;
+  let globalDayCounter = 1;
+  const allTasks = [];
+
+  baseRoadmap.forEach((milestone, milestoneIndex) => {
+    const taskCount = milestone.skills.length > 0 ? milestone.skills.length : 3;
+    for (let taskIndex = 0; taskIndex < taskCount; taskIndex++) {
+      allTasks.push({
+        id: `task-${milestoneIndex}-${taskIndex}`,
+        milestoneId: milestone.id,
+        dayNumber: globalDayCounter++,
+        title: `${milestone.skills[0] || milestone.title} - Day ${taskIndex + 1}`,
+        description: `Study and practice ${milestone.skills[taskIndex % milestone.skills.length] || milestone.title} concepts`,
+        durationMinutes: 20,
+        resourceUrl: milestone.resources?.[0]?.url || 'https://developer.mozilla.org/',
+        resourceTitle: milestone.resources?.[0]?.title || 'Learning Resource',
+        status: globalDayCounter === 2 ? 'unlocked' : 'locked', // first one unlocked, globalDayCounter was incremented
+        completedAt: null
+      });
+    }
+  });
+
+  return { roadmap: baseRoadmap, tasks: allTasks };
 }
 
 /**
@@ -547,7 +568,7 @@ export async function fetchRoadmapAI(career, profile, skillGap) {
     return await apiPost('/roadmap', { career, profile, skillGap });
   } catch (err) {
     console.warn('[aiService] Backend /roadmap unavailable, falling back to local engine:', err.message);
-    return { roadmap: generateRoadmap(career) };
+    return generateRoadmap(career);
   }
 }
 
@@ -569,11 +590,31 @@ export async function fetchProjectsAI(career, skills, missingSkills, experienceL
   }
 }
 
+let globalDayCounter = 1;
+
 export async function askCareerMentorAI(question) {
   try {
     return await apiPost('/ai/mentor', { question });
   } catch (err) {
     console.warn('[aiService] Backend /ai/mentor unavailable:', err.message);
+    throw err;
+  }
+}
+
+export async function fetchTodaysTasks() {
+  try {
+    return await apiGet('/roadmap/today');
+  } catch (err) {
+    console.warn('[aiService] Backend /roadmap/today unavailable:', err.message);
+    throw err;
+  }
+}
+
+export async function completeTaskAPI(taskId) {
+  try {
+    return await apiPut(`/roadmap/task/${taskId}/complete`);
+  } catch (err) {
+    console.warn('[aiService] Backend task complete unavailable:', err.message);
     throw err;
   }
 }

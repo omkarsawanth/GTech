@@ -1,4 +1,4 @@
-import { generateRoadmap as genRoadmap, getCachedRoadmap, updateMilestone } from '../services/roadmapService.js';
+import { generateRoadmap as genRoadmap, getCachedRoadmap, updateMilestone, completeTask as completeTaskService, getTodaysTasks as getTodaysTasksService } from '../services/roadmapService.js';
 
 /**
  * POST /api/roadmap — generate new roadmap
@@ -35,6 +35,27 @@ export const updateRoadmapMilestone = async (req, res, next) => {
     const { id } = req.params;
     const { status, progress } = req.body;
     const result = await updateMilestone(req.user.uid, id, { status, progress });
+    res.json({ success: true, data: result });
+  } catch (err) { next(err); }
+};
+
+/**
+ * PUT /api/roadmap/task/:taskId/complete
+ */
+export const completeTask = async (req, res, next) => {
+  try {
+    const { taskId } = req.params;
+    const result = await completeTaskService(req.user.uid, taskId);
+    res.json({ success: true, data: result });
+  } catch (err) { next(err); }
+};
+
+/**
+ * GET /api/roadmap/today
+ */
+export const getTodaysTasks = async (req, res, next) => {
+  try {
+    const result = await getTodaysTasksService(req.user.uid);
     res.json({ success: true, data: result });
   } catch (err) { next(err); }
 };
