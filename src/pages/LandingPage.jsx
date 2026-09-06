@@ -224,54 +224,41 @@ export const LandingPage = () => {
       </div>
 
       {/* HERO SECTION */}
-      <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-32 overflow-hidden">
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 opacity-80" />
+      <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-36 overflow-hidden">
+        {/* Animated Solar Flare Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-950 via-[#0C0F1A] to-dark-950" />
         
-        {/* Floating Gradient Orbs */}
-        <GradientOrb size={600} top="10%" left="5%" color="purple" blur="blur-3xl" />
-        <GradientOrb size={400} top="60%" right="10%" color="cyan" blur="blur-2xl" />
-        <GradientOrb size={300} bottom="20%" left="20%" color="indigo" blur="blur-xl" />
+        {/* Floating Sunset Flare Radiant Orbs */}
+        <div className="absolute top-[10%] left-[15%] w-[550px] h-[550px] rounded-full bg-gradient-to-br from-solar-coral/25 via-solar-amber/20 to-transparent blur-[110px] pointer-events-none animate-solar-pulse" />
+        <div className="absolute top-[35%] right-[10%] w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-solar-violet/25 via-solar-purple/20 to-transparent blur-[120px] pointer-events-none animate-blob" />
+        <div className="absolute bottom-[10%] left-[30%] w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-solar-amber/20 via-solar-rose/15 to-transparent blur-[100px] pointer-events-none animate-pulse-slow" />
 
-        {/* Subtle grid pattern backdrop */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
-
-        {/* Mouse Tracking Glow */}
-        <div 
-          className="absolute pointer-events-none -z-5 w-96 h-96 rounded-full bg-purple-500/10 blur-3xl transition-all duration-200 ease-out"
-          style={{
-            left: cursorX - 150,
-            top: cursorY - 150,
-            opacity: 0.3,
-          }}
-        />
+        {/* Cyber Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_20%,#000_70%,transparent_100%)] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           
-          {/* Hero Badge with Animation */}
+          {/* Solar Flare Pill */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-purple-500/30 mb-8 shadow-md hover:shadow-xl transition-shadow"
+            className="inline-flex items-center gap-2.5 px-4.5 py-1.5 rounded-full glass-panel border border-solar-coral/35 mb-8 shadow-lg shadow-rose-950/30 hover:border-solar-coral/60 transition-all cursor-pointer group"
           >
-            <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
-            <span className="text-xs font-semibold text-purple-200 uppercase tracking-wider">
-              GTech AI Career Intelligence Platform
+            <Sparkles className="w-4 h-4 text-solar-amber animate-pulse" />
+            <span className="text-xs font-semibold text-transparent bg-clip-text bg-gradient-to-r from-solar-coral via-solar-amber to-solar-violet uppercase tracking-wider font-display">
+              GTech Solar AI • Next-Gen Career Intelligence
             </span>
           </motion.div>
 
-          {/* Main Headline with 3D Effect */}
+          {/* Main Headline with Solar Flare Gradient */}
           <motion.h1
-            initial={{ opacity: 0, y: 15, rotateX: 15 }}
-            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-4xl sm:text-6xl lg:text-7xl font-display font-extrabold text-white tracking-tight max-w-5xl mx-auto leading-[1.1] transform-gpu"
-            style={{
-              perspective: 1000,
-            }}
+            className="text-4xl sm:text-6xl lg:text-7xl font-display font-extrabold text-white tracking-tight max-w-5xl mx-auto leading-[1.08] transform-gpu"
           >
-            Build the career you're <span className="gradient-text inline-block">actually ready for.</span>
+            Build the career you're <span className="gradient-text-solar inline-block drop-shadow-solar-glow">actually ready for.</span>
           </motion.h1>
 
           {/* Subheading */}
@@ -279,9 +266,9 @@ export const LandingPage = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed"
+            className="mt-7 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed"
           >
-            GTech analyzes your skills, identifies your gaps, and builds a personalized AI-powered roadmap to your target career.
+            GTech pinpoints your exact skill gaps against real industry roles and builds a fiery, AI-guided execution roadmap powered by <strong className="text-white font-semibold">Gemini 3.6 Flash</strong>.
           </motion.p>
 
           {/* Primary / Secondary CTAs */}
@@ -292,14 +279,13 @@ export const LandingPage = () => {
             className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap"
           >
             <Button
-              variant="glow"
+              variant="solar"
               size="lg"
               onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
               className="w-full sm:w-auto text-base font-display group relative overflow-hidden"
             >
-              <span className="relative z-10">Start Your Career Analysis</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-20 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              <span className="relative z-10 font-bold">Start Your Career Analysis</span>
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1.5 transition-transform relative z-10" />
             </Button>
 
             <Button
@@ -309,10 +295,10 @@ export const LandingPage = () => {
                 const el = document.getElementById('workflow');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="w-full sm:w-auto text-base font-display group"
+              className="w-full sm:w-auto text-base font-display hover:border-solar-coral/40 group"
             >
               See How It Works
-              <div className="ml-2 w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+              <div className="ml-2.5 w-2 h-2 bg-solar-coral rounded-full animate-pulse shadow-[0_0_8px_#FF3366]" />
             </Button>
           </motion.div>
 
@@ -330,24 +316,24 @@ export const LandingPage = () => {
               ))}
             </div>
 
-            <div className="rounded-xl overflow-hidden bg-slate-950 border border-slate-800 p-6 sm:p-8 text-left relative">
+            <div className="rounded-xl overflow-hidden bg-dark-950/90 border border-solar-coral/20 p-6 sm:p-8 text-left relative shadow-2xl">
               
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-800">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-800/80">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-500/80 animate-pulse" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/80 animate-pulse" style={{ animationDelay: '0.2s' }} />
-                  <div className="w-3 h-3 rounded-full bg-emerald-500/80 animate-pulse" style={{ animationDelay: '0.4s' }} />
-                  <span className="ml-2 text-xs font-mono text-slate-500">gtech.ai/dashboard</span>
+                  <div className="w-3 h-3 rounded-full bg-solar-coral/80 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-solar-amber/80 animate-pulse" style={{ animationDelay: '0.2s' }} />
+                  <div className="w-3 h-3 rounded-full bg-solar-violet/80 animate-pulse" style={{ animationDelay: '0.4s' }} />
+                  <span className="ml-2 text-xs font-mono text-slate-400">gtech.ai/command-center</span>
                 </div>
-                <Badge variant="purple" size="sm" className="font-display animate-pulse">
-                  Target Track: AI Engineer (72% Ready)
+                <Badge variant="coral" size="sm" className="font-display animate-pulse">
+                  Target: AI Engineer (72% Ready)
                 </Badge>
               </div>
 
               {/* Demo Stats with Animated Counters */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
                 <motion.div 
-                  className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 group cursor-pointer hover:scale-[1.02] transition-transform"
+                  className="p-4 rounded-xl bg-dark-900/90 border border-solar-coral/20 group cursor-pointer hover:border-solar-coral/50 transition-all"
                   whileHover={{ scale: 1.02 }}
                 >
                   <div className="text-xs text-slate-400">Career Readiness</div>
@@ -358,9 +344,9 @@ export const LandingPage = () => {
                   >
                     72%
                   </motion.div>
-                  <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                  <div className="w-full bg-dark-950 h-1.5 rounded-full mt-2 overflow-hidden border border-white/5">
                     <motion.div 
-                      className="bg-purple-500 h-full rounded-full"
+                      className="bg-gradient-to-r from-solar-coral to-solar-amber h-full rounded-full"
                       initial={{ width: 0 }}
                       animate={{ width: '72%' }}
                       transition={{ duration: 1, delay: 0.5 }}
@@ -369,33 +355,33 @@ export const LandingPage = () => {
                 </motion.div>
 
                 <motion.div 
-                  className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 group cursor-pointer hover:scale-[1.02] transition-transform"
+                  className="p-4 rounded-xl bg-dark-900/90 border border-slate-800/80 group cursor-pointer hover:border-solar-amber/40 transition-all"
                   whileHover={{ scale: 1.02 }}
                 >
                   <div className="text-xs text-slate-400">Skills Mastered</div>
-                  <div className="text-2xl font-bold text-emerald-400 font-mono mt-1">
+                  <div className="text-2xl font-bold text-solar-amber font-mono mt-1">
                     12<span className="text-slate-500 text-sm"> / 20</span>
                   </div>
                   <div className="text-[11px] text-slate-400 mt-1">Python, SQL, Git, OOP</div>
                 </motion.div>
 
                 <motion.div 
-                  className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 group cursor-pointer hover:scale-[1.02] transition-transform"
+                  className="p-4 rounded-xl bg-dark-900/90 border border-slate-800/80 group cursor-pointer hover:border-solar-violet/40 transition-all"
                   whileHover={{ scale: 1.02 }}
                 >
                   <div className="text-xs text-slate-400">Roadmap Progress</div>
-                  <div className="text-2xl font-bold text-cyan-400 font-mono mt-1">
+                  <div className="text-2xl font-bold text-solar-violet font-mono mt-1">
                     38<span className="text-slate-500 text-sm">%</span>
                   </div>
                   <div className="text-[11px] text-slate-400 mt-1">Phase 3 Active</div>
                 </motion.div>
 
                 <motion.div 
-                  className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 group cursor-pointer hover:scale-[1.02] transition-transform"
+                  className="p-4 rounded-xl bg-dark-900/90 border border-slate-800/80 group cursor-pointer hover:border-solar-coral/40 transition-all"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className="text-xs text-slate-400">Projects Done</div>
-                  <div className="text-2xl font-bold text-purple-300 font-mono mt-1">
+                  <div className="text-xs text-slate-400">Projects Built</div>
+                  <div className="text-2xl font-bold text-rose-400 font-mono mt-1">
                     3 
                   </div>
                   <div className="text-[11px] text-slate-400 mt-1">Student ML, RAG App</div>
@@ -403,17 +389,20 @@ export const LandingPage = () => {
               </div>
 
               {/* Interactive Skill Gap Row */}
-              <div className="p-4 rounded-xl bg-purple-950/40 border border-purple-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:backdrop-blur-sm transition-all">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-lg bg-purple-500/20 text-purple-300 animate-pulse">
+              <div className="p-4.5 rounded-xl bg-gradient-to-r from-solar-coral/15 via-solar-amber/10 to-transparent border border-solar-coral/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="p-2.5 rounded-xl bg-solar-coral/20 text-rose-300 animate-pulse border border-solar-coral/30 shadow-[0_0_12px_rgba(255,51,102,0.3)]">
                     <BrainCircuit className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white font-display">AI Career Mentor Recommendation</h4>
-                    <p className="text-xs text-slate-300">Your biggest current gap is Machine Learning. Completing 3 roadmap milestones will boost readiness +18%.</p>
+                    <h4 className="text-sm font-bold text-white font-display flex items-center gap-2">
+                      AI Career Mentor Recommendation
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-solar-coral/20 text-rose-200 font-mono font-normal">Gemini</span>
+                    </h4>
+                    <p className="text-xs text-slate-300 mt-0.5">Your biggest current gap is Machine Learning. Completing 3 roadmap milestones will boost readiness +18%.</p>
                   </div>
                 </div>
-                <Button variant="glow" size="sm" onClick={() => navigate('/roadmap')} className="shrink-0 group">
+                <Button variant="solar" size="sm" onClick={() => navigate('/roadmap')} className="shrink-0 group">
                   View Milestone
                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -426,14 +415,14 @@ export const LandingPage = () => {
       </section>
 
       {/* HOW IT WORKS SECTION */}
-      <section id="workflow" className="py-24 border-t border-b border-slate-800/60 bg-slate-950/60 relative overflow-hidden">
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%)]" />
+      <section id="workflow" className="py-24 border-t border-b border-slate-800/60 bg-[#090B12] relative overflow-hidden">
+        {/* Animated Solar Radiant Spot */}
+        <div className="absolute inset-0 pointer-events-none opacity-20">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-r from-solar-coral via-solar-amber to-solar-violet blur-[120px]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="cyan" size="md" className="mb-4 uppercase tracking-wider font-display animate-bounce">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <Badge variant="coral" size="md" className="mb-4 uppercase tracking-wider font-display">
             HOW IT WORKS
           </Badge>
           <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
@@ -443,14 +432,14 @@ export const LandingPage = () => {
             A precise AI pipeline that takes you from where you are to your dream tech offer.
           </p>
 
-          {/* 5-Step Pipeline with Enhanced Cards */}
+          {/* 5-Step Pipeline with Enhanced Solar Cards */}
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 relative">
             {[
-              { step: 1, title: 'Build Your Profile', desc: 'Input degree, major, current skills, languages, and target track.', color: 'purple' },
-              { step: 2, title: 'Assess Your Skills', desc: 'Complete 10-question baseline technical foundations evaluation.', color: 'cyan' },
-              { step: 3, title: 'AI Finds Your Gaps', desc: 'Get quantified readiness score and critical prerequisite gaps.', color: 'rose' },
-              { step: 4, title: 'Follow Your Roadmap', desc: 'Execute custom vertical timeline with courses & milestones.', color: 'amber' },
-              { step: 5, title: 'Become Job Ready', desc: 'Build AI projects and parse target job descriptions to land offers.', color: 'emerald' },
+              { step: 1, title: 'Build Your Profile', desc: 'Input degree, major, current skills, languages, and target track.', tag: 'Profile' },
+              { step: 2, title: 'Assess Your Skills', desc: 'Complete 10-question baseline technical foundations evaluation.', tag: 'Assessment' },
+              { step: 3, title: 'AI Finds Your Gaps', desc: 'Get quantified readiness score and critical prerequisite gaps.', tag: 'Analysis' },
+              { step: 4, title: 'Follow Your Roadmap', desc: 'Execute custom vertical timeline with courses & milestones.', tag: 'Execution' },
+              { step: 5, title: 'Become Job Ready', desc: 'Build AI projects and parse target job descriptions to land offers.', tag: 'Offer' },
             ].map((item, index) => (
               <motion.div
                 key={item.step}
@@ -458,25 +447,21 @@ export const LandingPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card hover className="p-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-r from-purple-500 to-cyan-400 opacity-10 rounded-full -translate-y-1/2 translate-x-1/2" />
-                  
-                  <div className="text-center">
-                    <motion.div 
-                      className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-2xl font-bold text-white font-mono mb-4"
-                      whileHover={{ scale: 1.1, rotate: 360 }}
-                      transition={{ duration: 0.3 }}
-                      style={{
-                        background: `linear-gradient(135deg, hsl(270, 85%, 50%), hsl(${item.color === 'purple' ? '270' : item.color === 'cyan' ? '200' : item.color === 'rose' ? '340' : item.color === 'amber' ? '40' : '150'}, 85%, 50%))`
-                      }}
-                    >
-                      {item.step}
-                    </motion.div>
-                    <h3 className="text-lg font-bold text-white font-display mb-2">{item.title}</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+                <Card hover className="p-6 relative overflow-hidden group text-left border-solar-coral/15 hover:border-solar-coral/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-solar-coral to-solar-amber text-white font-bold font-mono text-xs flex items-center justify-center shadow-[0_0_10px_rgba(255,51,102,0.35)]">
+                      0{item.step}
+                    </span>
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-rose-300 font-semibold px-2 py-0.5 rounded-full bg-solar-coral/10 border border-solar-coral/20">
+                      {item.tag}
+                    </span>
                   </div>
-                  
-                  <div className="mt-4 absolute bottom-4 left-1/2 -translate-x-1/2 w-10 h-1 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <h3 className="text-base font-bold text-white font-display mb-1.5 group-hover:text-rose-300 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    {item.desc}
+                  </p>
                 </Card>
               </motion.div>
             ))}
@@ -485,52 +470,54 @@ export const LandingPage = () => {
       </section>
 
       {/* FEATURES SECTION */}
-      <section id="features" className="py-24 relative">
-        {/* Animated Background */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-40 h-40 bg-purple-500/20 rounded-full filter blur-xl" />
-          <div className="absolute bottom-0 right-0 w-60 h-60 bg-cyan-500/20 rounded-full filter blur-3xl" />
-        </div>
+      <section id="features" className="py-24 relative overflow-hidden">
+        {/* Animated Background Orbs */}
+        <div className="absolute top-10 right-10 w-96 h-96 rounded-full bg-solar-coral/10 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-solar-violet/15 blur-[120px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <Badge variant="purple" size="md" className="mb-4 uppercase tracking-wider font-display animate-fade-in">
-              FEATURES
+            <Badge variant="amber" size="md" className="mb-4 uppercase tracking-wider font-display">
+              CORE CAPABILITIES
             </Badge>
             <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
               Engineered for high-growth tech careers
             </h2>
             <p className="mt-4 text-slate-400 text-base">
-              Six core AI features that eliminate ambiguity and accelerate your trajectory.
+              Six core AI modules that eliminate ambiguity and accelerate your trajectory to a top-tier role.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ 
-                  y: -5,
-                  boxShadow: '0px 25px 50px -12px rgba(139, 92, 246, 0.3)'
-                }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                whileHover={{ y: -6 }}
               >
-                <Card hover className="p-6 h-full flex flex-col justify-between">
+                <Card hover className="p-7 h-full flex flex-col justify-between border-solar-coral/15 hover:border-solar-coral/50">
                   <div>
-                    <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-purple-400 mb-5">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-solar-coral/20 to-solar-amber/20 border border-solar-coral/30 flex items-center justify-center text-solar-coral mb-5 shadow-[0_0_15px_rgba(255,51,102,0.2)]">
                       <feature.icon className="w-6 h-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-white font-display mb-4 text-left">{feature.title}</h3>
+                    <h3 className="text-xl font-bold text-white font-display mb-3 text-left group-hover:text-rose-200 transition-colors">
+                      {feature.title}
+                    </h3>
                     <p className="text-slate-300 text-sm leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
                   
-                  <div className="mt-6 pt-4 border-t border-slate-800/60 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs text-slate-400">AI-Powered</span>
+                  <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-solar-coral animate-pulse" />
+                      <span className="text-xs font-mono text-slate-400">Gemini 3.6 Flash</span>
+                    </div>
+                    <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-solar-coral to-solar-amber">
+                      Active
+                    </span>
                   </div>
                 </Card>
               </motion.div>
@@ -539,36 +526,42 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* FINAL CTA with Enhanced Effects */}
-      <section className="py-20 relative overflow-hidden text-center">
+      {/* FINAL CTA with Sunset Radiant Glow */}
+      <section className="py-24 relative overflow-hidden text-center border-t border-slate-800/60 bg-gradient-to-b from-dark-950 via-dark-900 to-dark-950">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-solar-coral/20 via-solar-amber/20 to-solar-violet/20 blur-[100px]" />
+        </div>
+
         <div className="max-w-4xl mx-auto px-4 relative z-10">
+          <Badge variant="coral" size="sm" className="mb-4 font-mono font-bold tracking-widest">
+            READY TO LEVEL UP?
+          </Badge>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-4xl sm:text-5xl font-display font-extrabold text-white tracking-tight"
           >
-            Build the career you're actually ready for.
+            Build the career you're <span className="gradient-text-solar">actually ready for.</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-4 text-slate-300 text-lg"
+            className="mt-4 text-slate-300 text-lg max-w-2xl mx-auto leading-relaxed"
           >
-            Stop guessing what skills to learn next. Let GTech navigate your path to your dream job.
+            Stop guessing what skills to learn next. Let GTech's real-time AI matrix navigate your exact path to a dream tech offer.
           </motion.p>
-          <div className="mt-8 flex justify-center">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+          <div className="mt-9 flex justify-center">
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}>
               <Button
-                variant="glow"
+                variant="solar"
                 size="lg"
                 onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
-                className="text-base px-8 py-4 font-display group relative overflow-hidden"
+                className="text-base px-8 py-4 font-display font-bold shadow-xl shadow-rose-950/50"
               >
                 <span className="relative z-10">Start Your Free Career Analysis</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 opacity-20 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 ml-2.5" />
               </Button>
             </motion.div>
           </div>

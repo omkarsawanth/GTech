@@ -158,23 +158,23 @@ export const DashboardPage = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="mb-8 rounded-2xl glass-panel p-6 border-l-4 border-l-purple-500 border border-purple-500/30 relative overflow-hidden"
+        className="mb-8 rounded-2xl glass-panel p-6 border-l-4 border-l-solar-coral border border-solar-coral/30 relative overflow-hidden shadow-xl shadow-rose-950/20"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start gap-4">
-            <div className="p-3.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/40 shrink-0">
+            <div className="p-3.5 rounded-2xl bg-solar-coral/20 text-rose-300 border border-solar-coral/40 shrink-0 shadow-[0_0_15px_rgba(255,51,102,0.3)]">
               <BrainCircuit className="w-7 h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Badge variant="purple" size="sm" className="font-display">AI Career Mentor</Badge>
-                <span className="text-xs text-slate-400 font-medium font-mono">Personalized Insight</span>
+                <Badge variant="coral" size="sm" className="font-display font-semibold">AI Career Mentor</Badge>
+                <span className="text-xs text-slate-400 font-medium font-mono">Gemini 3.6 Flash</span>
               </div>
               <h3 className="text-xl font-display font-extrabold text-white">
                 {nextMove.title}
               </h3>
               <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                Your biggest current gap is <strong className="text-purple-300 font-semibold">{nextMove.skill}</strong>. Completing the next three roadmap milestones could significantly improve your readiness for your target role.
+                Your biggest current gap is <strong className="text-rose-300 font-semibold">{nextMove.skill}</strong>. Completing the next three roadmap milestones will significantly improve your target role readiness.
               </p>
             </div>
           </div>
@@ -189,10 +189,10 @@ export const DashboardPage = () => {
               Ask AI Mentor
             </Button>
             <Button
-              variant="glow"
+              variant="solar"
               size="md"
               onClick={() => navigate('/roadmap')}
-              className="font-display"
+              className="font-display font-bold"
               icon={ArrowRight}
               iconPosition="right"
             >
@@ -209,36 +209,37 @@ export const DashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         
         {/* Recharts Bar Chart (2 columns width) */}
-        <Card hover className="lg:col-span-2 p-6 flex flex-col justify-between">
+        <Card hover className="lg:col-span-2 p-6 flex flex-col justify-between border-solar-coral/15 hover:border-solar-coral/40">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-display font-bold text-white flex items-center gap-2">
-                <Target className="w-5 h-5 text-purple-400" />
+                <Target className="w-5 h-5 text-solar-coral" />
                 Current Skill Level vs Target Benchmark
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">Quantified skill metrics for {activeCareerProfile?.title}</p>
             </div>
-            <Badge variant="purple" size="sm">Live Analytics</Badge>
+            <Badge variant="amber" size="sm">Live Analytics</Badge>
           </div>
 
           <div className="h-72 w-full pt-2 min-h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1c2333" />
                 <XAxis dataKey="skill" stroke="#94a3b8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94a3b8" fontSize={11} domain={[0, 100]} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0F172A',
-                    borderColor: '#334155',
+                    backgroundColor: '#0B0D14',
+                    borderColor: '#FF336640',
                     borderRadius: '12px',
                     color: '#F8FAFC',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.5)'
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                <Bar dataKey="currentLevel" name="Current Level %" fill="#8B5CF6" radius={[6, 6, 0, 0]} isAnimationActive={false} />
-                <Bar dataKey="requiredLevel" name="Target Benchmark %" fill="#06B6D4" radius={[6, 6, 0, 0]} opacity={0.5} isAnimationActive={false} />
+                <Bar dataKey="currentLevel" name="Current Level %" fill="#FF3366" radius={[6, 6, 0, 0]} isAnimationActive={false} />
+                <Bar dataKey="requiredLevel" name="Target Benchmark %" fill="#FF8A00" radius={[6, 6, 0, 0]} opacity={0.65} isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -7,60 +7,89 @@ import { motion } from 'framer-motion';
  */
 export const DynamicBackground = ({ 
   children, 
-  orbs = 3, 
+  orbs = 4, 
   className = '',
   ...props 
 }) => {
   const containerRef = useRef(null);
-  const mouseX = React.useRef(0);
-  const mouseY = React.useRef(0);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const [coords, setCoords] = React.useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      mouseX.current = e.clientX;
-      mouseY.current = e.clientY;
+      mousePos.current = { x: e.clientX, y: e.clientY };
+      setCoords({ x: (e.clientX / window.innerWidth - 0.5) * 40, y: (e.clientY / window.innerHeight - 0.5) * 40 });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   return (
-    <div ref={containerRef} className={`relative ${className}`} {...props}>
-      {/* Animated Gradient Orbs */}
-      {[...Array(orbs)].map((_, i) => (
+    <div ref={containerRef} className={`relative overflow-hidden ${className}`} {...props}>
+      {/* Dynamic Solar Flare / Sunset Cyber Mesh Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Primary Sunset Coral Glow */}
         <motion.div
-          key={i}
-          className="absolute rounded-full pointer-events-none opacity-30"
+          className="absolute w-[500px] h-[500px] rounded-full blur-[100px] opacity-25"
           style={{
-            width: Math.random() * 400 + 200 + 'px',
-            height: Math.random() * 400 + 200 + 'px',
-            top: Math.random() * 100 + '%',
-            left: Math.random() * 100 + '%',
-            background: `radial-gradient(circle, ${
-              i % 3 === 0 ? 'hsl(270, 100%, 60%)' : 
-              i % 3 === 1 ? 'hsl(200, 100%, 60%)' : 
-              'hsl(300, 100%, 60%)'
-            }, transparent 70%)`,
-            filter: 'blur(50px)',
-            transform: `translate3d(${mouseX.current / 50 - 200 + i * 100}px, ${mouseY.current / 50 - 100 + i * 50}px, 0)`,
+            top: '5%',
+            right: '10%',
+            background: 'radial-gradient(circle, #FF3366 0%, #FF8A00 50%, transparent 70%)',
           }}
           animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.5, 0.3]
+            x: [coords.x * -1.2, coords.x * -1.2 + 25, coords.x * -1.2],
+            y: [coords.y * -1.2, coords.y * -1.2 - 20, coords.y * -1.2],
+            scale: [1, 1.08, 1],
           }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         />
-      ))}
+
+        {/* Secondary Ultra Violet Orb */}
+        <motion.div
+          className="absolute w-[600px] h-[600px] rounded-full blur-[120px] opacity-25"
+          style={{
+            top: '40%',
+            left: '-5%',
+            background: 'radial-gradient(circle, #8B5CF6 0%, #C026D3 50%, transparent 70%)',
+          }}
+          animate={{
+            x: [coords.x * 1.5, coords.x * 1.5 - 30, coords.x * 1.5],
+            y: [coords.y * 1.5, coords.y * 1.5 + 25, coords.y * 1.5],
+            scale: [1, 1.12, 1],
+          }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        />
+
+        {/* Warm Solar Amber Center Flare */}
+        <motion.div
+          className="absolute w-[450px] h-[450px] rounded-full blur-[90px] opacity-20"
+          style={{
+            bottom: '10%',
+            right: '25%',
+            background: 'radial-gradient(circle, #FF8A00 0%, #FF3366 60%, transparent 75%)',
+          }}
+          animate={{
+            scale: [0.95, 1.1, 0.95],
+            opacity: [0.15, 0.3, 0.15],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+
+        {/* Cyber Neon Accent Ray */}
+        <div 
+          className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-100px,#FF336618,transparent)] pointer-events-none" 
+        />
+      </div>
       
-      {/* Subtle Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-10" />
+      {/* Cyber Hex / Dot Matrix Grid Overlay */}
+      <div 
+        className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] opacity-40 pointer-events-none z-0" 
+      />
       
-      {children}
+      <div className="relative z-10 w-full h-full">
+        {children}
+      </div>
     </div>
   );
 };

@@ -96,42 +96,42 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
             </motion.button>
           </div>
             
-          {/* Enhanced Target Career Card with Gradient Border */}
-          <div className="p-4 mx-3 my-4 rounded-xl bg-gradient-to-br from-slate-900/90 to-slate-800/60 border border-purple-500/20">
-            <div className="flex items-center justify-between mb-1">
+          {/* Enhanced Target Career Card with Solar Gradient Border */}
+          <div className="p-4 mx-3 my-4 rounded-xl bg-gradient-to-br from-dark-900/90 via-dark-850 to-dark-800/80 border border-solar-coral/25 shadow-lg shadow-rose-950/20">
+            <div className="flex items-center justify-between mb-1.5">
               <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Target Track</span>
-              <Badge variant="purple" size="sm" className="animate-pulse">
+              <Badge variant="coral" size="sm" className="animate-pulse">
                 {analysisResult?.readinessScore || 72}% Ready
               </Badge>
             </div>
             <motion.div 
-              className="flex items-center justify-center gap-2 text-sm font-bold text-white font-display"
-              whileHover={{ x: 5 }}
+              className="flex items-center gap-2 text-sm font-bold text-white font-display"
+              whileHover={{ x: 3 }}
             >
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <span className="truncate max-w-[120px]">{activeCareerProfile?.title || 'AI Engineer'}</span>
+              <Sparkles className="w-4 h-4 text-solar-amber shrink-0" />
+              <span className="truncate">{activeCareerProfile?.title || 'AI Engineer'}</span>
             </motion.div>
             
-            {/* Animated Progress Bar */}
-            <div className="mt-2.5 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            {/* Animated Solar Progress Bar */}
+            <div className="mt-3 w-full bg-dark-950 rounded-full h-1.5 overflow-hidden p-0.5 border border-white/5">
               <motion.div
-                className="bg-gradient-to-r from-purple-600 to-cyan-400 h-full rounded-full"
+                className="bg-gradient-to-r from-solar-coral via-solar-amber to-solar-violet h-full rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${analysisResult?.readinessScore || 72}%` }}
-                transition={{ duration: 1, delay: 0.3 }}
+                transition={{ duration: 1.2, delay: 0.2 }}
                 style={{ width: `${analysisResult?.readinessScore || 72}%` }}
               />
             </div>
           </div>
 
-          {/* Navigation Links with Hover Effects */}
+          {/* Navigation Links with Solar Hover Effects */}
           <nav className="px-3 space-y-1">
             {navItems.map((item, index) => (
               <motion.div
                 key={item.path}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.04 }}
               >
                 <NavLink
                   to={item.path}
@@ -139,21 +139,19 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                   className={({ isActive }) =>
                     `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
                       isActive
-                        ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40 shadow-sm font-semibold'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                        ? 'bg-gradient-to-r from-solar-coral/20 via-solar-amber/10 to-transparent text-rose-200 border-l-2 border-solar-coral shadow-[0_0_15px_rgba(255,51,102,0.15)] font-semibold'
+                        : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]'
                     }`
                   }
                 >
                   <div className="flex items-center gap-3">
-                    <item.icon className="w-4 h-4 text-current transition-transform duration-200 group-hover:scale-110" />
+                    <item.icon className="w-4 h-4 text-current transition-transform duration-200 group-hover:scale-110 group-hover:text-solar-coral" />
                     <span className="relative">
                       <span>{item.name}</span>
-                      {/* Underline Effect on Hover */}
-                      <div className="absolute inset-0 bg-purple-500/20 rounded-xl scale-0 group-hover:scale-100 transition-transform duration-200 origin-left" />
                     </span>
                   </div>
                   {item.badge && (
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono">
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-solar-coral/20 text-rose-300 border border-solar-coral/30 font-mono">
                       {item.badge}
                     </span>
                   )}

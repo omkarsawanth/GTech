@@ -67,26 +67,26 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="w-full max-w-2xl bg-[#0d121f] border border-purple-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[600px]"
+          className="w-full max-w-2xl bg-dark-900 border border-solar-coral/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[600px] relative"
         >
           {/* Header */}
-          <div className="p-4 px-6 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-4 px-6 bg-dark-950 border-b border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 p-0.5 shadow-md">
-                <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-purple-400">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-solar-coral via-solar-amber to-solar-violet p-0.5 shadow-md shadow-rose-950/40">
+                <div className="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center text-solar-coral">
                   <BrainCircuit className="w-5 h-5" />
                 </div>
               </div>
               <div>
                 <h3 className="text-base font-bold text-white font-display flex items-center gap-2">
-                  AI Career Mentor <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-mono">Gemini 2.0</span>
+                  AI Career Mentor <span className="text-[10px] px-2 py-0.5 rounded-full bg-solar-coral/20 text-rose-300 font-mono">Gemini 3.6 Flash</span>
                 </h3>
                 <p className="text-xs text-slate-400">Context-aware personalized career advisor</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -100,21 +100,21 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
                 className={`flex gap-3 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {m.sender === 'mentor' && (
-                  <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-lg bg-solar-coral/20 border border-solar-coral/30 flex items-center justify-center text-rose-300 shrink-0 mt-0.5">
                     <Bot className="w-4 h-4" />
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] rounded-2xl p-3.5 text-xs leading-relaxed ${
                     m.sender === 'user'
-                      ? 'bg-purple-600 text-white rounded-tr-none'
-                      : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'
+                      ? 'gradient-solar-btn text-white rounded-tr-none shadow-md'
+                      : 'bg-dark-850 border border-slate-800 text-slate-200 rounded-tl-none'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{m.text}</p>
                 </div>
                 {m.sender === 'user' && (
-                  <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-lg bg-solar-amber/20 border border-solar-amber/30 flex items-center justify-center text-amber-300 shrink-0 mt-0.5">
                     <User className="w-4 h-4" />
                   </div>
                 )}
@@ -122,11 +122,11 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
             ))}
             {isLoading && (
               <div className="flex gap-3 justify-start items-center">
-                <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-solar-coral/20 border border-solar-coral/30 flex items-center justify-center text-rose-300 shrink-0">
                   <Loader2 className="w-4 h-4 animate-spin" />
                 </div>
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-none p-3 text-xs text-slate-400">
-                  Thinking with your GTech profile context...
+                <div className="bg-dark-850 border border-slate-800 rounded-2xl rounded-tl-none p-3 text-xs text-rose-200 animate-pulse">
+                  Reasoning with your live GTech career profile...
                 </div>
               </div>
             )}

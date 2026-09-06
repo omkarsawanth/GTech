@@ -73,25 +73,19 @@ export const AppLayout = ({ children }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMentorOpen(true)}
-              className="flex items-center gap-2.5 bg-gradient-to-r from-purple-600/30 to-cyan-500/20 border border-purple-500/40 hover:border-purple-400 rounded-xl px-3 py-1.5 text-xs font-semibold text-purple-200 hover:text-white transition-all shadow-sm"
+              className="flex items-center gap-2.5 gradient-solar-btn rounded-xl px-3.5 py-1.5 text-xs font-semibold text-white transition-all shadow-md shadow-rose-950/40"
               title="Launch AI Career Mentor"
             >
-              <BrainCircuit className="w-3.5 h-3.5 text-purple-400" />
-              <span className="hidden sm:inline">Ask AI Mentor</span>
-              <Sparkles className="w-3 h-3 text-cyan-400" />
+              <BrainCircuit className="w-3.5 h-3.5 text-white" />
+              <span className="hidden sm:inline font-display">Ask AI Mentor</span>
+              <Sparkles className="w-3 h-3 text-amber-200 animate-pulse" />
             </motion.button>
 
             {/* Career Readiness Badge Pill with Pulse */}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 rounded-xl px-3 py-1.5">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-semibold text-purple-200 animate-pulse">
-                Readiness: <motion.span 
-                  className="text-white font-extrabold font-mono"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  {analysisResult?.readinessScore || 72}%
-                </motion.span>
+            <div className="flex items-center gap-2 bg-solar-coral/10 border border-solar-coral/30 rounded-xl px-3 py-1.5 shadow-[0_0_15px_rgba(255,51,102,0.1)]">
+              <div className="w-2 h-2 rounded-full bg-solar-coral animate-pulse shadow-[0_0_8px_#FF3366]" />
+              <span className="text-xs font-semibold text-rose-200">
+                Readiness: <span className="text-white font-extrabold font-mono">{analysisResult?.readinessScore || 72}%</span>
               </span>
             </div>
 

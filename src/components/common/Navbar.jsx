@@ -46,20 +46,20 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Brand Logo with 3D Effect */}
+          {/* Brand Logo with Solar Flare Gradient Effect */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-400 opacity-20 group-hover:opacity-30 transition-opacity duration-300" />
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-400 p-0.5 shadow-lg shadow-purple-600/30 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                  <span className="font-display font-extrabold text-purple-400 text-lg">G</span>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-solar-coral via-solar-amber to-solar-violet opacity-30 group-hover:opacity-75 blur-sm transition-opacity duration-300" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solar-coral via-solar-amber to-solar-violet p-0.5 shadow-lg shadow-rose-600/30 group-hover:scale-105 transition-transform duration-200 relative z-10">
+                <div className="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
+                  <span className="font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-solar-coral to-solar-amber text-lg">G</span>
                 </div>
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-display font-extrabold tracking-tight text-white flex items-center gap-1.5">
-                GTech <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold border border-purple-500/30">
-                  AI PLATFORM
+              <span className="text-xl font-display font-extrabold tracking-tight text-white flex items-center gap-2">
+                GTech <span className="text-[10px] px-2 py-0.5 rounded-full bg-solar-coral/15 text-rose-300 font-semibold border border-solar-coral/30 shadow-[0_0_10px_rgba(255,51,102,0.2)]">
+                  SOLAR AI
                 </span>
               </span>
               <span className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">AI Career Intelligence</span>
@@ -67,30 +67,30 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+          <div className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
             <button 
               onClick={() => handleNavClick('workflow')}
-              className="hover:text-purple-400 transition-colors relative py-2 px-3 rounded-full hover:bg-purple-500/10"
+              className="hover:text-rose-400 transition-colors relative py-1.5 px-3 rounded-full hover:bg-white/5"
             >
               How It Works
             </button>
             <button 
               onClick={() => handleNavClick('features')}
-              className="hover:text-purple-400 transition-colors relative py-2 px-3 rounded-full hover:bg-purple-500/10"
+              className="hover:text-rose-400 transition-colors relative py-1.5 px-3 rounded-full hover:bg-white/5"
             >
               Features
             </button>
             <Link 
               to="/career-selection" 
-              className="hover:text-purple-400 transition-colors relative py-2 px-3 rounded-full hover:bg-purple-500/10"
+              className="hover:text-rose-400 transition-colors relative py-1.5 px-3 rounded-full hover:bg-white/5"
             >
               Careers
             </Link>
             <Link 
               to="/job-analysis" 
-              className="hover:text-purple-400 transition-colors flex items-center gap-1 relative py-2 px-3 rounded-full hover:bg-purple-500/10"
+              className="hover:text-amber-400 transition-colors flex items-center gap-1.5 relative py-1.5 px-3 rounded-full hover:bg-white/5 text-slate-300"
             >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> Job Parser
+              <Sparkles className="w-3.5 h-3.5 text-solar-amber" /> Job Parser
             </Link>
           </div>
 

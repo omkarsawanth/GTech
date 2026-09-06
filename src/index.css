@@ -50,7 +50,7 @@
 
 @layer base {
   body {
-    background-color: #07090E;
+    background-color: #07080D;
     color: #f1f5f9;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -58,66 +58,65 @@
   }
 }
 
-/* CSS Variables for Dynamic Theming */
+/* CSS Variables for Dynamic Solar Flare Theming */
 :root {
-  --primary: 139 92 246;
-  --primary-light: 165 155 244;
-  --secondary: 99 102 241;
-  --accent-cyan: 56 189 248;
-  --accent-pink: 238 72 114;
-  --accent-emerald: 16 209 124;
-  --gradient-start: hsl(var(--primary));
-  --gradient-end: hsl(var(--secondary));
+  --primary-violet: 139 92 246;
+  --primary-coral: 255 51 102;
+  --primary-amber: 255 138 0;
+  --primary-rose: 244 63 94;
+  --accent-cyan: 6 182 212;
+  --bg-deep: 7 8 13;
 }
 
-.dark {
-  --primary: 139 92 246;
-  --primary-light: 165 155 244;
-  --secondary: 99 102 241;
-  --accent-cyan: 56 189 248;
-  --accent-pink: 238 72 114;
-  --accent-emerald: 16 209 124;
-}
-
-/* Performance-optimized Glassmorphism with GPU acceleration */
+/* Solar Flare Glassmorphism Panels */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(14, 17, 28, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transform: translateZ(0);
-  will-change: transform;
 }
 
-.glass-panel-hover {
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, border-color 0.2s ease;
-  transform: translateZ(0);
-}
-.glass-panel-hover:hover {
-  background: rgba(23, 32, 51, 0.9);
-  border-color: rgba(139, 92, 246, 0.4);
-  transform: translateY(-2px) translateZ(0);
+.glass-panel-solar {
+  background: radial-gradient(120% 120% at 0% 0%, rgba(255, 51, 102, 0.08) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(15, 19, 32, 0.85) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 51, 102, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
 
 .glass-card {
-  background: rgba(15, 21, 36, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(16, 20, 34, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transform: translateZ(0);
-  will-change: transform;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.glass-card:hover {
+  background: rgba(22, 28, 48, 0.85);
+  border-color: rgba(255, 51, 102, 0.35);
+  box-shadow: 0 12px 35px -8px rgba(255, 51, 102, 0.22), 0 0 25px -4px rgba(139, 92, 246, 0.18);
+  transform: translateY(-3px);
+}
+
+/* Solar Flare Radiant Gradient Typography */
 .gradient-text {
-  background: linear-gradient(135deg, #C084FC 0%, #A855F7 50%, #6366F1 100%);
+  background: linear-gradient(135deg, #FF6B8B 0%, #FF3366 35%, #8B5CF6 70%, #6366F1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: textGlow 3s ease-in-out infinite;
 }
 
-.gradient-text-cyan {
-  background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+.gradient-text-amber {
+  background: linear-gradient(135deg, #FFB347 0%, #FF8A00 40%, #FF3366 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-solar {
+  background: linear-gradient(120deg, #FFD200 0%, #FF8A00 25%, #FF3366 60%, #B026FF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -125,11 +124,47 @@
   animation: gradientShift 4s ease infinite;
 }
 
-/* Gradient Button Background */
-.gradient-glow {
-  background: linear-gradient(135deg, #8B5CF6, #6366F1, #06B6D4, #34D3FF);
-  background-size: 200% 200%;
-  animation: shimmer 3s linear infinite;
+/* Sunset Radiant Buttons and Glows */
+.gradient-solar-btn {
+  background: linear-gradient(135deg, #FF3366 0%, #FF6536 50%, #FF8A00 100%);
+  box-shadow: 0 4px 20px -2px rgba(255, 51, 102, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.25s ease;
+}
+
+.gradient-solar-btn:hover {
+  background: linear-gradient(135deg, #FF1E56 0%, #FF5024 50%, #FF7B00 100%);
+  box-shadow: 0 8px 30px -2px rgba(255, 51, 102, 0.65), 0 0 25px rgba(255, 138, 0, 0.35);
+  transform: translateY(-1px) scale(1.015);
+}
+
+.gradient-violet-btn {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 50%, #C026D3 100%);
+  box-shadow: 0 4px 20px -2px rgba(139, 92, 246, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.25s ease;
+}
+
+.gradient-violet-btn:hover {
+  box-shadow: 0 8px 30px -2px rgba(139, 92, 246, 0.65), 0 0 25px rgba(192, 38, 211, 0.35);
+  transform: translateY(-1px) scale(1.015);
+}
+
+.solar-border {
+  position: relative;
+}
+.solar-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 51, 102, 0.6), rgba(255, 138, 0, 0.4), rgba(139, 92, 246, 0.6));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Floating Animation Classes */
