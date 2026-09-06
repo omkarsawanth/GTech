@@ -2,13 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ripple {
+  var(--from-x, 50%) var(--from-y, 50%) {
+    top: var(--from-y);
+    left: var(--from-x);
+  }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes textGlow {
+  0%, 100% { text-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { text-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 40px rgba(99, 102, 241, 0.5); }
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-20px, -20px) scale(1.1); }
+  50% { transform: translate(-20px, 20px) scale(1); }
+  75% { transform: translate(20px, 20px) scale(1.1); }
+}
+
 @layer base {
   body {
     background-color: #07090E;
     color: #f1f5f9;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
   }
+}
+
+/* CSS Variables for Dynamic Theming */
+:root {
+  --primary: 139 92 246;
+  --primary-light: 165 155 244;
+  --secondary: 99 102 241;
+  --accent-cyan: 56 189 248;
+  --accent-pink: 238 72 114;
+  --accent-emerald: 16 209 124;
+  --gradient-start: hsl(var(--primary));
+  --gradient-end: hsl(var(--secondary));
+}
+
+.dark {
+  --primary: 139 92 246;
+  --primary-light: 165 155 244;
+  --secondary: 99 102 241;
+  --accent-cyan: 56 189 248;
+  --accent-pink: 238 72 114;
+  --accent-emerald: 16 209 124;
 }
 
 /* Performance-optimized Glassmorphism with GPU acceleration */
@@ -18,6 +86,7 @@
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transform: translateZ(0);
+  will-change: transform;
 }
 
 .glass-panel-hover {
@@ -33,6 +102,7 @@
 .glass-card {
   background: rgba(15, 21, 36, 0.85);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transform: translateZ(0);
   will-change: transform;
@@ -42,12 +112,76 @@
   background: linear-gradient(135deg, #C084FC 0%, #A855F7 50%, #6366F1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textGlow 3s ease-in-out infinite;
 }
 
 .gradient-text-cyan {
   background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+}
+
+/* Gradient Button Background */
+.gradient-glow {
+  background: linear-gradient(135deg, #8B5CF6, #6366F1, #06B6D4, #34D3FF);
+  background-size: 200% 200%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Floating Animation Classes */
+.float-slow {
+  animation: float 6s ease-in-out infinite;
+}
+
+.float-fast {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 3D Transform Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-500 {
+  perspective: 500px;
+}
+
+.transform-3d {
+  transform-style: preserve-3d;
+}
+
+/* Particle Background Effect */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0) 70%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: fadeInOut 4s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  10%, 90% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 0.6; }
 }
 
 /* Custom Scrollbar */
@@ -67,4 +201,10 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #334155;
+}
+
+/* Subtle Highlight for Text Selection */
+::selection {
+  background-color: #8B5CF6;
+  color: white;
 }
