@@ -17,6 +17,8 @@ import { RoadmapPage } from './pages/RoadmapPage';
 import { JobAnalysisPage } from './pages/JobAnalysisPage';
 import { ProjectGeneratorPage } from './pages/ProjectGeneratorPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage';
+import { OnboardingChatPage } from './pages/OnboardingChatPage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
 
 export function App() {
   return (
@@ -96,6 +98,18 @@ export function App() {
           <Route path="/settings" element={
             <ProtectedRoute>
               <ProfileSettingsPage />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/onboarding" element={
+            <ProtectedRoute>
+              <OnboardingChatPage />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/leaderboard" element={
+            <ProtectedRoute>
+              <LeaderboardPage />
             </ProtectedRoute>
           } />
 

@@ -15,9 +15,12 @@ import {
   Zap,
   Lock,
   CalendarCheck,
-  Flame
+  Flame,
+  Share2,
+  Trophy
 } from 'lucide-react';
 import { TaskCard } from '../components/common/TaskCard';
+import { ShareProgressModal } from '../components/common/ShareProgressModal';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -37,14 +40,23 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { StatCard, Card, Badge, ProgressBar, Button } from '../components/common/UIComponents';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MentorChatModal } from '../components/common/MentorChatModal';
 
 export const DashboardPage = () => {
-  const { activeCareerProfile, analysisResult, dailyTasks, dailyTasksLoading, markTaskComplete } = useApp();
+  const { 
+    activeCareerProfile, 
+    analysisResult, 
+    dailyTasks, 
+    dailyTasksLoading, 
+    markTaskComplete,
+    currentStreak,
+    streakCelebration 
+  } = useApp();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isMentorModalOpen, setIsMentorModalOpen] = React.useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = React.useState(false);
 
   const readinessScore = analysisResult?.readinessScore || 72;
   const skillsMasteredCount = analysisResult?.skillsMasteredCount || 12;
@@ -91,26 +103,73 @@ export const DashboardPage = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Button
             variant="outline"
             size="md"
-            onClick={() => navigate('/assessment')}
+            onClick={() => setIsShareModalOpen(true)}
+            className="text-xs font-display hover:border-solar-coral/50"
           >
-            Retake Assessment
+            <Share2 className="w-3.5 h-3.5 mr-1.5 text-solar-coral" />
+            Share Progress
           </Button>
+
           <Button
-            variant="glow"
+            variant="outline"
+            size="md"
+            onClick={() => navigate('/leaderboard')}
+            className="text-xs font-display hover:border-solar-amber/50"
+          >
+            <Trophy className="w-3.5 h-3.5 mr-1.5 text-solar-amber" />
+            Leaderboard
+          </Button>
+
+          <Button
+            variant="solar"
             size="md"
             onClick={() => navigate('/roadmap')}
-            className="font-display"
+            className="font-display font-bold text-xs"
             icon={Compass}
             iconPosition="right"
           >
-            View My Roadmap
+            View Roadmap
           </Button>
         </div>
       </div>
+
+      {/* STREAK CELEBRATION BANNER (Phase 2 Animation) */}
+      <AnimatePresence>
+        {streakCelebration && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -10 }}
+            className="mb-6 p-4.5 rounded-2xl bg-gradient-to-r from-solar-coral via-solar-amber to-solar-coral text-white font-display font-bold flex items-center justify-between shadow-2xl shadow-rose-950/60"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="p-2 bg-dark-950/30 rounded-xl">
+                <Flame className="w-7 h-7 text-yellow-200 animate-bounce" />
+              </div>
+              <div>
+                <div className="text-base flex items-center gap-2">
+                  STREAK EXTENDED! You're on a {currentStreak} Day Streak! 🔥
+                </div>
+                <div className="text-xs font-normal text-rose-100">
+                  Daily task completed! Consistency is the #1 predictor of career success.
+                </div>
+              </div>
+            </div>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => setIsShareModalOpen(true)}
+              className="bg-dark-950/50 text-white hover:bg-dark-950 border-white/25 shrink-0"
+            >
+              Share Streak 🚀
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* KPI STAT CARDS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
@@ -126,33 +185,33 @@ export const DashboardPage = () => {
         />
 
         <StatCard
+          title="Daily Streak"
+          value={`${currentStreak} Days`}
+          subtitle="Consecutive daily learning"
+          icon={Flame}
+          color="amber"
+          trend="up"
+          trendValue="Momentum Active"
+        />
+
+        <StatCard
           title="Skills Completed"
           value={`${skillsMasteredCount} / ${totalSkillsCount}`}
           subtitle="Proficient skills verified"
           icon={CheckCircle2}
           color="emerald"
           trend="up"
-          trendValue="12 Verified Skills"
+          trendValue="Verified Skills"
         />
 
         <StatCard
           title="Roadmap Progress"
           value={`${roadmapProgress}%`}
-          subtitle="Phase 3 of 7 in progress"
+          subtitle="Active milestones track"
           icon={Compass}
           color="cyan"
           trend="up"
-          trendValue="Phase 3 Active"
-        />
-
-        <StatCard
-          title="Projects Completed"
-          value={`${projectsCompletedCount}`}
-          subtitle="Portfolio projects built"
-          icon={FolderGit2}
-          color="rose"
-          trend="up"
-          trendValue="+1 this week"
+          trendValue="Milestone Active"
         />
 
       </div>
@@ -337,6 +396,18 @@ export const DashboardPage = () => {
         </Card>
 
       </div>
+
+      {/* Share Progress Modal (Phase 3) */}
+      <ShareProgressModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        careerTitle={activeCareerProfile?.title || 'AI Engineer'}
+        readinessScore={readinessScore}
+        currentStreak={currentStreak || 1}
+        skillsCount={skillsMasteredCount}
+        totalSkills={totalSkillsCount}
+        userName={user?.displayName || user?.name || 'Student'}
+      />
 
     </AppLayout>
   );

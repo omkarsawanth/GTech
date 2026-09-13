@@ -69,6 +69,8 @@ export const getDashboard = async (req, res, next) => {
         skillsMasteredCount: skillGap?.currentSkills?.length || 0,
         totalSkillsCount: skillGap?.requiredSkills?.length || 0,
         criticalGapsCount: skillGap?.missingSkills?.filter(s => s.severity === 'Critical').length || 0,
+        currentStreak: profile?.currentStreak || 0,
+        lastCompletedDate: profile?.lastCompletedDate || null,
       },
     });
   } catch (err) { next(err); }

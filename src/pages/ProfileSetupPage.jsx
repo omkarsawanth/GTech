@@ -81,6 +81,28 @@ export const ProfileSetupPage = () => {
           <ProgressBar progress={33} color="purple" height="h-2" />
         </div>
 
+        {/* Conversational Onboarding Alternative Banner */}
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-solar-coral/15 via-solar-amber/10 to-transparent border border-solar-coral/30 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-solar-coral/20 text-rose-300">
+              <Sparkles className="w-5 h-5 text-solar-amber animate-pulse" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-white font-display">Prefer a quick chat-style setup?</h4>
+              <p className="text-[11px] text-slate-300">Talk to the AI Career Navigator in a 2-minute conversation instead of filling out a form.</p>
+            </div>
+          </div>
+          <Button
+            variant="solar"
+            size="sm"
+            type="button"
+            onClick={() => navigate('/onboarding')}
+            className="shrink-0 text-xs font-bold"
+          >
+            Start Chat ➔
+          </Button>
+        </div>
+
         <Card className="p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             

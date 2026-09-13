@@ -150,9 +150,20 @@ export const AppProvider = ({ children }) => {
   });
   const [dailyTasksLoading, setDailyTasksLoading] = useState(false);
 
+  // ── Streak Tracking (Phase 2) ──────────────────────────────────────────────
+  const [currentStreak, setCurrentStreak] = useState(() => {
+    const saved = localStorage.getItem('skillnav_streak');
+    return saved ? parseInt(saved, 10) || 1 : 1;
+  });
+  const [streakCelebration, setStreakCelebration] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('skillnav_daily_tasks', JSON.stringify(dailyTasks));
   }, [dailyTasks]);
+
+  useEffect(() => {
+    localStorage.setItem('skillnav_streak', String(currentStreak));
+  }, [currentStreak]);
 
   const fetchDailyTasks = useCallback(async () => {
     if (!backendAvailable || !isAuthenticated) return;
@@ -170,11 +181,27 @@ export const AppProvider = ({ children }) => {
   const markTaskComplete = useCallback(async (taskId) => {
     try {
       const result = await completeTaskAPI(taskId);
+      if (result?.currentStreak !== undefined) {
+        setCurrentStreak(result.currentStreak);
+        setUser(prev => ({ ...prev, currentStreak: result.currentStreak }));
+      } else {
+        setCurrentStreak(s => s + 1);
+      }
+      setStreakCelebration(true);
+      setTimeout(() => setStreakCelebration(false), 3500);
+
       await fetchDailyTasks();
       return result;
     } catch (err) {
       console.error('[AppContext] Failed to complete task:', err.message);
-      throw err;
+      // Fallback local update
+      setCurrentStreak(s => s + 1);
+      setStreakCelebration(true);
+      setTimeout(() => setStreakCelebration(false), 3500);
+      setDailyTasks(prev => ({
+        ...prev,
+        activeTasks: (prev.activeTasks || []).map(t => t.id === taskId ? { ...t, status: 'completed' } : t)
+      }));
     }
   }, [fetchDailyTasks]);
 
@@ -286,7 +313,10 @@ export const AppProvider = ({ children }) => {
       dailyTasks,
       dailyTasksLoading,
       fetchDailyTasks,
-      markTaskComplete
+      markTaskComplete,
+      currentStreak,
+      streakCelebration,
+      setStreakCelebration
     }}>
       {children}
     </AppContext.Provider>

@@ -8,7 +8,8 @@ import {
   Sparkles, 
   ExternalLink,
   Lock,
-  Play
+  Play,
+  Share2
 } from 'lucide-react';
 import { AppLayout } from '../components/layout/AppLayout';
 import { Card, Badge, ProgressBar, Button } from '../components/common/UIComponents';
@@ -16,10 +17,12 @@ import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TaskCard } from '../components/common/TaskCard';
+import { ShareProgressModal } from '../components/common/ShareProgressModal';
 
 export const RoadmapPage = () => {
-  const { roadmap, toggleRoadmapStep, activeCareerProfile, dailyTasks, markTaskComplete } = useApp();
+  const { roadmap, toggleRoadmapStep, activeCareerProfile, dailyTasks, markTaskComplete, currentStreak, user, analysisResult } = useApp();
   const navigate = useNavigate();
+  const [isShareModalOpen, setIsShareModalOpen] = React.useState(false);
 
   const allTasks = roadmap?.tasks || (dailyTasks?.activeTasks || []).concat(dailyTasks?.previewTasks || []) || [];
 
@@ -62,6 +65,16 @@ export const RoadmapPage = () => {
             </div>
           </div>
         </div>
+
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => setIsShareModalOpen(true)}
+          className="text-xs font-display hover:border-solar-coral/50 shrink-0"
+        >
+          <Share2 className="w-3.5 h-3.5 mr-1.5 text-solar-coral" />
+          Share Progress
+        </Button>
       </div>
 
       {/* VERTICAL TIMELINE ROADMAP CONTAINER */}
@@ -233,6 +246,18 @@ export const RoadmapPage = () => {
           </Button>
         </div>
       </div>
+
+      {/* Share Progress Modal */}
+      <ShareProgressModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        careerTitle={activeCareerProfile?.title || 'AI Engineer'}
+        readinessScore={analysisResult?.readinessScore || 72}
+        currentStreak={currentStreak || 1}
+        skillsCount={analysisResult?.skillsMasteredCount || 12}
+        totalSkills={analysisResult?.totalSkillsCount || 20}
+        userName={user?.displayName || user?.name || 'Student'}
+      />
 
     </AppLayout>
   );

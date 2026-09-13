@@ -12,7 +12,9 @@ import {
   Sparkles,
   User,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Trophy,
+  MessageSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
@@ -27,13 +29,15 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Leaderboard', path: '/leaderboard', icon: Trophy, badge: 'NEW' },
+    { name: 'Chat Onboarding', path: '/onboarding', icon: MessageSquare },
     { name: 'My Profile', path: '/profile', icon: User },
     { name: 'Skill Assessment', path: '/assessment', icon: ClipboardCheck },
     { name: 'Skill Gap Matrix', path: '/skill-gap', icon: Target },
     { name: 'Personalized Roadmap', path: '/roadmap', icon: Compass },
     { name: 'Job Analyzer', path: '/job-analysis', icon: SearchCode, badge: 'AI' },
     { name: 'AI Projects', path: '/projects', icon: Code2 },
-    ];
+  ];
 
   const handleLogout = async () => {
     await logout();

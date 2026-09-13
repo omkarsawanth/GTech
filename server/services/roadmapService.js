@@ -101,7 +101,39 @@ export const completeTask = async (uid, taskId) => {
 
   await roadmapRef.update({ tasks, roadmap, updatedAt: new Date() });
   
-  return { completedTask: task, nextTask, milestoneProgress };
+  // Update streak in user document
+  const todayStr = new Date().toISOString().split('T')[0];
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  const userRef = db.collection('users').doc(uid);
+  const userSnap = await userRef.get();
+  const userData = userSnap.exists ? userSnap.data() : {};
+  let currentStreak = userData.currentStreak || 0;
+  const lastCompletedDate = userData.lastCompletedDate || null;
+  let streakIncremented = false;
+
+  if (!lastCompletedDate) {
+    currentStreak = 1;
+    streakIncremented = true;
+  } else if (lastCompletedDate === yesterdayStr) {
+    currentStreak += 1;
+    streakIncremented = true;
+  } else if (lastCompletedDate === todayStr) {
+    streakIncremented = false;
+  } else {
+    currentStreak = 1;
+    streakIncremented = true;
+  }
+
+  await userRef.set({
+    currentStreak,
+    lastCompletedDate: todayStr,
+    updatedAt: new Date(),
+  }, { merge: true });
+
+  return { completedTask: task, nextTask, milestoneProgress, currentStreak, streakIncremented };
 };
 
 /**

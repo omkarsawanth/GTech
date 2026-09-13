@@ -19,8 +19,8 @@ export const SignupPage = () => {
     if (error) {
       setErrorMsg(error);
     } else {
-      // New users go to profile setup; returning users see dashboard
-      navigate('/profile');
+      // New users go to conversational onboarding
+      navigate('/onboarding');
     }
   };
 

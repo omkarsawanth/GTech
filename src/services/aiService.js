@@ -619,3 +619,21 @@ export async function completeTaskAPI(taskId) {
   }
 }
 
+export async function fetchLeaderboardAPI(career = 'ai-engineer') {
+  try {
+    return await apiGet(`/leaderboard?career=${encodeURIComponent(career)}`);
+  } catch (err) {
+    console.warn('[aiService] Backend /leaderboard unavailable:', err.message);
+    return null;
+  }
+}
+
+export async function optInLeaderboardAPI(displayHandle, optIn = true) {
+  try {
+    return await apiPut('/leaderboard/opt-in', { displayHandle, optIn });
+  } catch (err) {
+    console.warn('[aiService] Backend /leaderboard/opt-in unavailable:', err.message);
+    throw err;
+  }
+}
+
