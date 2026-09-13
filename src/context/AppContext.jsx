@@ -150,12 +150,18 @@ export const AppProvider = ({ children }) => {
   });
   const [dailyTasksLoading, setDailyTasksLoading] = useState(false);
 
-  // ── Streak Tracking (Phase 2) ──────────────────────────────────────────────
+  // ── Streak Tracking & Freeze Mechanic (Phase 2) ───────────────────────────
   const [currentStreak, setCurrentStreak] = useState(() => {
     const saved = localStorage.getItem('skillnav_streak');
     return saved ? parseInt(saved, 10) || 1 : 1;
   });
   const [streakCelebration, setStreakCelebration] = useState(false);
+  const [streakFreezes, setStreakFreezes] = useState(() => {
+    const saved = localStorage.getItem('skillnav_streak_freezes');
+    return saved !== null ? parseInt(saved, 10) : 1;
+  });
+  const [streakFreezeUsedAlert, setStreakFreezeUsedAlert] = useState(false);
+  const [milestoneUnlocked, setMilestoneUnlocked] = useState(null);
 
   useEffect(() => {
     localStorage.setItem('skillnav_daily_tasks', JSON.stringify(dailyTasks));
@@ -164,6 +170,10 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('skillnav_streak', String(currentStreak));
   }, [currentStreak]);
+
+  useEffect(() => {
+    localStorage.setItem('skillnav_streak_freezes', String(streakFreezes));
+  }, [streakFreezes]);
 
   const fetchDailyTasks = useCallback(async () => {
     if (!backendAvailable || !isAuthenticated) return;
@@ -178,32 +188,60 @@ export const AppProvider = ({ children }) => {
     }
   }, [backendAvailable, isAuthenticated]);
 
+  const checkMilestone = (streakDays) => {
+    const milestones = {
+      3: { days: 3, badge: 'Spark Initiate', title: '3-Day Momentum Spark', desc: 'First habit loop locked in.', icon: '🔥' },
+      7: { days: 7, badge: 'Cyber Flamekeeper', title: '7-Day High Roller', desc: 'Top 10% consistency tier unlocked.', icon: '⚡' },
+      14: { days: 14, badge: 'Neural Surfer', title: '14-Day Cyber Surge', desc: '2 consecutive weeks of unstoppable build momentum.', icon: '💥' },
+      30: { days: 30, badge: 'Solar Titan', title: '30-Day Relentless', desc: 'Full month streak! Industry-ready mindset verified.', icon: '🌟' },
+      100: { days: 100, badge: 'Quantum Overlord', title: '100-Day Legend', desc: 'Elite top 0.1% disciplined tech builder.', icon: '👑' }
+    };
+    if (milestones[streakDays]) {
+      setMilestoneUnlocked(milestones[streakDays]);
+    }
+  };
+
   const markTaskComplete = useCallback(async (taskId) => {
     try {
       const result = await completeTaskAPI(taskId);
+      let nextStreak = currentStreak + 1;
       if (result?.currentStreak !== undefined) {
+        nextStreak = result.currentStreak;
         setCurrentStreak(result.currentStreak);
         setUser(prev => ({ ...prev, currentStreak: result.currentStreak }));
       } else {
         setCurrentStreak(s => s + 1);
       }
+
+      if (result?.streakFreezes !== undefined) {
+        setStreakFreezes(result.streakFreezes);
+      }
+
+      if (result?.streakSavedByFreeze) {
+        setStreakFreezeUsedAlert(true);
+        setTimeout(() => setStreakFreezeUsedAlert(false), 5500);
+      }
+
       setStreakCelebration(true);
       setTimeout(() => setStreakCelebration(false), 3500);
+      checkMilestone(nextStreak);
 
       await fetchDailyTasks();
       return result;
     } catch (err) {
       console.error('[AppContext] Failed to complete task:', err.message);
       // Fallback local update
-      setCurrentStreak(s => s + 1);
+      const fallbackStreak = currentStreak + 1;
+      setCurrentStreak(fallbackStreak);
       setStreakCelebration(true);
       setTimeout(() => setStreakCelebration(false), 3500);
+      checkMilestone(fallbackStreak);
       setDailyTasks(prev => ({
         ...prev,
         activeTasks: (prev.activeTasks || []).map(t => t.id === taskId ? { ...t, status: 'completed' } : t)
       }));
     }
-  }, [fetchDailyTasks]);
+  }, [fetchDailyTasks, currentStreak]);
 
   useEffect(() => {
     if (backendAvailable && isAuthenticated) {
@@ -316,7 +354,11 @@ export const AppProvider = ({ children }) => {
       markTaskComplete,
       currentStreak,
       streakCelebration,
-      setStreakCelebration
+      setStreakCelebration,
+      streakFreezes,
+      streakFreezeUsedAlert,
+      milestoneUnlocked,
+      setMilestoneUnlocked
     }}>
       {children}
     </AppContext.Provider>

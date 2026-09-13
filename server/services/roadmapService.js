@@ -101,7 +101,7 @@ export const completeTask = async (uid, taskId) => {
 
   await roadmapRef.update({ tasks, roadmap, updatedAt: new Date() });
   
-  // Update streak in user document
+  // Update streak in user document with Streak Freeze mechanic
   const todayStr = new Date().toISOString().split('T')[0];
   const yesterday = new Date();
   yesterday.setUTCDate(yesterday.getUTCDate() - 1);
@@ -112,7 +112,16 @@ export const completeTask = async (uid, taskId) => {
   const userData = userSnap.exists ? userSnap.data() : {};
   let currentStreak = userData.currentStreak || 0;
   const lastCompletedDate = userData.lastCompletedDate || null;
+  let streakFreezes = userData.streakFreezes !== undefined ? userData.streakFreezes : 1;
   let streakIncremented = false;
+  let streakSavedByFreeze = false;
+
+  // Weekly freeze refresh check (grant 1 freeze per week)
+  const lastFreezeRefresh = userData.lastFreezeRefresh ? new Date(userData.lastFreezeRefresh) : null;
+  const daysSinceRefresh = lastFreezeRefresh ? (Date.now() - lastFreezeRefresh.getTime()) / (1000 * 60 * 60 * 24) : 999;
+  if (daysSinceRefresh >= 7 && streakFreezes < 1) {
+    streakFreezes = 1;
+  }
 
   if (!lastCompletedDate) {
     currentStreak = 1;
@@ -123,17 +132,37 @@ export const completeTask = async (uid, taskId) => {
   } else if (lastCompletedDate === todayStr) {
     streakIncremented = false;
   } else {
-    currentStreak = 1;
-    streakIncremented = true;
+    // Missed at least one day: check if streak freeze can protect the streak
+    if (streakFreezes > 0 && currentStreak > 0) {
+      streakFreezes -= 1;
+      currentStreak += 1;
+      streakSavedByFreeze = true;
+      streakIncremented = true;
+    } else {
+      currentStreak = 1;
+      streakIncremented = true;
+    }
   }
 
-  await userRef.set({
+  const userUpdates = {
     currentStreak,
     lastCompletedDate: todayStr,
+    streakFreezes,
+    ...(streakSavedByFreeze && { lastFreezeUsedAt: todayStr }),
     updatedAt: new Date(),
-  }, { merge: true });
+  };
 
-  return { completedTask: task, nextTask, milestoneProgress, currentStreak, streakIncremented };
+  await userRef.set(userUpdates, { merge: true });
+
+  return { 
+    completedTask: task, 
+    nextTask, 
+    milestoneProgress, 
+    currentStreak, 
+    streakIncremented, 
+    streakSavedByFreeze,
+    streakFreezes 
+  };
 };
 
 /**

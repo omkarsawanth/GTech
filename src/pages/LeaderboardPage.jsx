@@ -11,7 +11,13 @@ import {
   Search, 
   UserCheck, 
   Lock,
-  Edit3
+  Edit3,
+  Swords,
+  Rocket,
+  Share2,
+  Copy,
+  Check,
+  ExternalLink
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -41,6 +47,8 @@ export const LeaderboardPage = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isChallengeModalOpen, setIsChallengeModalOpen] = useState(false);
+  const [challengeCopied, setChallengeCopied] = useState(false);
   const [displayHandle, setDisplayHandle] = useState(user?.displayHandle || user?.name || 'You');
 
   useEffect(() => {
@@ -110,15 +118,25 @@ export const LeaderboardPage = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <Button
+            variant="solar"
+            size="md"
+            onClick={() => setIsChallengeModalOpen(true)}
+            className="text-xs font-display font-bold shadow-lg shadow-rose-950/40"
+          >
+            <Swords className="w-3.5 h-3.5 mr-1.5" />
+            Challenge a Friend 🥊
+          </Button>
+
           <Button
             variant="outline"
             size="md"
             onClick={() => setIsEditModalOpen(true)}
             className="text-xs"
           >
-            <Edit3 className="w-3.5 h-3.5 mr-2" />
-            Set My Display Handle
+            <Edit3 className="w-3.5 h-3.5 mr-1.5" />
+            Set My Handle
           </Button>
         </div>
       </div>
@@ -269,6 +287,48 @@ export const LeaderboardPage = () => {
         </div>
       </Card>
 
+      {/* THIS WEEK'S CLIMBERS MINI-SECTION */}
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-3">
+          <Rocket className="w-4 h-4 text-solar-coral animate-pulse" />
+          <h3 className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
+            This Week's Biggest Climbers
+          </h3>
+          <Badge variant="coral" size="sm" className="font-mono text-[9px]">SURGING</Badge>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { handle: leaderboardData[0]?.handle || '@neuralninja', climb: '+9 spots', readiness: leaderboardData[0]?.readiness || 88, tag: '⚡ Top Accelerator' },
+            { handle: leaderboardData[1]?.handle || '@asyncwizard', climb: '+6 spots', readiness: leaderboardData[1]?.readiness || 85, tag: '🔥 Daily Habit' },
+            { handle: `@${(user?.displayHandle || user?.name || 'you').toLowerCase().replace(/^@/, '')}`, climb: '+5 spots', readiness: 78, tag: '🚀 Surging (You)', isCurrent: true }
+          ].map((climber, idx) => (
+            <div 
+              key={idx}
+              className={`p-3.5 rounded-xl border flex items-center justify-between ${
+                climber.isCurrent 
+                  ? 'bg-gradient-to-r from-solar-coral/20 to-dark-900 border-solar-coral shadow-lg shadow-rose-950/30 ring-1 ring-solar-coral/40'
+                  : 'bg-dark-900/70 border-slate-800'
+              }`}
+            >
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-display font-bold text-white text-xs">{climber.handle}</span>
+                  {climber.isCurrent && <span className="text-[9px] px-1.5 py-0.2 rounded bg-solar-coral text-white font-mono font-bold">YOU</span>}
+                </div>
+                <div className="text-[10px] text-slate-400 mt-0.5">{climber.tag}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-0.5 justify-end">
+                  <Rocket className="w-3 h-3" /> {climber.climb}
+                </div>
+                <div className="text-[10px] text-slate-400">{climber.readiness}% score</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* FULL RANKINGS LIST */}
       <div className="space-y-3">
         <h3 className="text-base font-display font-bold text-white mb-4">Complete Cohort Standings</h3>
@@ -278,7 +338,7 @@ export const LeaderboardPage = () => {
             key={peer.handle + peer.rank}
             className={`p-4 rounded-xl border flex items-center justify-between gap-4 transition-all ${
               peer.isCurrentUser
-                ? 'bg-gradient-to-r from-solar-coral/20 via-dark-900 to-dark-950 border-solar-coral shadow-lg shadow-rose-950/30'
+                ? 'bg-gradient-to-r from-solar-coral/25 via-dark-900 to-dark-950 border-2 border-solar-coral shadow-[0_0_25px_rgba(255,51,102,0.45)] ring-1 ring-solar-coral/50'
                 : 'bg-dark-900/60 border-slate-800/80 hover:border-slate-700'
             }`}
           >
@@ -295,8 +355,8 @@ export const LeaderboardPage = () => {
                     {peer.handle}
                   </span>
                   {peer.isCurrentUser && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-solar-coral text-white font-semibold">
-                      YOU
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-solar-coral text-white font-extrabold shadow-sm animate-pulse">
+                      YOU • RANK #{peer.rank}
                     </span>
                   )}
                 </div>
@@ -319,6 +379,101 @@ export const LeaderboardPage = () => {
           </div>
         ))}
       </div>
+
+      {/* Challenge a Friend Modal */}
+      {isChallengeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/85 backdrop-blur-md">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md p-6 rounded-2xl bg-dark-900 border border-solar-coral/30 shadow-2xl relative"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase text-solar-coral font-bold">
+                <Swords className="w-4 h-4" /> Challenge a Peer
+              </div>
+              <button
+                onClick={() => setIsChallengeModalOpen(false)}
+                className="text-slate-400 hover:text-white text-sm p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <h3 className="text-xl font-display font-black text-white mb-1">
+              Call Out a Friend 🥊
+            </h3>
+            <p className="text-xs text-slate-400 mb-5 leading-relaxed">
+              Share your custom challenge link. When they onboard on GTech, they'll be tasked with beating your rank on the leaderboard!
+            </p>
+
+            <div className="p-3.5 rounded-xl bg-dark-950 border border-slate-800 mb-5 space-y-2">
+              <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Your Challenge Link</div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-mono text-solar-amber truncate">
+                  {`${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=${topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3}`}
+                </span>
+                <button
+                  onClick={() => {
+                    const rankNum = topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3;
+                    const url = `${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=${rankNum}`;
+                    navigator.clipboard.writeText(url);
+                    setChallengeCopied(true);
+                    setTimeout(() => setChallengeCopied(false), 2500);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-dark-900 border border-slate-700 hover:border-solar-coral text-xs font-mono text-white flex items-center gap-1.5 transition-all shrink-0"
+                >
+                  {challengeCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {challengeCopied ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* Direct Social Share Buttons */}
+            <div className="space-y-2 mb-4">
+              <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-2">1-Click Share</div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                    `🥊 Think you can beat my rank on the GTech leaderboard? I'm currently holding Rank #${
+                      topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3
+                    }! Take the challenge here: ${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=3`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-300 text-xs font-display font-semibold flex items-center justify-center gap-2 transition-all"
+                >
+                  <span>WhatsApp</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    `🥊 Just took Rank #${
+                      topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3
+                    } on @GTech_AI! Challenge me to see who reaches 100% readiness first: ${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=3`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/30 hover:bg-sky-500/20 text-sky-300 text-xs font-display font-semibold flex items-center justify-center gap-2 transition-all"
+                >
+                  <span>Twitter / X</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsChallengeModalOpen(false)}
+              className="w-full text-xs text-slate-400"
+            >
+              Close
+            </Button>
+          </motion.div>
+        </div>
+      )}
 
       {/* Edit Handle Modal */}
       {isEditModalOpen && (

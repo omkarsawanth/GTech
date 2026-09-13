@@ -17,7 +17,9 @@ import {
   CalendarCheck,
   Flame,
   Share2,
-  Trophy
+  Trophy,
+  Snowflake,
+  ShieldCheck
 } from 'lucide-react';
 import { TaskCard } from '../components/common/TaskCard';
 import { ShareProgressModal } from '../components/common/ShareProgressModal';
@@ -51,7 +53,11 @@ export const DashboardPage = () => {
     dailyTasksLoading, 
     markTaskComplete,
     currentStreak,
-    streakCelebration 
+    streakCelebration,
+    streakFreezes,
+    streakFreezeUsedAlert,
+    milestoneUnlocked,
+    setMilestoneUnlocked
   } = useApp();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -137,6 +143,33 @@ export const DashboardPage = () => {
         </div>
       </div>
 
+      {/* STREAK FREEZE ALERT (Phase 2 Protection) */}
+      <AnimatePresence>
+        {streakFreezeUsedAlert && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -10 }}
+            className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-cyan-900/90 via-dark-900 to-cyan-950/90 border border-cyan-500/40 text-cyan-200 font-display flex items-center justify-between shadow-2xl"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                <Snowflake className="w-6 h-6 animate-pulse text-cyan-300" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-white flex items-center gap-2">
+                  ❄️ STREAK FREEZE ACTIVATED!
+                </div>
+                <div className="text-xs text-cyan-300/80 mt-0.5">
+                  Your streak was protected from breaking yesterday. 1 free miss used.
+                </div>
+              </div>
+            </div>
+            <Badge variant="cyan" size="sm" className="font-mono">PROTECTED</Badge>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* STREAK CELEBRATION BANNER (Phase 2 Animation) */}
       <AnimatePresence>
         {streakCelebration && (
@@ -184,15 +217,76 @@ export const DashboardPage = () => {
           trendValue="+14% this month"
         />
 
-        <StatCard
-          title="Daily Streak"
-          value={`${currentStreak} Days`}
-          subtitle="Consecutive daily learning"
-          icon={Flame}
-          color="amber"
-          trend="up"
-          trendValue="Momentum Active"
-        />
+        {/* DUOLINGO-STYLE INTERACTIVE FLAME WIDGET */}
+        <Card hover className="p-4 flex flex-col justify-between relative overflow-hidden bg-gradient-to-b from-dark-900 via-dark-900/95 to-dark-950 border-solar-amber/40 shadow-xl shadow-amber-950/20 group">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Streak Level</span>
+            {streakFreezes > 0 ? (
+              <Badge variant="glass" size="sm" className="text-[10px] font-mono text-cyan-300 border-cyan-500/30 flex items-center gap-1">
+                <Snowflake className="w-2.5 h-2.5 text-cyan-400" />
+                {streakFreezes} Freeze
+              </Badge>
+            ) : (
+              <Badge variant="glass" size="sm" className="text-[10px] font-mono text-slate-500">
+                0 Freezes
+              </Badge>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3.5 my-1">
+            {/* Animated Duolingo Flame with Number Overlay */}
+            <div className="relative w-14 h-14 shrink-0 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-solar-amber/25 blur-xl group-hover:bg-solar-amber/40 transition-all" />
+              
+              <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-[0_0_12px_rgba(255,138,0,0.6)]">
+                <defs>
+                  <linearGradient id="flameGrad" x1="0%" y1="100%" x2="50%" y2="0%">
+                    <stop offset="0%" stopColor="#FF3366" />
+                    <stop offset="50%" stopColor="#FF8A00" />
+                    <stop offset="100%" stopColor="#FFE600" />
+                  </linearGradient>
+                  <linearGradient id="innerFlameGrad" x1="0%" y1="100%" x2="50%" y2="0%">
+                    <stop offset="0%" stopColor="#FF8A00" />
+                    <stop offset="100%" stopColor="#FFFFFF" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M32 4 C32 4, 46 20, 46 38 C46 51, 38 60, 32 60 C26 60, 18 51, 18 38 C18 20, 32 4, 32 4 Z"
+                  fill="url(#flameGrad)"
+                />
+                <path
+                  d="M32 20 C32 20, 40 30, 40 42 C40 50, 35 56, 32 56 C29 56, 24 50, 24 42 C24 30, 32 20, 32 20 Z"
+                  fill="url(#innerFlameGrad)"
+                  opacity="0.85"
+                />
+              </svg>
+
+              {/* Number Overlay in Center of Flame */}
+              <span className="absolute inset-0 flex items-center justify-center font-display font-black text-lg text-dark-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] pt-2 select-none">
+                {currentStreak}
+              </span>
+            </div>
+
+            <div>
+              <div className="text-lg font-display font-extrabold text-white flex items-center gap-1.5">
+                {currentStreak} Day Streak
+              </div>
+              <div className="text-[11px] text-solar-amber font-mono mt-0.5 font-semibold">
+                {currentStreak >= 30 ? '🌟 Solar Titan' : currentStreak >= 14 ? '💥 Cyber Surge' : currentStreak >= 7 ? '⚡ Flamekeeper' : currentStreak >= 3 ? '🔥 Spark' : '🌱 Ember Habit'}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+            <span>Protected 1x/wk</span>
+            <button 
+              onClick={() => setIsShareModalOpen(true)}
+              className="text-solar-coral hover:text-white font-medium transition-colors"
+            >
+              Brag 🔥
+            </button>
+          </div>
+        </Card>
 
         <StatCard
           title="Skills Completed"
@@ -396,6 +490,89 @@ export const DashboardPage = () => {
         </Card>
 
       </div>
+
+      {/* FULLSCREEN CONFETTI & BADGE UNLOCK CELEBRATION MODAL */}
+      <AnimatePresence>
+        {milestoneUnlocked && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/85 backdrop-blur-md">
+            {/* Lightweight Confetti Particles (Framer Motion) */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {[...Array(16)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ 
+                    x: `${(i * 6.2) % 100}vw`, 
+                    y: '-10vh', 
+                    rotate: 0,
+                    opacity: 1 
+                  }}
+                  animate={{ 
+                    y: '110vh', 
+                    rotate: (i % 2 === 0 ? 360 : -360) * 2,
+                    opacity: [1, 1, 0] 
+                  }}
+                  transition={{ 
+                    duration: 2.8 + (i % 4) * 0.4, 
+                    repeat: Infinity, 
+                    ease: 'linear',
+                    delay: (i * 0.15) % 1.5
+                  }}
+                  className={`absolute w-3 h-3 rounded-sm ${
+                    i % 4 === 0 ? 'bg-solar-coral' : i % 4 === 1 ? 'bg-solar-amber' : i % 4 === 2 ? 'bg-solar-violet' : 'bg-yellow-300'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 30 }}
+              className="relative max-w-md w-full rounded-3xl p-8 bg-gradient-to-b from-dark-900 via-dark-950 to-dark-900 border-2 border-solar-amber shadow-[0_0_50px_rgba(255,138,0,0.35)] text-center z-10"
+            >
+              <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-solar-coral via-solar-amber to-yellow-400 p-1 flex items-center justify-center shadow-2xl shadow-rose-950/60">
+                <div className="w-full h-full bg-dark-950 rounded-[22px] flex items-center justify-center text-4xl">
+                  {milestoneUnlocked.icon}
+                </div>
+              </div>
+
+              <Badge variant="amber" size="sm" className="mb-2 font-mono tracking-wider animate-pulse">
+                MILESTONE UNLOCKED • {milestoneUnlocked.days} DAYS
+              </Badge>
+
+              <h2 className="text-2xl font-display font-extrabold text-white tracking-tight">
+                {milestoneUnlocked.title}
+              </h2>
+              <p className="text-xs text-slate-300 mt-2 max-w-xs mx-auto leading-relaxed">
+                {milestoneUnlocked.desc}
+              </p>
+
+              <div className="mt-6 flex flex-col gap-3">
+                <Button
+                  variant="solar"
+                  size="md"
+                  onClick={() => {
+                    setMilestoneUnlocked(null);
+                    setIsShareModalOpen(true);
+                  }}
+                  className="w-full font-display font-bold text-xs"
+                >
+                  Share Badge on Instagram / Discord 🚀
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setMilestoneUnlocked(null)}
+                  className="text-xs text-slate-400 hover:text-white"
+                >
+                  Keep Crushing It ➔
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Share Progress Modal (Phase 3) */}
       <ShareProgressModal

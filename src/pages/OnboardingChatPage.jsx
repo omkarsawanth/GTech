@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
@@ -11,11 +11,16 @@ import {
   Briefcase, 
   Code2, 
   BookOpen,
-  Compass
+  Compass,
+  Swords,
+  Share2
 } from 'lucide-react';
 import { Button, Badge } from '../components/common/UIComponents';
+import { ShareProgressModal } from '../components/common/ShareProgressModal';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
+
+const VIBE_EMOJIS = ['🔥', '💡', '🚀', '🎯', '👀'];
 
 const QUESTIONS = [
   {
@@ -84,19 +89,35 @@ const QUESTIONS = [
 
 export const OnboardingChatPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refUser = searchParams.get('ref');
+  const refRank = searchParams.get('rank');
+
   const { user, updateUserProfile } = useApp();
   const { user: authUser } = useAuth();
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [messages, setMessages] = useState([
-    {
+  const [messages, setMessages] = useState(() => {
+    const initial = [];
+    if (refUser) {
+      initial.push({
+        sender: 'bot',
+        text: `🥊 CHALLENGE ACCEPTED! Your peer @${refUser} (Rank #${refRank || '3'} on the global leaderboard) challenged you to beat their score! Let's get your custom roadmap locked in.`,
+        isChallengeIntro: true,
+      });
+    }
+    initial.push({
       sender: 'bot',
       text: QUESTIONS[0].botText,
       options: QUESTIONS[0].options,
       type: QUESTIONS[0].type,
-    }
-  ]);
+    });
+    return initial;
+  });
+
+  const [reactions, setReactions] = useState({});
   const [isTyping, setIsTyping] = useState(false);
+  const [isStarterModalOpen, setIsStarterModalOpen] = useState(false);
   const [selectedMulti, setSelectedMulti] = useState([]);
   const [answers, setAnswers] = useState({
     name: authUser?.displayName || user?.name || 'Student',
@@ -112,6 +133,13 @@ export const OnboardingChatPage = () => {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  const handleReaction = (msgIdx, emoji) => {
+    setReactions(prev => ({
+      ...prev,
+      [msgIdx]: prev[msgIdx] === emoji ? null : emoji
+    }));
+  };
 
   const handleSingleSelect = (option) => {
     const question = QUESTIONS[currentStepIndex];
@@ -173,18 +201,13 @@ export const OnboardingChatPage = () => {
           ...prev,
           {
             sender: 'bot',
-            text: `Perfect! 🚀 I've synthesized your custom career trajectory for ${currentAnswers.targetCareer}. Let's run your skill gap analysis and unlock Day 1 of your daily roadmap!`,
+            text: `Perfect! 🚀 I've synthesized your custom career trajectory for ${currentAnswers.targetCareer}. Your Day 1 Roadmap Starter is ready! Share your commitment card below or head straight into your analysis.`,
             isFinal: true,
           }
         ]);
 
         // Save to AppContext & backend
         updateUserProfile(currentAnswers);
-
-        // Auto navigate after short delay
-        setTimeout(() => {
-          navigate('/ai-analysis');
-        }, 2200);
       }, 800);
     }
   };
@@ -243,6 +266,26 @@ export const OnboardingChatPage = () => {
             }`}>
               <p className="text-sm sm:text-base leading-relaxed">{msg.text}</p>
 
+              {/* Bot Vibe Check Quick Reaction Pills */}
+              {msg.sender === 'bot' && !msg.options && (
+                <div className="mt-3 flex items-center gap-1.5 pt-2 border-t border-slate-800/60">
+                  <span className="text-[10px] font-mono text-slate-500 mr-1">Vibe:</span>
+                  {VIBE_EMOJIS.map(emoji => (
+                    <button
+                      key={emoji}
+                      onClick={() => handleReaction(index, emoji)}
+                      className={`text-xs px-2 py-0.5 rounded-full transition-all transform hover:scale-125 ${
+                        reactions[index] === emoji
+                          ? 'bg-solar-coral/30 border border-solar-coral scale-110 shadow-sm'
+                          : 'bg-dark-950/60 hover:bg-dark-950 text-slate-400'
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {/* Options Chips inside Bot Message */}
               {msg.options && index === messages.length - 1 && !isTyping && (
                 <div className="mt-5 pt-4 border-t border-slate-800/80">
@@ -300,9 +343,32 @@ export const OnboardingChatPage = () => {
               )}
 
               {msg.isFinal && (
-                <div className="mt-4 flex items-center gap-2 text-xs text-rose-300 font-mono">
-                  <Sparkles className="w-4 h-4 animate-spin text-solar-amber" />
-                  <span>Configuring your AI roadmap...</span>
+                <div className="mt-5 pt-4 border-t border-slate-800/80 space-y-3">
+                  <div className="flex items-center gap-2 text-xs text-rose-300 font-mono">
+                    <Sparkles className="w-4 h-4 animate-spin text-solar-amber" />
+                    <span>Your roadmap trajectory is locked in!</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 pt-2">
+                    <Button
+                      variant="solar"
+                      size="sm"
+                      onClick={() => setIsStarterModalOpen(true)}
+                      className="text-xs font-display font-bold shadow-lg shadow-rose-950/40"
+                    >
+                      <Share2 className="w-3.5 h-3.5 mr-1.5" />
+                      Preview Day 1 Starter Card 🎨
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate('/ai-analysis')}
+                      className="text-xs"
+                    >
+                      Enter Dashboard ➔
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -336,6 +402,19 @@ export const OnboardingChatPage = () => {
           <span>100% Free & Open-Source</span>
         </div>
       </footer>
+
+      {/* Share Progress Modal for Day 1 Starter */}
+      <ShareProgressModal
+        isOpen={isStarterModalOpen}
+        onClose={() => setIsStarterModalOpen(false)}
+        careerTitle={answers.targetCareer.replace(/-/g, ' ').toUpperCase()}
+        readinessScore={42}
+        currentStreak={1}
+        skillsCount={answers.skills?.length || 3}
+        totalSkills={15}
+        userName={answers.name}
+        initialTemplate="stats"
+      />
     </div>
   );
 };

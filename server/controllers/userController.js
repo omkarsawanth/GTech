@@ -71,6 +71,7 @@ export const getDashboard = async (req, res, next) => {
         criticalGapsCount: skillGap?.missingSkills?.filter(s => s.severity === 'Critical').length || 0,
         currentStreak: profile?.currentStreak || 0,
         lastCompletedDate: profile?.lastCompletedDate || null,
+        streakFreezes: profile?.streakFreezes !== undefined ? profile.streakFreezes : 1,
       },
     });
   } catch (err) { next(err); }
