@@ -1,588 +1,786 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Sparkles, 
   ArrowRight, 
-  BrainCircuit, 
-  Target, 
-  Compass, 
-  Briefcase, 
-  CheckCircle2, 
-  Zap, 
-  BarChart3, 
-  Cpu, 
-  SearchCode,
-  Code2,
+  ArrowUpRight, 
+  Terminal, 
+  Sliders, 
+  Crosshair, 
+  Check, 
+  Minus,
+  Sparkles,
+  Layers,
+  ChevronRight,
   TrendingUp,
-  FolderGit2,
-  Rocket,
-  Users,
-  GraduationCap,
-  Globe,
-  Lightbulb,
-  ChevronDown,
-  Star
+  Cpu,
+  CornerDownRight
 } from 'lucide-react';
-import { motion, useAnimation, AnimatePresence } from 'framer-motion';
-
 import { Navbar } from '../components/common/Navbar';
-import { Button, Card, Badge } from '../components/common/UIComponents';
 import { useAuth } from '../context/AuthContext';
 
-// Particle Component for Background
-const Particle = ({ delay }) => {
-  const [x, setX] = useState(Math.random() * window.innerWidth);
-  const [y, setY] = useState(Math.random() * window.innerHeight);
-  const [size] = useState(Math.random() * 4 + 2);
-  const [opacity] = useState(Math.random() * 0.5 + 0.3);
-
-  useEffect(() => {
-    const moveParticle = () => {
-      setX(Math.random() * window.innerWidth);
-      setY(Math.random() * window.innerHeight);
-    };
-
-    const interval = setInterval(moveParticle, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div
-      className="absolute rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 opacity-0 blur-sm animate-pulse"
-      style={{
-        left: `${x}px`,
-        top: `${y}px`,
-        width: `${size}px`,
-        height: `${size}px`,
-        opacity: opacity,
-        animationDelay: `${delay}s`
-      }}
-    />
-  );
-};
-
-// Gradient Orb Component
-const GradientOrb = ({ size = 400, color = 'purple', top = '20%', left = '10%', blur = 'blur-3xl', animation = true }) => {
-  return (
-    <div
-      className={`absolute ${size}px ${blur} rounded-full pointer-events-none opacity-60 ${animation ? 'animate-pulse' : ''}`}
-      style={{
-        top,
-        left,
-        background: color === 'purple' 
-          ? 'radial-gradient(circle, hsl(270, 100%, 60%), transparent 70%)'
-          : color === 'cyan'
-          ? 'radial-gradient(circle, hsl(200, 100%, 60%), transparent 70%)'
-          : 'radial-gradient(circle, hsl(300, 100%, 60%), transparent 70%)'
-      }}
-    />
-  );
-};
-
-// Floating Skill Card Component
-const FloatingSkillCard = ({ skill, delay }) => (
-  <motion.div
-    className="absolute rounded-xl glass-panel p-4 border border-purple-500/20 min-w-[180px]"
-    style={{
-      x: Math.random() * 600 - 300,
-      y: Math.random() * 100 - 50,
-    }}
-    initial={{ opacity: 0, scale: 0.8 }}
-    animate={{ 
-      opacity: [0.7, 1, 0.7],
-      scale: [0.8, 1.05, 0.8],
-      y: [0, -20, 0]
-    }}
-    transition={{ 
-      duration: 4,
-      delay: delay,
-      repeat: Infinity,
-      ease: 'easeInOut'
-    }}
-  >
-    <div className="text-xs text-slate-400 mb-1">{skill.name}</div>
-    <div className="flex items-center gap-1 mb-2">
-      <div className="text-xs text-slate-300">Level:</div>
-      <div className="font-bold text-white text-xs">{skill.level}</div>
-    </div>
-    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-      <div 
-        className="h-full bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full"
-        style={{ width: `${skill.progress}%` }}
-      />
-    </div>
-  </motion.div>
-);
-
-// Animated Numbers Counter
-const AnimatedNumber = ({ value, duration = 2 }) => {
-  const [displayValue, setDisplayValue] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  useEffect(() => {
-    if (!hasAnimated) {
-      const start = 0;
-      const end = value;
-      const startTime = Date.now();
-
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / (duration * 1000), 1);
-        const current = Math.floor(start + (end - start) * progress);
-        setDisplayValue(current);
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          setDisplayValue(end);
-          setHasAnimated(true);
-        }
-      };
-
-      animate();
+// Real tech career dataset
+const EDITORIAL_CAREERS = [
+  {
+    id: 'ai-engineer',
+    code: 'ROLE.01',
+    title: 'AI Engineer',
+    field: 'Foundation Models / Neural Systems',
+    salary: '$145,000 — $195,000',
+    demand: '+142% YoY',
+    experienceReq: '0-2 YRS FOUNDATION',
+    manifesto: 'Engineering inference pipelines, fine-tuning LLMs, vector embedding spaces, and production evaluation frameworks.',
+    skills: [
+      { name: 'PyTorch / GPU Kernels', required: 92, baseline: 35, category: 'Core Math' },
+      { name: 'LLM RAG Architectures', required: 90, baseline: 55, category: 'Inference' },
+      { name: 'Vector DBs & Indexing', required: 85, baseline: 40, category: 'Data' },
+      { name: 'Python Systems & Async', required: 88, baseline: 70, category: 'Engineering' },
+      { name: 'Evaluation & Benchmarks', required: 82, baseline: 25, category: 'Ops' },
+    ],
+    recommendedProject: {
+      title: 'Multi-Modal Local Agent Core',
+      type: 'Production Artifact',
+      stack: ['Python', 'vLLM', 'Qdrant', 'FastAPI'],
+      desc: 'High-throughput local RAG pipeline with hybrid search, streaming quantization, and verifiable synthetic benchmark tests.',
+      impactDelta: '+28% Verified Readiness'
     }
-  }, [value, duration, hasAnimated]);
-
-  return <span>{displayValue}</span>;
-};
+  },
+  {
+    id: 'ml-engineer',
+    code: 'ROLE.02',
+    title: 'ML Engineer',
+    field: 'Production Systems / MLOps',
+    salary: '$140,000 — $185,000',
+    demand: '+98% YoY',
+    experienceReq: '1-3 YRS SYSTEMS',
+    manifesto: 'Continuous model deployment, feature stores, drift detection, and orchestrating distributed training jobs.',
+    skills: [
+      { name: 'Distributed Training', required: 88, baseline: 30, category: 'Compute' },
+      { name: 'Docker & Kubernetes MLOps', required: 85, baseline: 45, category: 'Infra' },
+      { name: 'Feature Stores & Feast', required: 78, baseline: 20, category: 'Data' },
+      { name: 'Scikit-Learn & XGBoost', required: 92, baseline: 75, category: 'Modeling' },
+      { name: 'Model Monitoring & Drift', required: 80, baseline: 20, category: 'Ops' },
+    ],
+    recommendedProject: {
+      title: 'Distributed Model Serving Gateway',
+      type: 'Infra Blueprint',
+      stack: ['Kubernetes', 'Triton', 'Docker', 'Prometheus'],
+      desc: 'Zero-downtime model rollouts with latency profiling, automated A/B traffic splitting, and drift trigger webhooks.',
+      impactDelta: '+32% Verified Readiness'
+    }
+  },
+  {
+    id: 'fullstack-developer',
+    code: 'ROLE.03',
+    title: 'Full Stack Engineer',
+    field: 'High-Concurrence Web Applications',
+    salary: '$120,000 — $165,000',
+    demand: '+64% YoY',
+    experienceReq: '0-2 YRS APPS',
+    manifesto: 'Architecting resilient cloud APIs, real-time client state sync, relational schemas, and accessible interfaces.',
+    skills: [
+      { name: 'TypeScript & React SPA', required: 92, baseline: 65, category: 'Frontend' },
+      { name: 'PostgreSQL & Query Tuning', required: 85, baseline: 40, category: 'Database' },
+      { name: 'Node.js / Go Microservices', required: 88, baseline: 50, category: 'Backend' },
+      { name: 'Distributed Caching (Redis)', required: 78, baseline: 30, category: 'Caching' },
+      { name: 'CI/CD & Cloud Deployments', required: 82, baseline: 45, category: 'DevOps' },
+    ],
+    recommendedProject: {
+      title: 'Real-Time Collaboration Canvas',
+      type: 'Architecture Case Study',
+      stack: ['TypeScript', 'WebSockets', 'PostgreSQL', 'Redis'],
+      desc: 'Multiplayer room engine featuring optimistic UI updates, conflict-free replicated data, and sub-40ms event relays.',
+      impactDelta: '+26% Verified Readiness'
+    }
+  },
+  {
+    id: 'data-scientist',
+    code: 'ROLE.04',
+    title: 'Data Scientist',
+    field: 'Statistical Intelligence / Forecasting',
+    salary: '$125,000 — $170,000',
+    demand: '+52% YoY',
+    experienceReq: '0-2 YRS ANALYTICS',
+    manifesto: 'Translating noisy multimodal data into causal inferences, probabilistic forecasting, and automated decision engines.',
+    skills: [
+      { name: 'Advanced Statistical Inference', required: 94, baseline: 55, category: 'Math' },
+      { name: 'SQL Window Funcs & Warehousing', required: 90, baseline: 65, category: 'Data' },
+      { name: 'Predictive Modeling & Scikit', required: 88, baseline: 60, category: 'ML' },
+      { name: 'A/B Experimentation Rigor', required: 85, baseline: 30, category: 'Product' },
+      { name: 'Storytelling & Visualization', required: 80, baseline: 50, category: 'Comms' },
+    ],
+    recommendedProject: {
+      title: 'Causal Lift & User Retention Engine',
+      type: 'Statistical Engine',
+      stack: ['Python', 'DuckDB', 'Statsmodels', 'Plotly'],
+      desc: 'Heterogeneous treatment effect modeling on million-row cohort datasets with automated sensitivity bounds.',
+      impactDelta: '+24% Verified Readiness'
+    }
+  }
+];
 
 export const LandingPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const controls = useAnimation();
-  const[cursorX, setCursorX] = useState(0);
-  const[cursorY, setCursorY] = useState(0);
-  const[showTooltip, setShowTooltip] = useState(false);
-  const tooltipRef = useRef(null);
 
-  // Mouse follow effect
+  // Active Target Career State
+  const [selectedCareerIndex, setSelectedCareerIndex] = useState(0);
+  const activeRole = EDITORIAL_CAREERS[selectedCareerIndex];
+
+  // Interactive Gap Matrix State
+  const [gapMode, setGapMode] = useState('diff'); // 'diff' | 'target' | 'baseline'
+  const [hoveredSkill, setHoveredSkill] = useState(null);
+
+  // Interactive Readiness Simulator State
+  const [simulatedCompletedTasks, setSimulatedCompletedTasks] = useState(3);
+  const totalSimTasks = 8;
+  const baseScore = 42;
+  const calculatedReadiness = Math.min(94, Math.round(baseScore + (simulatedCompletedTasks / totalSimTasks) * 52));
+
+  // Live Market Metric Ticker
+  const [marketMetric, setMarketMetric] = useState(48219);
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setCursorX(e.clientX);
-      setCursorY(e.clientY);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const timer = setInterval(() => {
+      setMarketMetric(prev => prev + Math.floor(Math.random() * 3));
+    }, 4000);
+    return () => clearInterval(timer);
   }, []);
 
-  const floatingCards = [
-    { title: 'Python Mastery', score: '88%', status: 'Strong', color: 'purple', delay: 0 },
-    { title: 'Machine Learning', score: '42%', status: 'Gap Alert', color: 'rose', delay: 0.5 },
-    { title: 'Deep Learning', score: '28%', status: 'Critical Gap', color: 'rose', delay: 1 },
-    { title: 'LLM RAG Apps', score: '65%', status: 'Developing', color: 'cyan', delay: 1.5 },
-  ];
-
-  const features = [
-    { 
-      title: 'AI Skill Gap Analysis', 
-      description: 'Objective baseline measuring current vs target role criteria across ML, statistics, and engineering.',
-      icon: BrainCircuit,
-      color: 'purple'
-    },
-    { 
-      title: 'Career Matching', 
-      description: 'Benchmark against real tech tracks (Full Stack, AI, ML, Data Science, Cloud, Security) with salary data.',
-      icon: Target,
-      color: 'cyan'
-    },
-    { 
-      title: 'Job Description Analyzer', 
-      description: 'Paste any live job posting to calculate match score %, extract missing skills, and auto-inject roadmap steps.',
-      icon: SearchCode,
-      color: 'emerald'
-    },
-    { 
-      title: 'Personalized Roadmaps', 
-      description: 'Dynamic vertical timeline with curated learning resources, docs, and milestone projects for every phase.',
-      icon: Compass,
-      color: 'amber'
-    },
-    { 
-      title: 'AI Project Generator', 
-      description: 'Generate resume-ready portfolio projects tailored specifically to eliminate your largest skill gaps.',
-      icon: FolderGit2,
-      color: 'rose'
-    },
-    { 
-      title: 'Job Readiness Score', 
-      description: 'Track your quantified readiness score trend in real time as you complete milestones and projects.',
-      icon: BarChart3,
-      color: 'indigo'
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-[#07090E] text-slate-100 flex flex-col selection:bg-purple-500 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#060709] text-[#E4E7EC] font-sans selection:bg-gorange selection:text-black relative overflow-x-hidden">
+      
+      {/* Top Editorial Navbar */}
       <Navbar />
 
-      {/* Particles Background */}
-      <div className="fixed inset-0 overflow-hidden -z-10">
-        {[...Array(20)].map((_, i) => (
-          <Particle key={i} delay={i * 0.5} />
-        ))}
-      </div>
-
-      {/* HERO SECTION */}
-      <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-36 overflow-hidden">
-        {/* Animated Solar Flare Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-950 via-[#0C0F1A] to-dark-950" />
+      {/* =========================================================================
+          01 — WHERE ARE YOU? (Hero / Reality of Tech Hiring)
+          ========================================================================= */}
+      <section id="story-where" className="relative min-h-[90vh] border-b border-[#1E232F] flex flex-col justify-between px-6 lg:px-12 pt-16 pb-12">
         
-        {/* Floating Sunset Flare Radiant Orbs */}
-        <div className="absolute top-[10%] left-[15%] w-[550px] h-[550px] rounded-full bg-gradient-to-br from-solar-coral/25 via-solar-amber/20 to-transparent blur-[110px] pointer-events-none animate-solar-pulse" />
-        <div className="absolute top-[35%] right-[10%] w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-solar-violet/25 via-solar-purple/20 to-transparent blur-[120px] pointer-events-none animate-blob" />
-        <div className="absolute bottom-[10%] left-[30%] w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-solar-amber/20 via-solar-rose/15 to-transparent blur-[100px] pointer-events-none animate-pulse-slow" />
+        {/* Top Monospace Meta Coordinates */}
+        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] border-b border-[#1E232F] pb-4">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 bg-gorange inline-block" />
+            <span className="text-white">SECTION 01</span>
+            <span>—</span>
+            <span>CURRENT POSITION & MARKET REALITY</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <span>INDEXED ROLES: <strong className="text-white font-normal">{marketMetric.toLocaleString()}</strong></span>
+            <span className="hidden md:inline">SYSTEM: GEMINI 3.6 FLASH</span>
+            <span>STATUS: LIVE</span>
+          </div>
+        </div>
 
-        {/* Cyber Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_20%,#000_70%,transparent_100%)] pointer-events-none" />
+        {/* Main Editorial Headline — Asymmetric, Oversized, Left-Aligned */}
+        <div className="my-auto py-12 lg:py-16 max-w-[1400px]">
+          <div className="font-mono text-xs uppercase tracking-[0.25em] text-gorange mb-6 flex items-center gap-2">
+            <span>[ SYSTEM AUDIT ]</span>
+            <span className="h-px w-12 bg-gorange/40" />
+            <span className="text-[#8F9AA9]">STOP GUESSING YOUR TECH QUALIFICATION</span>
+          </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <h1 className="font-display font-extrabold text-5xl sm:text-7xl lg:text-[6.5rem] tracking-[-0.035em] text-white leading-[0.95] max-w-6xl">
+            You are applying into a market that measures <span className="underline decoration-gorange decoration-4 underline-offset-8">exact skills</span>, not resume keywords.
+          </h1>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12 pt-8 border-t border-[#1E232F]">
+            <div className="lg:col-span-6">
+              <p className="text-lg sm:text-xl text-[#A0AABA] font-light leading-relaxed">
+                Most students and early engineers waste 9 months learning redundant web tutorials. GTech replaces ambiguity with a cold, quantified delta between where you stand and what modern hiring algorithms demand.
+              </p>
+            </div>
+
+            <div className="lg:col-span-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 lg:pl-12">
+              <div className="font-mono text-xs space-y-1 text-[#6B7688]">
+                <div>DELTA DETECTION: <span className="text-white">ACCURATE TO 1.4%</span></div>
+                <div>VERIFICATION ENGINE: <span className="text-white">GRAPH MATRIX</span></div>
+                <div>ROADMAP GENERATION: <span className="text-gorange font-bold">ACTIVE</span></div>
+              </div>
+
+              <button
+                onClick={() => {
+                  const el = document.getElementById('story-target');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="font-mono text-xs uppercase tracking-widest px-8 py-4 bg-white text-black font-bold hover:bg-gorange hover:text-black transition-colors flex items-center gap-3 shrink-0"
+              >
+                <span>Select Target Role</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Data Ticker Banner */}
+        <div className="pt-6 border-t border-[#1E232F] grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs">
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-[#6B7688]">AVERAGE SKILL GAP</div>
+            <div className="text-2xl font-bold text-white mt-1">58.4%</div>
+            <div className="text-[10px] text-[#6B7688] mt-0.5">Found across 2026 graduates</div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-[#6B7688]">TIME SAVED</div>
+            <div className="text-2xl font-bold text-gorange mt-1">4.2 MOS</div>
+            <div className="text-[10px] text-[#6B7688] mt-0.5">Eliminating unneeded tutorials</div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-[#6B7688]">HIRE ACCELERATION</div>
+            <div className="text-2xl font-bold text-white mt-1">3.1×</div>
+            <div className="text-[10px] text-[#6B7688] mt-0.5">With verified portfolio artifacts</div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-[#6B7688]">ACCESS MODEL</div>
+            <div className="text-2xl font-bold text-white mt-1">100% FREE</div>
+            <div className="text-[10px] text-[#6B7688] mt-0.5">Open career intelligence</div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          02 — WHERE DO YOU WANT TO GO? (Target Career Selection)
+          ========================================================================= */}
+      <section id="story-target" className="relative border-b border-[#1E232F] px-6 lg:px-12 py-20 lg:py-28">
+        
+        {/* Section Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 bg-gorange inline-block" />
+            <span className="text-white">SECTION 02</span>
+            <span>—</span>
+            <span>WHERE DO YOU WANT TO GO?</span>
+          </div>
+          <div>[ SELECT AN INDUSTRY VECTOR ]</div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Solar Flare Pill */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2.5 px-4.5 py-1.5 rounded-full glass-panel border border-solar-coral/35 mb-8 shadow-lg shadow-rose-950/30 hover:border-solar-coral/60 transition-all cursor-pointer group"
-          >
-            <Sparkles className="w-4 h-4 text-solar-amber animate-pulse" />
-            <span className="text-xs font-semibold text-transparent bg-clip-text bg-gradient-to-r from-solar-coral via-solar-amber to-solar-violet uppercase tracking-wider font-display">
-              GTech Solar AI • Next-Gen Career Intelligence
-            </span>
-          </motion.div>
+          {/* Left: Role Navigation Directory */}
+          <div className="lg:col-span-5 space-y-2">
+            <div className="font-mono text-[11px] uppercase tracking-widest text-[#6B7688] mb-4">
+              PRIMARY TRACKS / SPECIFICATIONS
+            </div>
 
-          {/* Main Headline with Solar Flare Gradient */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-4xl sm:text-6xl lg:text-7xl font-display font-extrabold text-white tracking-tight max-w-5xl mx-auto leading-[1.08] transform-gpu"
-          >
-            Build the career you're <span className="gradient-text-solar inline-block drop-shadow-solar-glow">actually ready for.</span>
-          </motion.h1>
+            {EDITORIAL_CAREERS.map((role, idx) => {
+              const isSelected = idx === selectedCareerIndex;
+              return (
+                <button
+                  key={role.id}
+                  onClick={() => setSelectedCareerIndex(idx)}
+                  className={`w-full text-left p-6 transition-all border flex items-center justify-between group ${
+                    isSelected
+                      ? 'bg-[#0E1118] border-gorange text-white'
+                      : 'bg-transparent border-[#1E232F] text-[#8F9AA9] hover:border-[#2B3242] hover:text-white'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center gap-3 font-mono text-[11px] tracking-widest">
+                      <span className={isSelected ? 'text-gorange' : 'text-[#4E5664]'}>{role.code}</span>
+                      <span className="text-[#6B7688]">•</span>
+                      <span className="uppercase text-[10px]">{role.experienceReq}</span>
+                    </div>
+                    <div className="font-display font-bold text-2xl mt-1 tracking-tight">
+                      {role.title}
+                    </div>
+                    <div className="text-xs text-[#6B7688] mt-1 font-mono">
+                      {role.field}
+                    </div>
+                  </div>
 
-          {/* Subheading */}
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-7 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed"
-          >
-            GTech pinpoints your exact skill gaps against real industry roles and builds a fiery, AI-guided execution roadmap powered by <strong className="text-white font-semibold">Gemini 3.6 Flash</strong>.
-          </motion.p>
+                  <div className="text-right pl-4">
+                    <div className="font-mono text-xs text-gorange font-bold">{role.demand}</div>
+                    <div className={`mt-2 font-mono text-[10px] tracking-widest uppercase ${isSelected ? 'text-white' : 'text-transparent group-hover:text-[#6B7688]'}`}>
+                      VIEW MATRIX →
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
 
-          {/* Primary / Secondary CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap"
-          >
-            <Button
-              variant="solar"
-              size="lg"
-              onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
-              className="w-full sm:w-auto text-base font-display group relative overflow-hidden"
-            >
-              <span className="relative z-10 font-bold">Start Your Career Analysis</span>
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1.5 transition-transform relative z-10" />
-            </Button>
+          {/* Right: Selected Role Technical Manifest */}
+          <div className="lg:col-span-7 bg-[#0B0D12] border border-[#1E232F] p-8 lg:p-12 flex flex-col justify-between">
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#1E232F] pb-6 mb-8">
+                <div>
+                  <span className="font-mono text-[11px] tracking-widest text-gorange uppercase">{activeRole.code} MANIFEST</span>
+                  <h2 className="font-display font-black text-4xl text-white tracking-tight mt-1">{activeRole.title}</h2>
+                </div>
+                <div className="text-right font-mono">
+                  <div className="text-[10px] text-[#6B7688] uppercase tracking-widest">COMPENSATION BRACKET</div>
+                  <div className="text-xl font-bold text-white mt-0.5">{activeRole.salary}</div>
+                </div>
+              </div>
 
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => {
-                const el = document.getElementById('workflow');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="w-full sm:w-auto text-base font-display hover:border-solar-coral/40 group"
-            >
-              See How It Works
-              <div className="ml-2.5 w-2 h-2 bg-solar-coral rounded-full animate-pulse shadow-[0_0_8px_#FF3366]" />
-            </Button>
-          </motion.div>
+              <div className="mb-8">
+                <div className="font-mono text-[11px] text-[#6B7688] uppercase tracking-widest mb-2">ROLE SPECIFICATION</div>
+                <p className="text-base sm:text-lg text-[#C8CFDB] font-light leading-relaxed">
+                  "{activeRole.manifesto}"
+                </p>
+              </div>
 
-          {/* Hero Visual Mockup & Floating Skill Cards Preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-16 max-w-5xl mx-auto relative rounded-2xl glass-panel p-3 border border-purple-500/20 shadow-2xl overflow-hidden"
+              {/* Requirement Manifest Table */}
+              <div className="space-y-3 font-mono text-xs">
+                <div className="text-[11px] text-[#6B7688] uppercase tracking-widest mb-3">KEY INDUSTRY PREREQUISITES</div>
+                {activeRole.skills.map((s, i) => (
+                  <div key={s.name} className="flex items-center justify-between py-2.5 border-b border-[#1E232F]/80">
+                    <span className="flex items-center gap-3">
+                      <span className="text-[#4E5664]">0{i + 1}</span>
+                      <span className="text-white font-sans text-sm font-medium">{s.name}</span>
+                    </span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-[10px] text-[#6B7688] tracking-widest uppercase">{s.category}</span>
+                      <span className="text-gorange font-bold">{s.required}% REQ</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-8 mt-8 border-t border-[#1E232F] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <span className="font-mono text-xs text-[#6B7688]">
+                READY TO RUN REAL GAP AUDIT FOR THIS TRACK?
+              </span>
+              <button
+                onClick={() => {
+                  const el = document.getElementById('story-gaps');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="font-mono text-xs uppercase tracking-widest px-6 py-3 bg-gorange text-black font-bold hover:bg-[#FF6D24] transition-colors flex items-center gap-2"
+              >
+                <span>Inspect Skill Matrix</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* =========================================================================
+          03 — WHAT IS MISSING? (Interactive Skill-Gap Intelligence Visualization)
+          ========================================================================= */}
+      <section id="story-gaps" className="relative border-b border-[#1E232F] px-6 lg:px-12 py-20 lg:py-28 bg-[#08090E]">
+        
+        {/* Section Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 bg-gorange inline-block" />
+            <span className="text-white">SECTION 03</span>
+            <span>—</span>
+            <span>WHAT IS MISSING? (SKILL-GAP MATRIX)</span>
+          </div>
+          <div>[ REAL-TIME DIFFERENTIAL ENGINE ]</div>
+        </div>
+
+        {/* Section Headline */}
+        <div className="max-w-4xl mb-12">
+          <h2 className="font-display font-extrabold text-4xl sm:text-6xl text-white tracking-tight leading-tight">
+            The deficit between student confidence and industry bar.
+          </h2>
+          <p className="text-lg text-[#8F9AA9] mt-4 font-light">
+            Interactive visualization mapping average applicant baseline knowledge against the verified production benchmark for <strong className="text-white font-normal">{activeRole.title}</strong>.
+          </p>
+        </div>
+
+        {/* Interactive Mode Switcher */}
+        <div className="flex items-center gap-2 font-mono text-xs mb-8">
+          <span className="text-[#6B7688] mr-3 uppercase tracking-wider">VIEW LAYER:</span>
+          <button
+            onClick={() => setGapMode('diff')}
+            className={`px-4 py-2 uppercase tracking-widest transition-all ${
+              gapMode === 'diff'
+                ? 'bg-white text-black font-bold'
+                : 'bg-[#10131A] text-[#8F9AA9] border border-[#1E232F] hover:text-white'
+            }`}
           >
-            {/* Floating Skills Preview */}
-            <div className="absolute -z-10 opacity-10">
-              {[...Array(6)].map((_, i) => (
-                <FloatingSkillCard key={i} skill={floatingCards[i % floatingCards.length]} delay={i * 0.5} />
+            Skill Deficit Delta
+          </button>
+          <button
+            onClick={() => setGapMode('target')}
+            className={`px-4 py-2 uppercase tracking-widest transition-all ${
+              gapMode === 'target'
+                ? 'bg-gorange text-black font-bold'
+                : 'bg-[#10131A] text-[#8F9AA9] border border-[#1E232F] hover:text-white'
+            }`}
+          >
+            Market Target (100%)
+          </button>
+          <button
+            onClick={() => setGapMode('baseline')}
+            className={`px-4 py-2 uppercase tracking-widest transition-all ${
+              gapMode === 'baseline'
+                ? 'bg-white text-black font-bold'
+                : 'bg-[#10131A] text-[#8F9AA9] border border-[#1E232F] hover:text-white'
+            }`}
+          >
+            Applicant Baseline
+          </button>
+        </div>
+
+        {/* Large Data-Led Skill Gap Visualization */}
+        <div className="border border-[#1E232F] bg-[#060709] p-6 lg:p-10">
+          <div className="space-y-6">
+            {activeRole.skills.map((skill, index) => {
+              const gap = skill.required - skill.baseline;
+              const isHovered = hoveredSkill === skill.name;
+
+              return (
+                <div 
+                  key={skill.name}
+                  onMouseEnter={() => setHoveredSkill(skill.name)}
+                  onMouseLeave={() => setHoveredSkill(null)}
+                  className={`p-4 border transition-all ${
+                    isHovered ? 'border-gorange bg-[#0D1017]' : 'border-[#1E232F] bg-[#0A0C10]'
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs text-[#4E5664]">0{index + 1}</span>
+                      <span className="font-display font-bold text-lg text-white">{skill.name}</span>
+                      <span className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest bg-[#141822] px-2 py-0.5 border border-[#1E232F]">
+                        {skill.category}
+                      </span>
+                    </div>
+
+                    <div className="font-mono text-xs flex items-center gap-4">
+                      <span className="text-[#6B7688]">BASELINE: <strong className="text-white font-normal">{skill.baseline}%</strong></span>
+                      <span className="text-[#6B7688]">TARGET: <strong className="text-white font-normal">{skill.required}%</strong></span>
+                      <span className="text-gorange font-bold">DEFICIT: -{gap}%</span>
+                    </div>
+                  </div>
+
+                  {/* High-Contrast Data Bar Visualizer */}
+                  <div className="relative h-6 bg-[#121620] border border-[#1E232F] overflow-hidden">
+                    {/* Baseline Bar */}
+                    <div 
+                      className="absolute top-0 bottom-0 left-0 bg-[#2E3646] transition-all duration-500"
+                      style={{ width: `${skill.baseline}%` }}
+                    />
+                    
+                    {/* Gap Delta Bar (Orange) */}
+                    <div 
+                      className="absolute top-0 bottom-0 bg-gorange transition-all duration-500 opacity-90"
+                      style={{ 
+                        left: `${skill.baseline}%`, 
+                        width: `${gap}%`,
+                        display: gapMode === 'baseline' ? 'none' : 'block' 
+                      }}
+                    />
+
+                    {/* Target Threshold Marker Line */}
+                    <div 
+                      className="absolute top-0 bottom-0 w-0.5 bg-white z-10"
+                      style={{ left: `${skill.required}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between mt-2 font-mono text-[10px] text-[#6B7688]">
+                    <span>0% ENTRY</span>
+                    <span>50% WORKING KNOWLEDGE</span>
+                    <span className="text-white">MARKET HIRE LINE ({skill.required}%)</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Matrix Legend Footer */}
+          <div className="mt-8 pt-6 border-t border-[#1E232F] flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-[#6B7688]">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 bg-[#2E3646] inline-block" />
+                <span>CURRENT APPLICANT BASELINE</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 bg-gorange inline-block" />
+                <span>CRITICAL LEARNING GAP</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-1 h-3 bg-white inline-block" />
+                <span>PRODUCTION HIRE THRESHOLD</span>
+              </div>
+            </div>
+            
+            <div>EVALUATION CONFIDENCE: 98.6%</div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          04 — WHAT SHOULD YOU BUILD? (Roadmap & Architectural Projects)
+          ========================================================================= */}
+      <section id="story-roadmap" className="relative border-b border-[#1E232F] px-6 lg:px-12 py-20 lg:py-28">
+        
+        {/* Section Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 bg-gorange inline-block" />
+            <span className="text-white">SECTION 04</span>
+            <span>—</span>
+            <span>WHAT SHOULD YOU BUILD?</span>
+          </div>
+          <div>[ PROOF-OF-WORK ARTIFACTS ]</div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          {/* Left: Philosophy & Execution Steps */}
+          <div className="lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <h2 className="font-display font-extrabold text-4xl sm:text-5xl text-white tracking-tight leading-tight">
+                Stop building todo apps. Build verifiable systems.
+              </h2>
+              <p className="text-base sm:text-lg text-[#8F9AA9] mt-6 font-light leading-relaxed">
+                Engineering managers do not read bullet points. They inspect architecture diagrams, GitHub pull requests, and real latency benchmarks.
+              </p>
+
+              {/* Execution Protocol */}
+              <div className="mt-8 space-y-4 font-mono text-xs">
+                <div className="p-4 border border-[#1E232F] bg-[#0A0C10]">
+                  <div className="text-gorange font-bold uppercase">PHASE 01: FOUNDATIONAL DEEP DIVE</div>
+                  <div className="text-[#8F9AA9] mt-1 font-sans text-sm">Close math, inference & async systems gaps via 20-min daily atomic tasks.</div>
+                </div>
+                <div className="p-4 border border-[#1E232F] bg-[#0A0C10]">
+                  <div className="text-white font-bold uppercase">PHASE 02: CAPSTONE SYSTEM ARCHITECTURE</div>
+                  <div className="text-[#8F9AA9] mt-1 font-sans text-sm">Design, scaffold, and bench a full production-ready repo.</div>
+                </div>
+                <div className="p-4 border border-[#1E232F] bg-[#0A0C10]">
+                  <div className="text-white font-bold uppercase">PHASE 03: LIVE JD PARSER REFINEMENT</div>
+                  <div className="text-[#8F9AA9] mt-1 font-sans text-sm">Paste active job postings to inject missing keywords and requirements.</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-8 mt-8 border-t border-[#1E232F]">
+              <button
+                onClick={() => navigate('/roadmap')}
+                className="font-mono text-xs uppercase tracking-widest px-8 py-4 bg-white text-black font-bold hover:bg-gorange transition-colors flex items-center gap-3"
+              >
+                <span>Explore Full Daily Roadmap</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Right: Curated Capstone Project Artifact */}
+          <div className="lg:col-span-7 bg-[#0B0D12] border border-gorange/40 p-8 lg:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 px-4 py-1.5 bg-gorange text-black font-mono text-[10px] font-bold uppercase tracking-widest">
+              RECOMMENDED PORTFOLIO ARTIFACT
+            </div>
+
+            <div className="font-mono text-xs text-[#6B7688] uppercase tracking-widest mb-2">
+              TARGET SPECIFIC: {activeRole.title.toUpperCase()}
+            </div>
+
+            <h3 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
+              {activeRole.recommendedProject.title}
+            </h3>
+
+            <div className="flex flex-wrap items-center gap-2 my-6">
+              {activeRole.recommendedProject.stack.map(tech => (
+                <span key={tech} className="font-mono text-xs px-3 py-1 bg-[#151923] border border-[#232938] text-white">
+                  {tech}
+                </span>
               ))}
             </div>
 
-            <div className="rounded-xl overflow-hidden bg-dark-950/90 border border-solar-coral/20 p-6 sm:p-8 text-left relative shadow-2xl">
-              
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-800/80">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-solar-coral/80 animate-pulse" />
-                  <div className="w-3 h-3 rounded-full bg-solar-amber/80 animate-pulse" style={{ animationDelay: '0.2s' }} />
-                  <div className="w-3 h-3 rounded-full bg-solar-violet/80 animate-pulse" style={{ animationDelay: '0.4s' }} />
-                  <span className="ml-2 text-xs font-mono text-slate-400">gtech.ai/command-center</span>
-                </div>
-                <Badge variant="coral" size="sm" className="font-display animate-pulse">
-                  Target: AI Engineer (72% Ready)
-                </Badge>
+            <p className="text-base text-[#C8CFDB] font-light leading-relaxed mb-8">
+              {activeRole.recommendedProject.desc}
+            </p>
+
+            {/* Architecture Spec Breakdown */}
+            <div className="p-5 border border-[#1E232F] bg-[#060709] font-mono text-xs space-y-3 mb-8">
+              <div className="text-[#6B7688] uppercase tracking-widest text-[10px]">EVALUATION SPECIFICATION</div>
+              <div className="flex items-center justify-between text-slate-300">
+                <span>BENCHMARK CRITERIA:</span>
+                <span className="text-white">&lt; 85ms P99 Latency / Concurrency 500</span>
               </div>
-
-              {/* Demo Stats with Animated Counters */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-                <motion.div 
-                  className="p-4 rounded-xl bg-dark-900/90 border border-solar-coral/20 group cursor-pointer hover:border-solar-coral/50 transition-all"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="text-xs text-slate-400">Career Readiness</div>
-                  <motion.div 
-                    className="text-2xl font-bold text-white font-mono mt-1"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    72%
-                  </motion.div>
-                  <div className="w-full bg-dark-950 h-1.5 rounded-full mt-2 overflow-hidden border border-white/5">
-                    <motion.div 
-                      className="bg-gradient-to-r from-solar-coral to-solar-amber h-full rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: '72%' }}
-                      transition={{ duration: 1, delay: 0.5 }}
-                    />
-                  </div>
-                </motion.div>
-
-                <motion.div 
-                  className="p-4 rounded-xl bg-dark-900/90 border border-slate-800/80 group cursor-pointer hover:border-solar-amber/40 transition-all"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="text-xs text-slate-400">Skills Mastered</div>
-                  <div className="text-2xl font-bold text-solar-amber font-mono mt-1">
-                    12<span className="text-slate-500 text-sm"> / 20</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-1">Python, SQL, Git, OOP</div>
-                </motion.div>
-
-                <motion.div 
-                  className="p-4 rounded-xl bg-dark-900/90 border border-slate-800/80 group cursor-pointer hover:border-solar-violet/40 transition-all"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="text-xs text-slate-400">Roadmap Progress</div>
-                  <div className="text-2xl font-bold text-solar-violet font-mono mt-1">
-                    38<span className="text-slate-500 text-sm">%</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-1">Phase 3 Active</div>
-                </motion.div>
-
-                <motion.div 
-                  className="p-4 rounded-xl bg-dark-900/90 border border-slate-800/80 group cursor-pointer hover:border-solar-coral/40 transition-all"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="text-xs text-slate-400">Projects Built</div>
-                  <div className="text-2xl font-bold text-rose-400 font-mono mt-1">
-                    3 
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-1">Student ML, RAG App</div>
-                </motion.div>
+              <div className="flex items-center justify-between text-slate-300">
+                <span>ESTIMATED BUILD TIME:</span>
+                <span className="text-white">14 Days (Guided Milestones)</span>
               </div>
-
-              {/* Interactive Skill Gap Row */}
-              <div className="p-4.5 rounded-xl bg-gradient-to-r from-solar-coral/15 via-solar-amber/10 to-transparent border border-solar-coral/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="p-2.5 rounded-xl bg-solar-coral/20 text-rose-300 animate-pulse border border-solar-coral/30 shadow-[0_0_12px_rgba(255,51,102,0.3)]">
-                    <BrainCircuit className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-white font-display flex items-center gap-2">
-                      AI Career Mentor Recommendation
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-solar-coral/20 text-rose-200 font-mono font-normal">Gemini</span>
-                    </h4>
-                    <p className="text-xs text-slate-300 mt-0.5">Your biggest current gap is Machine Learning. Completing 3 roadmap milestones will boost readiness +18%.</p>
-                  </div>
-                </div>
-                <Button variant="solar" size="sm" onClick={() => navigate('/roadmap')} className="shrink-0 group">
-                  View Milestone
-                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+              <div className="flex items-center justify-between text-slate-300">
+                <span>VERIFIED READINESS DELTA:</span>
+                <span className="text-gorange font-bold">{activeRole.recommendedProject.impactDelta}</span>
               </div>
-
             </div>
-          </motion.div>
+
+            <button
+              onClick={() => navigate('/projects')}
+              className="font-mono text-xs uppercase tracking-widest px-6 py-3 border border-white text-white hover:bg-white hover:text-black transition-all flex items-center gap-2"
+            >
+              <span>Inspect Project Generator</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
         </div>
       </section>
 
-      {/* HOW IT WORKS SECTION */}
-      <section id="workflow" className="py-24 border-t border-b border-slate-800/60 bg-[#090B12] relative overflow-hidden">
-        {/* Animated Solar Radiant Spot */}
-        <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-r from-solar-coral via-solar-amber to-solar-violet blur-[120px]" />
+      {/* =========================================================================
+          05 — ARE YOU READY? (Career Readiness Metric Result)
+          ========================================================================= */}
+      <section id="story-readiness" className="relative border-b border-[#1E232F] px-6 lg:px-12 py-20 lg:py-28 bg-[#07080D]">
+        
+        {/* Section Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 bg-gorange inline-block" />
+            <span className="text-white">SECTION 05</span>
+            <span>—</span>
+            <span>ARE YOU READY?</span>
+          </div>
+          <div>[ VERIFIED READINESS ENGINE ]</div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <Badge variant="coral" size="md" className="mb-4 uppercase tracking-wider font-display">
-            HOW IT WORKS
-          </Badge>
-          <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
-            5 Steps to Become Job Ready
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          {/* Left: Oversized Readiness Score Display */}
+          <div className="lg:col-span-6">
+            <div className="font-mono text-xs uppercase tracking-widest text-gorange mb-3">
+              SIMULATED READINESS INDEX
+            </div>
+            
+            <div className="flex items-baseline gap-4">
+              <span className="font-display font-black text-8xl sm:text-[9rem] text-white tracking-tighter leading-none">
+                {calculatedReadiness}
+              </span>
+              <span className="font-display font-bold text-4xl text-gorange">%</span>
+            </div>
+
+            <div className="h-3 w-full bg-[#121620] border border-[#1E232F] mt-6 overflow-hidden">
+              <motion.div 
+                className="h-full bg-gorange"
+                initial={{ width: '42%' }}
+                animate={{ width: `${calculatedReadiness}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between font-mono text-xs text-[#6B7688] mt-3">
+              <span>DAY 0: 42% (UNPREPARED)</span>
+              <span className="text-white">HIRE READY THRESHOLD: 80%+</span>
+              <span>100% MAXIMUM</span>
+            </div>
+          </div>
+
+          {/* Right: Interactive Simulator Controls */}
+          <div className="lg:col-span-6 bg-[#0B0D12] border border-[#1E232F] p-8 lg:p-10">
+            <div className="font-mono text-xs uppercase tracking-widest text-[#6B7688] mb-2">
+              INTERACTIVE READINESS SIMULATOR
+            </div>
+            <h3 className="font-display font-bold text-2xl text-white tracking-tight mb-4">
+              See what happens when you finish milestones
+            </h3>
+            <p className="text-sm text-[#8F9AA9] font-light leading-relaxed mb-6">
+              Toggle the number of completed daily modules to see your objective readiness score adjust in real time:
+            </p>
+
+            {/* Slider / Counter Toggle */}
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center justify-between font-mono text-xs">
+                <span className="text-white">COMPLETED MILESTONES:</span>
+                <span className="text-gorange font-bold text-base">{simulatedCompletedTasks} of {totalSimTasks}</span>
+              </div>
+
+              <input 
+                type="range"
+                min="0"
+                max={totalSimTasks}
+                value={simulatedCompletedTasks}
+                onChange={(e) => setSimulatedCompletedTasks(parseInt(e.target.value))}
+                className="w-full h-2 bg-[#1E232F] accent-gorange cursor-pointer"
+              />
+
+              <div className="grid grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                <div className="p-3 border border-[#1E232F] bg-[#060709]">
+                  <div className="text-[#6B7688]">CURRENT COHORT:</div>
+                  <div className="text-white font-bold mt-0.5">Top 18% of Applicants</div>
+                </div>
+                <div className="p-3 border border-[#1E232F] bg-[#060709]">
+                  <div className="text-[#6B7688]">INTERVIEW PROBABILITY:</div>
+                  <div className="text-gorange font-bold mt-0.5">{calculatedReadiness >= 80 ? 'HIGH (3.8×)' : 'MODERATE (1.4×)'}</div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate('/skill-gap')}
+              className="w-full font-mono text-xs uppercase tracking-widest py-3.5 bg-white text-black font-bold hover:bg-gorange transition-colors flex items-center justify-center gap-2"
+            >
+              <span>Calculate Your Real Score</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      {/* =========================================================================
+          06 — START (Decisive Editorial Finale & CTA)
+          ========================================================================= */}
+      <section className="relative px-6 lg:px-12 py-24 lg:py-32 bg-[#060709] overflow-hidden">
+        
+        {/* Section Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 bg-gorange inline-block" />
+            <span className="text-white">SECTION 06</span>
+            <span>—</span>
+            <span>START YOUR TRAJECTORY</span>
+          </div>
+          <div>[ DEPLOY YOUR ENGINE ]</div>
+        </div>
+
+        <div className="max-w-5xl">
+          <h2 className="font-display font-extrabold text-5xl sm:text-7xl lg:text-8xl text-white tracking-tight leading-[0.95]">
+            Build the career you're <span className="text-gorange">actually ready for.</span>
           </h2>
-          <p className="mt-3 text-slate-400 text-base max-w-2xl mx-auto">
-            A precise AI pipeline that takes you from where you are to your dream tech offer.
+
+          <p className="text-xl sm:text-2xl text-[#8F9AA9] font-light mt-8 max-w-2xl leading-relaxed">
+            Eliminate tutorial hell. Benchmark your real technical baseline in 4 minutes with Gemini 3.6 Flash.
           </p>
 
-          {/* 5-Step Pipeline with Enhanced Solar Cards */}
-          <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 relative">
-            {[
-              { step: 1, title: 'Build Your Profile', desc: 'Input degree, major, current skills, languages, and target track.', tag: 'Profile' },
-              { step: 2, title: 'Assess Your Skills', desc: 'Complete 10-question baseline technical foundations evaluation.', tag: 'Assessment' },
-              { step: 3, title: 'AI Finds Your Gaps', desc: 'Get quantified readiness score and critical prerequisite gaps.', tag: 'Analysis' },
-              { step: 4, title: 'Follow Your Roadmap', desc: 'Execute custom vertical timeline with courses & milestones.', tag: 'Execution' },
-              { step: 5, title: 'Become Job Ready', desc: 'Build AI projects and parse target job descriptions to land offers.', tag: 'Offer' },
-            ].map((item, index) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card hover className="p-6 relative overflow-hidden group text-left border-solar-coral/15 hover:border-solar-coral/50">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-solar-coral to-solar-amber text-white font-bold font-mono text-xs flex items-center justify-center shadow-[0_0_10px_rgba(255,51,102,0.35)]">
-                      0{item.step}
-                    </span>
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-rose-300 font-semibold px-2 py-0.5 rounded-full bg-solar-coral/10 border border-solar-coral/20">
-                      {item.tag}
-                    </span>
-                  </div>
-                  <h3 className="text-base font-bold text-white font-display mb-1.5 group-hover:text-rose-300 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {item.desc}
-                  </p>
-                </Card>
-              </motion.div>
-            ))}
+          <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <button
+              onClick={() => navigate(isAuthenticated ? '/dashboard' : '/onboarding')}
+              className="font-mono text-xs uppercase tracking-widest px-10 py-5 bg-gorange text-black font-bold hover:bg-[#FF6D24] transition-all flex items-center gap-3 text-sm shadow-xl"
+            >
+              <span>Launch Onboarding Terminal</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <Link
+              to="/assessment"
+              className="font-mono text-xs uppercase tracking-widest px-8 py-5 border border-[#2B3242] text-white hover:border-white transition-colors"
+            >
+              Take 10-Question Diagnostic →
+            </Link>
+          </div>
+        </div>
+
+        {/* Technical Specification Footer */}
+        <div className="mt-24 pt-12 border-t border-[#1E232F] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-xs text-[#6B7688]">
+          <div className="flex items-center gap-3">
+            <span className="text-white font-bold tracking-wider">GTECH SYSTEM 2026</span>
+            <span>•</span>
+            <span>AI CAREER GAP PLATFORM</span>
+            <span>•</span>
+            <span className="text-gorange">REACT 18 + VITE + TAILWIND</span>
+          </div>
+
+          <div className="flex items-center gap-8">
+            <Link to="/career-selection" className="hover:text-white transition-colors">CAREERS</Link>
+            <Link to="/job-analysis" className="hover:text-white transition-colors">JOB PARSER</Link>
+            <Link to="/leaderboard" className="hover:text-white transition-colors">LEADERBOARD</Link>
+            <a href="https://github.com/omkarsawanth/GTech" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1">
+              GITHUB <ArrowUpRight className="w-3 h-3" />
+            </a>
           </div>
         </div>
       </section>
 
-      {/* FEATURES SECTION */}
-      <section id="features" className="py-24 relative overflow-hidden">
-        {/* Animated Background Orbs */}
-        <div className="absolute top-10 right-10 w-96 h-96 rounded-full bg-solar-coral/10 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-solar-violet/15 blur-[120px] pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <Badge variant="amber" size="md" className="mb-4 uppercase tracking-wider font-display">
-              CORE CAPABILITIES
-            </Badge>
-            <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
-              Engineered for high-growth tech careers
-            </h2>
-            <p className="mt-4 text-slate-400 text-base">
-              Six core AI modules that eliminate ambiguity and accelerate your trajectory to a top-tier role.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 25 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-                whileHover={{ y: -6 }}
-              >
-                <Card hover className="p-7 h-full flex flex-col justify-between border-solar-coral/15 hover:border-solar-coral/50">
-                  <div>
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-solar-coral/20 to-solar-amber/20 border border-solar-coral/30 flex items-center justify-center text-solar-coral mb-5 shadow-[0_0_15px_rgba(255,51,102,0.2)]">
-                      <feature.icon className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white font-display mb-3 text-left group-hover:text-rose-200 transition-colors">
-                      {feature.title}
-                    </h3>
-                    <p className="text-slate-300 text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
-                  
-                  <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-solar-coral animate-pulse" />
-                      <span className="text-xs font-mono text-slate-400">Gemini 3.6 Flash</span>
-                    </div>
-                    <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-solar-coral to-solar-amber">
-                      Active
-                    </span>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FINAL CTA with Sunset Radiant Glow */}
-      <section className="py-24 relative overflow-hidden text-center border-t border-slate-800/60 bg-gradient-to-b from-dark-950 via-dark-900 to-dark-950">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-solar-coral/20 via-solar-amber/20 to-solar-violet/20 blur-[100px]" />
-        </div>
-
-        <div className="max-w-4xl mx-auto px-4 relative z-10">
-          <Badge variant="coral" size="sm" className="mb-4 font-mono font-bold tracking-widest">
-            READY TO LEVEL UP?
-          </Badge>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl sm:text-5xl font-display font-extrabold text-white tracking-tight"
-          >
-            Build the career you're <span className="gradient-text-solar">actually ready for.</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-4 text-slate-300 text-lg max-w-2xl mx-auto leading-relaxed"
-          >
-            Stop guessing what skills to learn next. Let GTech's real-time AI matrix navigate your exact path to a dream tech offer.
-          </motion.p>
-          <div className="mt-9 flex justify-center">
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                variant="solar"
-                size="lg"
-                onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
-                className="text-base px-8 py-4 font-display font-bold shadow-xl shadow-rose-950/50"
-              >
-                <span className="relative z-10">Start Your Free Career Analysis</span>
-                <ArrowRight className="w-5 h-5 ml-2.5" />
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 border-t border-slate-800/80 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-purple-400 font-bold">© 2026 GTech</span>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-400">AI Career Intelligence Platform</span>
-          </div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-purple-400 transition-all duration-200">Privacy Policy</a>
-            <a href="#" className="hover:text-purple-400 transition-all duration-200">Terms of Service</a>
-            <a href="#" className="hover:text-purple-400 transition-all duration-200">Documentation</a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

@@ -50,12 +50,19 @@
 
 @layer base {
   body {
-    background-color: #07080D;
-    color: #f1f5f9;
+    background-color: #060709;
+    color: #E4E7EC;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em;
   }
+}
+
+/* Editorial selection */
+::selection {
+  background-color: #FF5500;
+  color: #000000;
 }
 
 /* CSS Variables for Dynamic Solar Flare Theming */

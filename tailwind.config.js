@@ -17,6 +17,22 @@ export default {
           700: '#252C45',
           600: '#384366',
         },
+        editorial: {
+          bg: '#060709',
+          surface: '#0B0D12',
+          card: '#10131A',
+          border: '#1E232F',
+          borderLight: '#2B3242',
+          muted: '#6B7688',
+          chalk: '#E4E7EC',
+        },
+        gorange: {
+          DEFAULT: '#FF5500',
+          hover: '#E04B00',
+          light: '#FF6D24',
+          faint: 'rgba(255, 85, 0, 0.08)',
+          glow: 'rgba(255, 85, 0, 0.25)',
+        },
         solar: {
           violet: '#8B5CF6',
           purple: '#A855F7',
@@ -41,6 +57,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         display: ['Space Grotesk', 'Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
