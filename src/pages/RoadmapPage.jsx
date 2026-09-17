@@ -42,6 +42,7 @@ export const RoadmapPage = () => {
   const completedStepsCount = (roadmap || []).filter(r => r.status === 'Completed').length;
   const totalStepsCount = (roadmap || []).length || 1;
   const overallRoadmapPercent = Math.round((completedStepsCount / totalStepsCount) * 100);
+  const readinessScore = analysisResult?.readinessScore || 56;
 
   const allTasks = roadmap?.tasks || (dailyTasks?.activeTasks || []).concat(dailyTasks?.previewTasks || []) || [];
 
@@ -73,35 +74,82 @@ export const RoadmapPage = () => {
           </EditorialButton>
         </EditorialHeader>
 
-        {/* Milestone Sequence Metric Row */}
-        <div className="p-6 bg-[#0B0D12] border border-[#1E232F] mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-6">
-            <div className="font-display font-black text-5xl text-white">
-              {overallRoadmapPercent}%
-            </div>
-            <div>
-              <div className="font-mono text-xs uppercase tracking-wider text-gorange">
-                ROADMAP PROGRESS
+        {/* Milestone Sequence & Readiness Metric Grid */}
+        <div className="border border-[#1E232F] bg-[#0B0D12] mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#1E232F]">
+            
+            {/* Metric 01: Roadmap Progress */}
+            <div className="p-6 sm:p-8 flex items-start justify-between gap-6">
+              <div>
+                <div className="font-mono text-[10px] text-gorange uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-gorange inline-block" />
+                  <span>CURRICULUM METRIC // 01</span>
+                </div>
+                <div className="font-mono text-xs uppercase tracking-wider text-[#8F9AA9]">
+                  ROADMAP PROGRESS
+                </div>
+                <div className="font-display font-black text-5xl sm:text-6xl text-white my-1 tracking-tight">
+                  {overallRoadmapPercent}%
+                </div>
+                <div className="font-mono text-xs text-white font-semibold mt-1">
+                  {completedStepsCount} of {totalStepsCount} Phases Verified
+                </div>
+                <div className="text-xs text-[#8F9AA9] mt-0.5 font-light">
+                  Phases completed in active curriculum
+                </div>
               </div>
-              <div className="text-sm text-[#8F9AA9] mt-0.5 font-light">
-                {completedStepsCount} of {totalStepsCount} Phases Verified
+
+              <div className="space-y-1.5 text-right font-mono text-[11px] text-[#8F9AA9] shrink-0 pt-2">
+                <div className="flex items-center justify-end gap-1.5">
+                  <span className="w-2 h-2 bg-emerald-400 inline-block" />
+                  <span>{completedStepsCount} VERIFIED</span>
+                </div>
+                <div className="flex items-center justify-end gap-1.5">
+                  <span className="w-2 h-2 bg-gorange inline-block" />
+                  <span>{totalStepsCount - completedStepsCount} PENDING</span>
+                </div>
               </div>
             </div>
+
+            {/* Metric 02: Career Readiness */}
+            <div className="p-6 sm:p-8 flex items-start justify-between gap-6">
+              <div>
+                <div className="font-mono text-[10px] text-emerald-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 inline-block" />
+                  <span>INSTITUTIONAL METRIC // 02</span>
+                </div>
+                <div className="font-mono text-xs uppercase tracking-wider text-[#8F9AA9]">
+                  CAREER READINESS
+                </div>
+                <div className="font-display font-black text-5xl sm:text-6xl text-white my-1 tracking-tight">
+                  {readinessScore}%
+                </div>
+                <div className="font-mono text-xs text-white font-semibold mt-1">
+                  Evaluated Hiring Readiness
+                </div>
+                <div className="text-xs text-[#8F9AA9] mt-0.5 font-light">
+                  Based on verified skills, roadmap phases, evidence, and domain experience
+                </div>
+              </div>
+
+              <div className="text-right font-mono text-[11px] shrink-0 pt-2">
+                <span className={`inline-block px-2.5 py-1 border uppercase tracking-wider font-bold ${
+                  readinessScore >= 80 
+                    ? 'border-emerald-500/40 text-emerald-400 bg-emerald-950/20'
+                    : 'border-gorange/40 text-gorange bg-gorange/10'
+                }`}>
+                  {readinessScore >= 80 ? 'BENCHMARK READY' : 'ADVANCING PROFILE'}
+                </span>
+              </div>
+            </div>
+
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-mono text-[#8F9AA9]">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-emerald-400 inline-block" />
-              <span>COMPLETED</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-gorange inline-block" />
-              <span>IN PROGRESS</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-[#2B3242] inline-block" />
-              <span>UPCOMING / LOCKED</span>
-            </div>
+          {/* Metric Distinction Note */}
+          <div className="px-6 py-3 border-t border-[#1E232F] bg-[#07080D] font-mono text-[11px] text-[#6B7688] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span>
+              * DISTINCTION: Roadmap progress tracks curriculum completion ({completedStepsCount}/{totalStepsCount}). Career readiness ({readinessScore}%) is an evidence-based institutional evaluation combining verified skills, completed roadmap phases, casework artifacts, and domain experience.
+            </span>
           </div>
         </div>
 

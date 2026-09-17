@@ -2,8 +2,8 @@
  * AI Service for GTech Career Intelligence Platform
  * Universal Career Engine spanning 15 professional disciplines.
  */
-import { ALL_CAREERS, getCareerById, CAREER_CATEGORIES } from '../data/careersData';
-import { apiPost, apiGet, apiPut } from './api';
+import { ALL_CAREERS, getCareerById, CAREER_CATEGORIES } from '../data/careersData.js';
+import { apiPost, apiGet, apiPut } from './api.js';
 
 /**
  * Universal CAREER_PROFILES dictionary dynamically constructed from ALL_CAREERS.
@@ -44,9 +44,16 @@ export const CAREER_PROFILES = ALL_CAREERS.reduce((acc, career) => {
 
 /**
  * Synchronous Universal Skill Analysis Engine
- * Maps user skills against ANY career benchmark in the 15 domains.
+ * Evaluates evidence-based Career Readiness across skills, roadmap completion, practical casework, and experience.
  */
-export function analyzeSkills(userSkills = [], targetCareerId = 'software-engineer', assessmentAnswers = {}) {
+export function analyzeSkills(
+  userSkills = [], 
+  targetCareerId = 'software-engineer', 
+  assessmentAnswers = {},
+  roadmap = [],
+  userProfile = {},
+  dailyTasks = { activeTasks: [], previewTasks: [] }
+) {
   const profile = CAREER_PROFILES[targetCareerId] || CAREER_PROFILES['software-engineer'] || Object.values(CAREER_PROFILES)[0];
   
   const userSkillMap = {};
@@ -54,20 +61,51 @@ export function analyzeSkills(userSkills = [], targetCareerId = 'software-engine
     if (s) userSkillMap[String(s).toLowerCase().trim()] = true;
   });
 
+  // Calculate Roadmap Phase Verification
+  const phasesList = Array.isArray(roadmap) ? roadmap : (roadmap?.roadmap || []);
+  const completedPhases = phasesList.filter(r => r.status === 'Completed');
+  const totalPhasesCount = Math.max(1, phasesList.length || 4);
+  const completedPhasesCount = completedPhases.length;
+  const roadmapProgress = Math.round((completedPhasesCount / totalPhasesCount) * 100);
+
+  // Set of skills verified by completed roadmap phases
+  const completedRoadmapSkills = new Set();
+  completedPhases.forEach(phase => {
+    (phase.skills || []).forEach(sk => {
+      if (sk) completedRoadmapSkills.add(String(sk).toLowerCase().trim());
+    });
+  });
+
+  // Count verified daily tasks & capstone projects
+  const verifiedTasksCount = 
+    (roadmap?.tasks || []).filter(t => t.status === 'completed').length + 
+    (dailyTasks?.activeTasks || []).filter(t => t.status === 'completed').length;
+
   const skillChartData = profile.requiredSkills.map((req, index) => {
-    const key = req.name.toLowerCase();
+    const key = req.name.toLowerCase().trim();
     let currentLevel = req.baselineLevel || 35;
 
-    // Check direct match or substring in user profile skills
-    if (userSkillMap[key] || (userSkills || []).some(u => u && (key.includes(String(u).toLowerCase()) || String(u).toLowerCase().includes(key)))) {
+    // 1. Check direct match or substring in user profile skills
+    if (userSkillMap[key] || (userSkills || []).some(u => u && (key.includes(String(u).toLowerCase().trim()) || String(u).toLowerCase().trim().includes(key)))) {
       currentLevel = Math.max(currentLevel, 68);
     }
 
-    // Check specific assessment answers if mapped
+    // 2. Check specific assessment answers if mapped
     const ansKey = `q_skill_${index}`;
     if (assessmentAnswers[ansKey]) {
-      const valMap = { 'Beginner': 25, 'Basic': 50, 'Intermediate': 75, 'Advanced': 92 };
+      const valMap = { 'Beginner': 28, 'Basic': 52, 'Intermediate': 75, 'Advanced': 92 };
       currentLevel = valMap[assessmentAnswers[ansKey]] || currentLevel;
+    }
+
+    // 3. Roadmap Milestone Verification Impact:
+    // If a completed roadmap phase specifically targets this skill, boost proficiency
+    const isExplicitlyVerifiedInRoadmap = Array.from(completedRoadmapSkills).some(cs => key.includes(cs) || cs.includes(key));
+    if (isExplicitlyVerifiedInRoadmap) {
+      currentLevel = Math.max(currentLevel, Math.min(req.requiredLevel, currentLevel + 25));
+    } else if (completedPhasesCount > 0) {
+      // General curriculum completion provides cross-domain skill lift
+      const phaseLift = Math.round((completedPhasesCount / totalPhasesCount) * 10);
+      currentLevel = Math.min(req.requiredLevel, currentLevel + phaseLift);
     }
 
     const gap = Math.max(0, req.requiredLevel - currentLevel);
@@ -83,9 +121,54 @@ export function analyzeSkills(userSkills = [], targetCareerId = 'software-engine
     };
   });
 
+  // Skills Component Score
   const totalRequired = skillChartData.reduce((acc, item) => acc + item.requiredLevel, 0);
   const totalCurrent = skillChartData.reduce((acc, item) => acc + Math.min(item.currentLevel, item.requiredLevel), 0);
-  const readinessScore = Math.round((totalCurrent / (totalRequired || 1)) * 100) || 64;
+  const skillsProficiency = Math.round((totalCurrent / (totalRequired || 1)) * 100) || 50;
+
+  // Practical Evidence Score (from assessment answer q_evidence, daily tasks, and capstone phase)
+  let evidenceScore = 35;
+  if (assessmentAnswers['q_evidence']) {
+    const evMap = { 'Beginner': 25, 'Basic': 50, 'Intermediate': 75, 'Advanced': 95 };
+    evidenceScore = evMap[assessmentAnswers['q_evidence']] || 35;
+  }
+  if (verifiedTasksCount > 0) {
+    evidenceScore = Math.min(100, evidenceScore + Math.min(25, verifiedTasksCount * 4));
+  }
+  if (completedPhases.some(p => p.stageNumber === '04' || p.stageNumber === '03' || String(p.title).toLowerCase().includes('capstone') || String(p.title).toLowerCase().includes('evidence'))) {
+    evidenceScore = Math.min(100, evidenceScore + 15);
+  }
+
+  // Domain Experience & Background Score (from userProfile)
+  let experienceScore = 55;
+  const expLevel = userProfile?.experienceLevel;
+  if (expLevel) {
+    if (expLevel.includes('Junior') || expLevel.includes('1-2')) experienceScore = 70;
+    else if (expLevel.includes('Mid-Level') || expLevel.includes('3-5')) experienceScore = 85;
+    else if (expLevel.includes('Senior') || expLevel.includes('Transition')) experienceScore = 90;
+  }
+  if (userProfile?.degree) {
+    experienceScore = Math.min(100, experienceScore + 10);
+  }
+
+  // Multi-Pillar Composite Career Readiness Score:
+  // At 0 phases completed and no assessment: skillsProficiency determines the exact foundational baseline (e.g. 56% for Financial Analyst).
+  // Completing roadmap phases elevates skills and adds roadmap verification credit.
+  // When all 4 phases are verified, readiness reaches ~86% (clearly distinguished from 100% roadmap progress).
+  let compositeReadiness;
+  if (completedPhasesCount === 0 && !assessmentAnswers['q_skill_0'] && (!userSkills || userSkills.length === 0)) {
+    // Exact baseline for cold-start candidates
+    compositeReadiness = skillsProficiency;
+  } else {
+    // Weighted multi-pillar evaluation
+    const roadmapVerificationBonus = Math.round(roadmapProgress * 0.15); // 0 to 15 points
+    const evidenceBonus = Math.round((evidenceScore / 100) * 8); // 2 to 8 points
+    const experienceBonus = Math.round((experienceScore / 100) * 6); // 3 to 6 points
+    const calculatedScore = Math.round((skillsProficiency * 0.75) + roadmapVerificationBonus + evidenceBonus + experienceBonus);
+    compositeReadiness = Math.max(skillsProficiency, calculatedScore);
+  }
+
+  const readinessScore = Math.min(98, Math.max(15, compositeReadiness));
 
   const strongSkills = skillChartData.filter(s => s.currentLevel >= 70);
   const developingSkills = skillChartData.filter(s => s.currentLevel >= 40 && s.currentLevel < 70);
@@ -117,10 +200,20 @@ export function analyzeSkills(userSkills = [], targetCareerId = 'software-engine
   return {
     careerTitle: profile.title,
     readinessScore,
+    roadmapProgress,
+    completedPhasesCount,
+    totalPhasesCount,
     skillsMasteredCount: strongSkills.length,
     totalSkillsCount: profile.requiredSkills.length,
     criticalGapsCount: criticalGaps.length,
-    roadmapProgress: 35,
+    evidenceScore,
+    experienceScore,
+    readinessBreakdown: {
+      skills: skillsProficiency,
+      roadmap: roadmapProgress,
+      evidence: evidenceScore,
+      experience: experienceScore
+    },
     skillChartData,
     strongSkills,
     developingSkills,
@@ -153,8 +246,8 @@ export function generateRoadmap(targetCareerId = 'software-engineer', customSkil
       description: `Establish analytical rigor and essential theory in ${skill1} required for institutional practice.`,
       duration: '2 Weeks',
       difficulty: 'Foundations',
-      status: 'Completed',
-      progress: 100,
+      status: 'In Progress',
+      progress: 0,
       skills: [skill1, ...(profile.knowledge?.slice(0, 2) || ['Theory'])],
       resources: [
         { title: `${skill1} Standard Reference Manual`, url: 'https://en.wikipedia.org/wiki/Portal:Contents', type: 'Docs' },
@@ -172,8 +265,8 @@ export function generateRoadmap(targetCareerId = 'software-engineer', customSkil
       description: `Transition into practical methodologies, standards, and structured frameworks in ${skill2}.`,
       duration: '3 Weeks',
       difficulty: 'Intermediate',
-      status: 'In Progress',
-      progress: 50,
+      status: 'Upcoming',
+      progress: 0,
       skills: [skill2, skill3],
       resources: [
         { title: `${skill2} Professional Practice Guidelines`, url: 'https://www.coursera.org/', type: 'Guide' },

@@ -63,12 +63,7 @@ export const AppProvider = ({ children }) => {
     return DEFAULT_ASSESSMENT;
   });
 
-  // Synchronous initial calculation for Analysis Data (local fallback)
-  const [analysisResult, setAnalysisResult] = useState(() => {
-    return analyzeSkills(user.skills, user.targetCareer, assessment.answers || {});
-  });
-
-  // Roadmap State
+  // Roadmap State (loaded before analysisResult so analysis accounts for verified milestones)
   const [roadmap, setRoadmap] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY_ROADMAP);
     if (saved) {
@@ -79,6 +74,41 @@ export const AppProvider = ({ children }) => {
     }
     const result = generateRoadmap(user.targetCareer);
     return Array.isArray(result) ? result : result.roadmap;
+  });
+
+  // Daily Tasks State
+  const [dailyTasks, setDailyTasks] = useState(() => {
+    const saved = localStorage.getItem('skillnav_daily_tasks');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { /* fall through */ }
+    }
+    return { activeTasks: [], previewTasks: [], career: null };
+  });
+  const [dailyTasksLoading, setDailyTasksLoading] = useState(false);
+
+  // Centralized analysis calculator (Single Source of Truth across AppContext)
+  const computeAnalysis = useCallback((userObj, assessmentObj, roadmapArr, tasksObj) => {
+    if (!userObj || !userObj.targetCareer) return null;
+    return analyzeSkills(
+      userObj.skills || [],
+      userObj.targetCareer,
+      assessmentObj?.answers || {},
+      roadmapArr || [],
+      userObj,
+      tasksObj || { activeTasks: [], previewTasks: [] }
+    );
+  }, []);
+
+  // Multi-Pillar Analysis & Career Readiness State
+  const [analysisResult, setAnalysisResult] = useState(() => {
+    return analyzeSkills(
+      user.skills || [],
+      user.targetCareer,
+      assessment.answers || {},
+      roadmap,
+      user,
+      dailyTasks
+    );
   });
 
   // Job Description Analyses State
@@ -132,23 +162,15 @@ export const AppProvider = ({ children }) => {
     if (roadmap.length > 0) localStorage.setItem(STORAGE_KEY_ROADMAP, JSON.stringify(roadmap));
   }, [roadmap]);
   useEffect(() => { localStorage.setItem(STORAGE_KEY_JOBS, JSON.stringify(jobAnalyses)); }, [jobAnalyses]);
+  useEffect(() => { localStorage.setItem('skillnav_daily_tasks', JSON.stringify(dailyTasks)); }, [dailyTasks]);
 
-  // ── Recalculate analysis when profile / assessment changes ─────────────────
+  // ── Recalculate analysis when profile, assessment, roadmap, or tasks change ──
   useEffect(() => {
     if (user && user.targetCareer) {
-      const result = analyzeSkills(user.skills, user.targetCareer, assessment.answers || {});
-      setAnalysisResult(result);
+      const result = computeAnalysis(user, assessment, roadmap, dailyTasks);
+      if (result) setAnalysisResult(result);
     }
-  }, [user.targetCareer, user.skills, assessment]);
-
-  const [dailyTasks, setDailyTasks] = useState(() => {
-    const saved = localStorage.getItem('skillnav_daily_tasks');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* fall through */ }
-    }
-    return { activeTasks: [], previewTasks: [], career: null };
-  });
-  const [dailyTasksLoading, setDailyTasksLoading] = useState(false);
+  }, [user, assessment, roadmap, dailyTasks, computeAnalysis]);
 
   // ── Streak Tracking & Freeze Mechanic (Phase 2) ───────────────────────────
   const [currentStreak, setCurrentStreak] = useState(() => {
@@ -236,12 +258,17 @@ export const AppProvider = ({ children }) => {
       setStreakCelebration(true);
       setTimeout(() => setStreakCelebration(false), 3500);
       checkMilestone(fallbackStreak);
-      setDailyTasks(prev => ({
-        ...prev,
-        activeTasks: (prev.activeTasks || []).map(t => t.id === taskId ? { ...t, status: 'completed' } : t)
-      }));
+      setDailyTasks(prev => {
+        const updated = {
+          ...prev,
+          activeTasks: (prev.activeTasks || []).map(t => t.id === taskId ? { ...t, status: 'completed' } : t)
+        };
+        const nextAnalysis = computeAnalysis(user, assessment, roadmap, updated);
+        if (nextAnalysis) setAnalysisResult(nextAnalysis);
+        return updated;
+      });
     }
-  }, [fetchDailyTasks, currentStreak]);
+  }, [fetchDailyTasks, currentStreak, user, assessment, roadmap, computeAnalysis]);
 
   useEffect(() => {
     if (backendAvailable && isAuthenticated) {
@@ -254,12 +281,14 @@ export const AppProvider = ({ children }) => {
   const updateUserProfile = useCallback((updates) => {
     setUser(prev => {
       const nextUser = { ...prev, ...updates };
-      const result = analyzeSkills(nextUser.skills, nextUser.targetCareer, assessment.answers || {});
-      setAnalysisResult(result);
+      let currentRoadmap = roadmap;
       if (updates.targetCareer && updates.targetCareer !== prev.targetCareer) {
         const generated = generateRoadmap(nextUser.targetCareer);
-        setRoadmap(Array.isArray(generated) ? generated : generated.roadmap);
+        currentRoadmap = Array.isArray(generated) ? generated : generated.roadmap;
+        setRoadmap(currentRoadmap);
       }
+      const nextAnalysis = computeAnalysis(nextUser, assessment, currentRoadmap, dailyTasks);
+      if (nextAnalysis) setAnalysisResult(nextAnalysis);
       return nextUser;
     });
 
@@ -267,33 +296,40 @@ export const AppProvider = ({ children }) => {
     if (backendAvailable && isAuthenticated) {
       apiPut('/user/profile', updates).catch(console.error);
     }
-  }, [assessment, backendAvailable, isAuthenticated]);
+  }, [assessment, backendAvailable, isAuthenticated, roadmap, dailyTasks, computeAnalysis]);
 
   const saveAssessment = useCallback((answers) => {
     setIsLoading(true);
     const newAssessment = { completed: true, answers, timestamp: new Date().toISOString() };
     setAssessment(newAssessment);
 
-    const result = analyzeSkills(user.skills, user.targetCareer, answers);
-    setAnalysisResult(result);
-
     const generated = generateRoadmap(user.targetCareer);
-    setRoadmap(Array.isArray(generated) ? generated : generated.roadmap);
+    const updatedRoadmap = Array.isArray(generated) ? generated : generated.roadmap;
+    setRoadmap(updatedRoadmap);
+
+    const nextAnalysis = computeAnalysis(user, newAssessment, updatedRoadmap, dailyTasks);
+    if (nextAnalysis) setAnalysisResult(nextAnalysis);
 
     setIsLoading(false);
-    return result;
-  }, [user.skills, user.targetCareer]);
+    return nextAnalysis;
+  }, [user, dailyTasks, computeAnalysis]);
 
   const toggleRoadmapStep = useCallback((stepId) => {
-    setRoadmap(prev => prev.map(item => {
-      if (item.id === stepId) {
-        const newStatus = item.status === 'Completed' ? 'In Progress' : 'Completed';
-        const newProgress = newStatus === 'Completed' ? 100 : 50;
-        return { ...item, status: newStatus, progress: newProgress };
-      }
-      return item;
-    }));
-  }, []);
+    setRoadmap(prev => {
+      const updated = prev.map(item => {
+        if (item.id === stepId) {
+          const newStatus = item.status === 'Completed' ? 'In Progress' : 'Completed';
+          const newProgress = newStatus === 'Completed' ? 100 : 50;
+          return { ...item, status: newStatus, progress: newProgress };
+        }
+        return item;
+      });
+      // Synchronously recalculate analysisResult so UI updates immediately
+      const nextAnalysis = computeAnalysis(user, assessment, updated, dailyTasks);
+      if (nextAnalysis) setAnalysisResult(nextAnalysis);
+      return updated;
+    });
+  }, [user, assessment, dailyTasks, computeAnalysis]);
 
   const addSkillsToRoadmap = useCallback((skillsToAdd) => {
     const skillList = Array.isArray(skillsToAdd) ? skillsToAdd : [skillsToAdd];
@@ -322,9 +358,12 @@ export const AppProvider = ({ children }) => {
       }
     }));
 
-    setRoadmap(prev => [...prev, ...newSteps]);
+    const updatedRoadmap = [...roadmap, ...newSteps];
+    setRoadmap(updatedRoadmap);
+    const nextAnalysis = computeAnalysis(user, assessment, updatedRoadmap, dailyTasks);
+    if (nextAnalysis) setAnalysisResult(nextAnalysis);
     return true;
-  }, [roadmap]);
+  }, [roadmap, user, assessment, dailyTasks, computeAnalysis]);
 
   const saveJobAnalysis = useCallback((analysisData) => {
     setJobAnalyses(prev => [analysisData, ...prev]);

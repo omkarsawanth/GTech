@@ -183,12 +183,17 @@ export const DashboardPage = () => {
               </div>
             </div>
 
-            <div className="flex items-baseline gap-3 lg:text-right">
-              <div className="font-display font-black text-6xl sm:text-7xl text-white tracking-tighter">
-                {readinessScore}%
+            <div className="lg:text-right">
+              <div className="flex items-baseline gap-3 lg:justify-end">
+                <div className="font-display font-black text-6xl sm:text-7xl text-white tracking-tighter">
+                  {readinessScore}%
+                </div>
+                <div className="font-mono text-xs text-gorange font-bold uppercase tracking-wider">
+                  CAREER READINESS
+                </div>
               </div>
-              <div className="font-mono text-xs text-gorange font-bold uppercase tracking-wider">
-                CAREER READINESS
+              <div className="font-mono text-[11px] text-[#8F9AA9] mt-1 font-light">
+                Based on verified skills, roadmap phases, casework evidence, and profile experience
               </div>
             </div>
           </div>
@@ -208,9 +213,12 @@ export const DashboardPage = () => {
               </div>
             </div>
             <div>
-              <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">MILESTONES COMPLETED</div>
+              <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">ROADMAP PROGRESS</div>
               <div className="text-2xl font-bold text-white mt-1">
-                {completedPhasesCount} <span className="text-[#566173] text-sm">/ {totalPhasesCount}</span>
+                {Math.round(((roadmap || []).filter(r => r.status === 'Completed').length / Math.max(1, (roadmap || []).length)) * 100)}%
+                <span className="text-[#566173] text-sm ml-1.5 font-normal">
+                  ({(roadmap || []).filter(r => r.status === 'Completed').length}/{(roadmap || []).length || 4} PHASES)
+                </span>
               </div>
             </div>
             <div>
