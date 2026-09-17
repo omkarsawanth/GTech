@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
+import { generalLimiter, aiLimiter } from './middleware/rateLimitMiddleware.js';
 
 // Routes
 import userRoutes from './routes/userRoutes.js';
@@ -39,6 +40,15 @@ app.get('/api/health', (req, res) => {
     version: '1.0.0',
   });
 });
+
+// ── Rate Limiting ─────────────────────────────────────────────────────────────
+// General rate limiter for all /api endpoints (100 requests per 15 minutes per IP)
+app.use('/api', generalLimiter);
+
+// Specific rate limiter for Gemini-powered endpoints (20 requests per 15 minutes per IP)
+app.use('/api/ai', aiLimiter);
+app.use('/api/job/analyze', aiLimiter);
+app.use('/api/projects/generate', aiLimiter);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/user', userRoutes);

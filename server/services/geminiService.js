@@ -49,14 +49,17 @@ export const generateStructuredResponse = async (prompt, schema) => {
     const validated = schema.safeParse(parsed);
     if (!validated.success) {
       console.error('[Gemini] Schema validation failed:', validated.error.flatten());
-      // Return the raw parsed data with a warning rather than crashing
-      // This is more resilient when Gemini adds extra fields
-      console.warn('[Gemini] Returning unvalidated data due to schema mismatch.');
-      return parsed;
+      const appError = new Error('Gemini response did not match the required schema.');
+      appError.code = 'GEMINI_SCHEMA_MISMATCH';
+      appError.userMessage = 'AI generated a response that did not match the required format. Please try again.';
+      throw appError;
     }
 
     return validated.data;
   } catch (error) {
+    if (error.code) {
+      throw error;
+    }
     // Re-throw as a typed error
     const appError = new Error(error.message || 'AI generation failed');
     appError.code = 'GEMINI_ERROR';

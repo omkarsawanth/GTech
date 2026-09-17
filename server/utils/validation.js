@@ -165,6 +165,16 @@ export const SkillGapInputSchema = z.object({
   assessment: z.record(z.any()).optional(),
 });
 
+export const CareerMatchInputSchema = z.object({
+  profile: z.object({
+    name: z.string().optional(),
+    degree: z.string().optional(),
+    major: z.string().optional(),
+    experienceLevel: z.string().optional(),
+    skills: z.array(z.string()).optional(),
+  }),
+});
+
 export const JobAnalysisInputSchema = z.object({
   jobDescription: z.string().min(50, 'Please provide a job description of at least 50 characters'),
 });

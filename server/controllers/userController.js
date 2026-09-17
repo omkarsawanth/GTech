@@ -1,4 +1,5 @@
 import { db } from '../config/firebaseAdmin.js';
+import { ProfileInputSchema } from '../utils/validation.js';
 
 /**
  * GET /api/user/profile
@@ -18,7 +19,15 @@ export const getProfile = async (req, res, next) => {
  */
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, degree, major, experienceLevel, skills, targetCareer } = req.body;
+    const parsed = ProfileInputSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'VALIDATION_ERROR', message: parsed.error.errors[0]?.message || 'Invalid input' },
+      });
+    }
+
+    const { name, degree, major, experienceLevel, skills, targetCareer } = parsed.data;
     const updates = {
       ...(name !== undefined && { displayName: name, name }),
       ...(degree !== undefined && { degree }),

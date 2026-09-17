@@ -8,7 +8,7 @@ const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AP
 const getToken = async () => {
   const user = auth.currentUser;
   if (!user) throw new Error('Not authenticated');
-  return await user.getIdToken(true);
+  return await user.getIdToken();
 };
 
 /**
