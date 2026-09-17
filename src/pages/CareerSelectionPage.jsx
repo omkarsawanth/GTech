@@ -1,164 +1,240 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight, ChevronDown, ChevronRight, CheckCircle2, Target, Sparkles, Compass } from 'lucide-react';
+import { AppLayout } from '../components/layout/AppLayout';
 import { 
-  Cpu, 
-  BrainCircuit, 
-  BarChart3, 
-  Code2, 
-  ShieldCheck, 
-  Cloud, 
-  LineChart, 
-  ArrowRight, 
-  Sparkles, 
-  CheckCircle2 
-} from 'lucide-react';
-import { Button, Card, Badge } from '../components/common/UIComponents';
+  EditorialShell, 
+  EditorialHeader, 
+  EditorialPanel, 
+  EditorialButton, 
+  EditorialBadge 
+} from '../components/common/EditorialComponents';
+import { CAREER_CATEGORIES, getCareerById } from '../data/careersData';
 import { useApp } from '../context/AppContext';
-import { motion } from 'framer-motion';
 
 export const CareerSelectionPage = () => {
-  const { user, updateUserProfile, CAREER_PROFILES } = useApp();
+  const { user, updateUserProfile } = useApp();
   const navigate = useNavigate();
-  const [selectedCareerId, setSelectedCareerId] = useState(user.targetCareer || 'ai-engineer');
 
-  const iconMap = {
-    Cpu,
-    BrainCircuit,
-    BarChart3,
-    Code2,
-    ShieldCheck,
-    Cloud,
-    LineChart
-  };
+  // Selected state
+  const [selectedCareerId, setSelectedCareerId] = useState(user?.targetCareer || 'software-engineer');
+  const [expandedDomainId, setExpandedDomainId] = useState(() => {
+    const active = getCareerById(user?.targetCareer);
+    return active?.domain || 'technology';
+  });
 
-  const handleSelect = (careerId) => {
+  const selectedCareer = getCareerById(selectedCareerId);
+
+  const handleSelectCareer = (careerId) => {
     setSelectedCareerId(careerId);
   };
 
-  const handleContinue = () => {
+  const handleConfirmCareer = () => {
     updateUserProfile({ targetCareer: selectedCareerId });
-    navigate('/assessment');
+    navigate('/dashboard');
   };
 
   return (
-    <div className="min-h-screen bg-[#07090E] px-4 py-12 flex flex-col justify-center items-center relative overflow-hidden">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-purple-600/20 via-indigo-600/15 to-cyan-500/15 rounded-full blur-3xl pointer-events-none opacity-60" />
-
-      <div className="w-full max-w-6xl relative z-10">
+    <AppLayout>
+      <EditorialShell>
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-6 border-b border-slate-800 gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 mb-2 text-xs font-semibold text-purple-300 font-display">
-              <Sparkles className="w-3.5 h-3.5 text-purple-400" /> Step 2 of 3 — Select Target Track
+        <EditorialHeader
+          index="02"
+          tag="DIRECTORY"
+          title="UNIVERSAL CAREER DIRECTORY."
+          subtitle="Explore verified standards across 15 professional disciplines. Select a target track to calibrate your competency gap matrix."
+        >
+          <EditorialButton
+            variant="primary"
+            size="md"
+            onClick={handleConfirmCareer}
+            icon={ArrowRight}
+          >
+            Confirm Target Track
+          </EditorialButton>
+        </EditorialHeader>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* Left: 15-Domain Editorial Directory List */}
+          <div className="lg:col-span-6 space-y-2">
+            <div className="font-mono text-xs uppercase tracking-[0.2em] text-[#6B7688] mb-4 pb-2 border-b border-[#1E232F] flex items-center justify-between">
+              <span>SELECT DISCIPLINE</span>
+              <span>15 SECTORS</span>
             </div>
-            <h1 className="text-3xl font-display font-extrabold text-white tracking-tight">Choose Your Target Tech Career</h1>
-            <p className="text-sm text-slate-400 mt-1">GTech benchmarks your skill profile against live industry criteria for this track.</p>
+
+            {CAREER_CATEGORIES.map((domain) => {
+              const isExpanded = expandedDomainId === domain.id;
+              const hasActiveCareer = domain.careers.some(c => c.id === selectedCareerId);
+
+              return (
+                <div key={domain.id} className="border border-[#1E232F] bg-[#080A0E] overflow-hidden">
+                  
+                  {/* Domain Row Accordion Header */}
+                  <button
+                    onClick={() => setExpandedDomainId(isExpanded ? null : domain.id)}
+                    className={`w-full p-4.5 text-left flex items-center justify-between transition-colors ${
+                      isExpanded ? 'bg-[#0E121A] border-b border-[#1E232F]' : 'hover:bg-[#0B0D12]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`font-mono text-xs font-bold ${hasActiveCareer ? 'text-gorange' : 'text-[#566173]'}`}>
+                        {domain.code}
+                      </span>
+                      <span className="font-display font-bold text-base sm:text-lg text-white tracking-tight">
+                        {domain.name}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3 font-mono text-xs text-[#6B7688]">
+                      <span className="hidden sm:inline text-[11px]">{domain.careers.length} TRACKS</span>
+                      {isExpanded ? <ChevronDown className="w-4 h-4 text-white" /> : <ChevronRight className="w-4 h-4" />}
+                    </div>
+                  </button>
+
+                  {/* Expanded Domain Careers */}
+                  {isExpanded && (
+                    <div className="p-3 bg-[#060709] space-y-2">
+                      {domain.careers.map((career) => {
+                        const isSelected = selectedCareerId === career.id;
+
+                        return (
+                          <div
+                            key={career.id}
+                            onClick={() => handleSelectCareer(career.id)}
+                            className={`p-4 border cursor-pointer transition-all flex items-center justify-between ${
+                              isSelected
+                                ? 'bg-[#10131A] border-gorange text-white'
+                                : 'bg-[#090C10] border-[#1E232F] text-[#8F9AA9] hover:border-[#2B3242] hover:text-white'
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-display font-bold text-sm sm:text-base text-white">
+                                  {career.title}
+                                </span>
+                                {isSelected && (
+                                  <span className="px-1.5 py-0.5 bg-gorange text-black font-mono text-[9px] font-bold uppercase">
+                                    ACTIVE
+                                  </span>
+                                )}
+                              </div>
+                              <div className="font-mono text-[11px] text-[#6B7688] mt-1">
+                                {career.salary} • {career.experienceReq}
+                              </div>
+                            </div>
+
+                            <div className="text-right font-mono text-xs shrink-0 pl-4">
+                              <span className="text-gorange font-bold text-[11px]">{career.demand}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                </div>
+              );
+            })}
           </div>
 
-          <Button
-            variant="glow"
-            size="lg"
-            onClick={handleContinue}
-            className="mt-4 sm:mt-0 font-display"
-            icon={ArrowRight}
-            iconPosition="right"
-          >
-            Continue to Assessment →
-          </Button>
-        </div>
+          {/* Right: Selected Career Specification Dossier */}
+          <div className="lg:col-span-6">
+            <div className="sticky top-24 p-8 bg-[#0B0D12] border border-[#1E232F]">
+              <div className="font-mono text-[10px] text-gorange uppercase tracking-widest mb-2">
+                [ ROLE SPECIFICATION AUDIT ]
+              </div>
 
-        {/* Career Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {Object.values(CAREER_PROFILES).map((career, idx) => {
-            const isSelected = selectedCareerId === career.id;
-            const IconComponent = iconMap[career.iconName] || Cpu;
+              <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
+                {selectedCareer.title}
+              </h2>
 
-            return (
-              <motion.div
-                key={career.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
-                onClick={() => handleSelect(career.id)}
-                className={`cursor-pointer rounded-2xl p-6 transition-all duration-200 relative flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-gradient-to-b from-purple-950/80 to-slate-900 border-2 border-purple-500 shadow-xl scale-[1.02]'
-                    : 'glass-card hover:border-purple-500/30 hover:bg-slate-900/80'
-                }`}
-              >
-                {isSelected && (
-                  <div className="absolute top-4 right-4 bg-purple-600 text-white rounded-full p-1 shadow-md">
-                    <CheckCircle2 className="w-4 h-4" />
+              <div className="mt-3 font-mono text-xs text-[#8F9AA9] flex flex-wrap items-center gap-3 pb-6 border-b border-[#1E232F]">
+                <span>COMPENSATION: <strong className="text-white">{selectedCareer.salary}</strong></span>
+                <span>•</span>
+                <span>DEMAND: <strong className="text-gorange">{selectedCareer.demand}</strong></span>
+              </div>
+
+              {/* Manifesto */}
+              <div className="my-6">
+                <div className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mb-1.5">
+                  ROLE OVERVIEW &amp; STANDARDS
+                </div>
+                <p className="text-base text-[#C8CFDB] font-light leading-relaxed">
+                  "{selectedCareer.manifesto || selectedCareer.description}"
+                </p>
+              </div>
+
+              {/* Verified Competencies */}
+              <div className="my-6">
+                <div className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mb-3 flex items-center justify-between">
+                  <span>CORE SKILLS &amp; BENCHMARK</span>
+                  <span>INDUSTRY REQ</span>
+                </div>
+                
+                <div className="space-y-2">
+                  {selectedCareer.skills.map((s, idx) => (
+                    <div key={s.name} className="py-2 px-3 bg-[#08090E] border border-[#161B24] flex items-center justify-between font-mono text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#566173]">0{idx + 1}</span>
+                        <span className="text-white font-medium">{s.name}</span>
+                      </div>
+                      <span className="text-gorange font-bold">{s.required}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Required Evidence Artifact */}
+              <div className="my-6 pt-6 border-t border-[#1E232F]">
+                <div className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mb-1.5">
+                  VERIFIABLE EVIDENCE REQUIREMENT
+                </div>
+                <div className="p-3 bg-[#0E121A] border border-[#1E232F] font-mono text-xs text-white">
+                  {selectedCareer.evidenceType}
+                </div>
+              </div>
+
+              {/* Certifications or Knowledge */}
+              {selectedCareer.certifications?.length > 0 && (
+                <div className="my-6 pt-4 border-t border-[#1E232F]/80">
+                  <div className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mb-2">
+                    RECOGNIZED CREDENTIALS
                   </div>
-                )}
-
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
-                      isSelected ? 'bg-purple-600/30 text-purple-300 border border-purple-400/50' : 'bg-slate-800 text-slate-300 border border-slate-700'
-                    }`}>
-                      <IconComponent className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 font-mono">{career.category}</span>
-                      <h3 className="text-lg font-display font-bold text-white tracking-tight">{career.title}</h3>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4">{career.description}</p>
-
-                  <div className="mb-4">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2 font-mono">Core Skills Required:</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {career.requiredSkills.slice(0, 4).map((sk) => (
-                        <span
-                          key={sk.name}
-                          className="text-[10px] px-2 py-0.5 rounded-md bg-slate-900 text-slate-300 border border-slate-800"
-                        >
-                          {sk.name}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedCareer.certifications.map((c) => (
+                      <span key={c} className="px-2 py-1 bg-[#121620] border border-[#202736] text-[#B0BAC8] font-mono text-[11px]">
+                        {c}
+                      </span>
+                    ))}
                   </div>
                 </div>
+              )}
 
-                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="text-slate-500 block text-[10px]">Avg Salary</span>
-                    <span className="font-bold text-slate-200 font-mono text-[11px]">{career.avgSalary}</span>
-                  </div>
-                  <Badge variant={isSelected ? 'purple' : 'slate'} size="sm">
-                    {career.difficulty}
-                  </Badge>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              {/* Confirmation CTA */}
+              <div className="mt-8 pt-6 border-t border-[#1E232F] flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span className="font-mono text-xs text-[#7F8B9D]">
+                  TARGET ROLE: <strong className="text-white">{selectedCareer.title}</strong>
+                </span>
 
-        {/* Bottom CTA Bar */}
-        <div className="mt-10 p-6 rounded-2xl glass-panel border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">Active Target Selection</span>
-            <h4 className="text-lg font-display font-bold text-white">
-              Target Role: <span className="text-purple-300">{CAREER_PROFILES[selectedCareerId]?.title}</span>
-            </h4>
+                <EditorialButton
+                  variant="primary"
+                  size="md"
+                  onClick={handleConfirmCareer}
+                  icon={ArrowRight}
+                  className="w-full sm:w-auto"
+                >
+                  Set as Active Target
+                </EditorialButton>
+              </div>
+
+            </div>
           </div>
 
-          <Button
-            variant="glow"
-            size="lg"
-            onClick={handleContinue}
-            className="font-display"
-            icon={ArrowRight}
-            iconPosition="right"
-          >
-            Continue to Assessment →
-          </Button>
         </div>
 
-      </div>
-    </div>
+      </EditorialShell>
+    </AppLayout>
   );
 };

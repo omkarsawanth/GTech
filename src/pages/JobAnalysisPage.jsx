@@ -1,55 +1,58 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  SearchCode, 
-  Sparkles, 
-  CheckCircle2, 
+  Check, 
   AlertTriangle, 
   ArrowRight, 
   Plus, 
   FileText, 
-  Zap,
-  TrendingUp
+  Sparkles
 } from 'lucide-react';
 import { AppLayout } from '../components/layout/AppLayout';
-import { Card, Badge, ProgressBar, Button } from '../components/common/UIComponents';
+import { 
+  EditorialShell, 
+  EditorialHeader, 
+  EditorialButton,
+  EditorialBadge
+} from '../components/common/EditorialComponents';
 import { useApp } from '../context/AppContext';
 import { analyzeJobDescription, fetchJobAnalysisAI } from '../services/aiService';
 
 export const JobAnalysisPage = () => {
-  const { user, addSkillsToRoadmap, saveJobAnalysis, backendAvailable } = useApp();
+  const { user, activeCareerProfile, addSkillsToRoadmap, saveJobAnalysis, backendAvailable } = useApp();
   const navigate = useNavigate();
 
-  const samplePosting = `Senior AI & Machine Learning Engineer
-Company: Apex Innovations AI
-Location: Remote (US / Global)
+  const defaultSample = `Senior Applied AI Engineer
+Company: Apex Systems Labs
+Location: Remote / Global
 
-About the Role:
-We are searching for a high-performing AI Engineer to architect, build, and deploy production-grade LLM applications and machine learning models. 
+Role Overview:
+We are seeking an Applied AI Engineer to architect, evaluate, and deploy production-grade LLM workflows, retrieval-augmented pipelines, and custom fine-tuning systems.
 
 Key Responsibilities:
-- Design and implement end-to-end Machine Learning pipelines using Python, PyTorch, and Scikit-Learn.
-- Build production RAG (Retrieval-Augmented Generation) systems utilizing Vector Databases and Large Language Models (LLMs).
-- Conduct rigorous statistical analysis, feature engineering, and hypothesis testing on multi-terabyte datasets.
-- Optimize database queries with SQL and manage containerized deployments using Docker and AWS.
+- Design end-to-end Machine Learning pipelines using Python, PyTorch, and vLLM.
+- Build production RAG systems utilizing Vector Databases (Qdrant/Pinecone) and hybrid dense-sparse retrieval.
+- Conduct rigorous statistical benchmarking, latency profiling, and regression evaluation across models.
+- Build resilient microservices with FastAPI, Docker, and PostgreSQL.
 
-Qualifications:
-- Bachelor's or Master's degree in Computer Science, AI, or Quantitative discipline.
-- Proficient in Python, SQL, Git version control, and RESTful API architecture.
-- Deep expertise in Deep Learning frameworks (PyTorch or TensorFlow), Statistics, and MLOps.`;
+Requirements:
+- Strong foundation in Deep Learning, PyTorch, and Transformer architectures.
+- Experience with Vector Databases, LLM fine-tuning, and prompt evaluations.
+- Production proficiency in Python, SQL, Git workflows, and CI/CD pipelines.`;
 
-  const [jobText, setJobText] = useState(samplePosting);
+  const [jobText, setJobText] = useState(defaultSample);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
   const [addedNotice, setAddedNotice] = useState(false);
 
   const handleAnalyze = async () => {
+    if (!jobText.trim()) return;
     setIsAnalyzing(true);
     setAddedNotice(false);
     try {
       let res;
       if (backendAvailable) {
-        res = await fetchJobAnalysisAI(jobText, user?.targetCareer || 'ai-engineer');
+        res = await fetchJobAnalysisAI(jobText, user?.targetCareer || activeCareerProfile?.id || 'software-engineer');
       } else {
         res = await analyzeJobDescription(jobText, user?.skills || []);
       }
@@ -68,162 +71,200 @@ Qualifications:
       setAddedNotice(true);
       setTimeout(() => {
         navigate('/roadmap');
-      }, 1000);
+      }, 900);
     }
   };
 
   return (
     <AppLayout>
-      
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-slate-800 gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-1">
-            <SearchCode className="w-3.5 h-3.5" /> AI Job Description Parser
-          </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            How ready are you for this job?
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Paste any live job posting to calculate match score %, identify missing requirements, and update your roadmap.
-          </p>
-        </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setJobText(samplePosting)}
-        >
-          Load Sample AI Job Posting
-        </Button>
-      </div>
-
-      {/* INPUT AREA */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <EditorialShell>
         
-        {/* Left: Textarea input */}
-        <Card className="p-6 flex flex-col justify-between">
-          <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-purple-400" /> Paste Job Description Text
-            </label>
-            <textarea
-              rows={14}
-              value={jobText}
-              onChange={(e) => setJobText(e.target.value)}
-              className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-xs font-mono leading-relaxed resize-none"
-              placeholder="Paste job posting duties, requirements, and tech stack here..."
-            />
-          </div>
+        {/* Editorial Header */}
+        <EditorialHeader
+          index="06"
+          tag="JOB SPECIFICATION AUDITOR"
+          title="Paste a Role. Measure the Gap."
+          subtitle="Audit live job postings and vacancy specifications against your verified candidate profile to calculate empirical readiness and inject missing competencies."
+        >
+          <EditorialButton
+            variant="secondary"
+            size="sm"
+            onClick={() => setJobText(defaultSample)}
+          >
+            LOAD SAMPLE SPEC
+          </EditorialButton>
+        </EditorialHeader>
 
-          <div className="pt-4 mt-4 border-t border-slate-800 flex justify-end">
-            <Button
-              variant="glow"
-              size="lg"
-              onClick={handleAnalyze}
-              isLoading={isAnalyzing}
-              icon={Sparkles}
-              iconPosition="right"
-              className="w-full sm:w-auto"
-            >
-              Analyze Job Readiness
-            </Button>
-          </div>
-        </Card>
-
-        {/* Right: Results Display */}
-        <div className="space-y-6">
-          {!result ? (
-            <Card className="p-12 text-center flex flex-col items-center justify-center min-h-[420px]">
-              <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mb-4">
-                <SearchCode className="w-8 h-8" />
+        {/* Workspace Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+          
+          {/* Left Column: Text Input (5 cols) */}
+          <div className="lg:col-span-6 border border-[#1E232F] bg-[#0B0D12] p-6 sm:p-8 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E232F] font-mono text-[11px] uppercase tracking-wider text-[#6B7688]">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-gorange" />
+                  <span className="text-white font-bold">01 // JOB SPECIFICATION TEXT</span>
+                </div>
+                <span>{jobText.length} CHARS</span>
               </div>
-              <h3 className="text-lg font-bold text-white mb-1">Ready for Job Analysis</h3>
-              <p className="text-xs text-slate-400 max-w-sm">
-                Click "Analyze Job Readiness" to calculate match score %, extracted skills, and gap impact.
-              </p>
-            </Card>
-          ) : (
-            <>
-              {/* Job Readiness Score Banner */}
-              <Card className="p-6 border-cyan-500/30 bg-gradient-to-r from-slate-900 via-slate-900 to-cyan-950/40">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">JOB READINESS MATCH</span>
-                    <h3 className="text-2xl font-extrabold text-white mt-0.5">{result.jobTitle}</h3>
-                    <p className="text-xs text-cyan-300 mt-1">{result.companyName}</p>
-                  </div>
 
-                  <div className="text-center">
-                    <div className="text-4xl font-extrabold text-white font-mono">{result.readinessScore}%</div>
-                    <Badge variant={result.readinessScore >= 70 ? 'green' : 'amber'} size="sm" className="mt-1">
-                      {result.readinessScore >= 70 ? 'Strong Match' : 'Gap Action Required'}
-                    </Badge>
-                  </div>
+              <textarea
+                rows={16}
+                value={jobText}
+                onChange={(e) => setJobText(e.target.value)}
+                className="w-full p-4 bg-[#07080D] border border-[#1E232F] text-white placeholder-[#4B5565] focus:outline-none focus:border-gorange text-xs font-mono leading-relaxed resize-none transition-colors"
+                placeholder="Paste the complete job description, technical requirements, or job vacancy notice here..."
+              />
+            </div>
+
+            <div className="pt-6 mt-6 border-t border-[#1E232F] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="font-mono text-[11px] text-[#6B7688]">
+                BENCHMARK TARGET: <span className="text-white">{activeCareerProfile?.title || 'Active Track'}</span>
+              </span>
+              <EditorialButton
+                variant="primary"
+                size="md"
+                onClick={handleAnalyze}
+                isLoading={isAnalyzing}
+                icon={Sparkles}
+                iconPosition="right"
+                className="w-full sm:w-auto"
+              >
+                ANALYZE ROLE MATCH
+              </EditorialButton>
+            </div>
+          </div>
+
+          {/* Right Column: Diagnostic Readout (6 cols) */}
+          <div className="lg:col-span-6">
+            {!result ? (
+              <div className="border border-dashed border-[#1E232F] bg-[#0B0D12]/40 p-12 text-center flex flex-col items-center justify-center min-h-[480px]">
+                <div className="font-mono text-xs text-gorange uppercase tracking-widest mb-3">
+                  [ SPECIFICATION DIAGNOSTIC PENDING ]
                 </div>
-
-                <div className="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-300 leading-relaxed">
-                  {result.summary}
-                </div>
-              </Card>
-
-              {/* Skills Matching Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <h3 className="font-display font-bold text-2xl text-white mb-2">
+                  Awaiting Job Specification
+                </h3>
+                <p className="text-xs text-[#8F9AA9] max-w-sm leading-relaxed font-light">
+                  Paste any live role description on the left and click "Analyze Role Match" to parse matching competencies, critical gaps, and compute your empirical readiness percentage.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
                 
-                {/* Skills You Have */}
-                <Card className="p-5 border-emerald-500/20">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <h4 className="text-sm font-bold text-white">Skills You Have</h4>
-                  </div>
-                  <div className="space-y-1.5">
-                    {result.matchingSkills.map((sk) => (
-                      <div key={sk} className="text-xs text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span className="font-semibold">{sk}</span>
+                {/* Result Header Panel */}
+                <div className="border border-[#1E232F] bg-[#0B0D12] p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#1E232F]">
+                    <div>
+                      <div className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mb-1">
+                        SPECIFICATION DIAGNOSIS
                       </div>
-                    ))}
-                  </div>
-                </Card>
+                      <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                        {result.jobTitle || 'Evaluated Position'}
+                      </h3>
+                      <p className="font-mono text-xs text-gorange mt-1">
+                        {result.companyName || 'Institutional Employer'}
+                      </p>
+                    </div>
 
-                {/* Missing Skills */}
-                <Card className="p-5 border-rose-500/20">
-                  <div className="flex items-center gap-2 mb-3">
-                    <AlertTriangle className="w-4 h-4 text-rose-400" />
-                    <h4 className="text-sm font-bold text-white">Missing Skills</h4>
-                  </div>
-                  <div className="space-y-1.5">
-                    {result.missingSkills.map((sk) => (
-                      <div key={sk} className="text-xs text-rose-300 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                        <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                        <span className="font-semibold">{sk}</span>
+                    <div className="sm:text-right shrink-0">
+                      <div className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mb-1">
+                        READINESS MATCH
                       </div>
-                    ))}
+                      <div className="font-display font-extrabold text-4xl sm:text-5xl text-white font-mono">
+                        {result.readinessScore}%
+                      </div>
+                      <span className={`inline-block font-mono text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 mt-2 border ${
+                        result.readinessScore >= 70
+                          ? 'border-emerald-500/40 text-emerald-400 bg-emerald-950/20'
+                          : 'border-gorange/40 text-gorange bg-gorange/10'
+                      }`}>
+                        {result.readinessScore >= 70 ? 'STRONG ALIGNMENT' : 'CRITICAL GAPS PRESENT'}
+                      </span>
+                    </div>
                   </div>
-                </Card>
+
+                  <p className="text-xs sm:text-sm text-[#8F9AA9] mt-4 leading-relaxed font-light">
+                    {result.summary}
+                  </p>
+                </div>
+
+                {/* Comparative Breakdown Grids */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  
+                  {/* Matching Qualifications */}
+                  <div className="border border-[#1E232F] bg-[#0B0D12] p-5">
+                    <div className="flex items-center justify-between font-mono text-[11px] text-[#6B7688] uppercase tracking-wider pb-3 mb-3 border-b border-[#1E232F]">
+                      <span className="text-white font-bold">MATCHING ASSETS</span>
+                      <span className="text-emerald-400 font-bold">{result.matchingSkills?.length || 0}</span>
+                    </div>
+                    <div className="space-y-2">
+                      {(result.matchingSkills || []).map((sk) => (
+                        <div key={sk} className="font-mono text-xs text-emerald-400 bg-[#07080D] border border-emerald-500/20 p-2.5 flex items-center gap-2">
+                          <Check className="w-3.5 h-3.5 shrink-0 stroke-[3]" />
+                          <span className="truncate">{sk}</span>
+                        </div>
+                      ))}
+                      {(!result.matchingSkills || result.matchingSkills.length === 0) && (
+                        <p className="font-mono text-xs text-[#6B7688]">No matching skills detected in profile.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Deficit / Missing Skills */}
+                  <div className="border border-[#1E232F] bg-[#0B0D12] p-5">
+                    <div className="flex items-center justify-between font-mono text-[11px] text-[#6B7688] uppercase tracking-wider pb-3 mb-3 border-b border-[#1E232F]">
+                      <span className="text-white font-bold">REQUIRED DEFICITS</span>
+                      <span className="text-rose-400 font-bold">{result.missingSkills?.length || 0}</span>
+                    </div>
+                    <div className="space-y-2">
+                      {(result.missingSkills || []).map((sk) => (
+                        <div key={sk} className="font-mono text-xs text-rose-400 bg-[#07080D] border border-rose-500/20 p-2.5 flex items-center gap-2">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-rose-400" />
+                          <span className="truncate">{sk}</span>
+                        </div>
+                      ))}
+                      {(!result.missingSkills || result.missingSkills.length === 0) && (
+                        <p className="font-mono text-xs text-emerald-400">Zero critical deficits identified!</p>
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Injection CTA */}
+                {result.missingSkills && result.missingSkills.length > 0 && (
+                  <div className="border border-gorange/40 bg-[#121622] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                      <div className="font-mono text-xs text-gorange font-bold uppercase tracking-wider">
+                        UPDATE CURRICULUM
+                      </div>
+                      <p className="text-xs text-[#8F9AA9] mt-1 font-light">
+                        Inject {result.missingSkills.length} identified deficits directly into your personalized career roadmap.
+                      </p>
+                    </div>
+
+                    <EditorialButton
+                      variant="primary"
+                      size="md"
+                      onClick={handleAddSkillsToRoadmap}
+                      icon={Plus}
+                      iconPosition="left"
+                      className="w-full sm:w-auto shrink-0"
+                    >
+                      {addedNotice ? '✓ INJECTED INTO ROADMAP' : 'INJECT GAPS TO ROADMAP'}
+                    </EditorialButton>
+                  </div>
+                )}
 
               </div>
+            )}
+          </div>
 
-              {/* Dynamic Roadmap Addition CTA Button */}
-              {result.missingSkills.length > 0 && (
-                <div className="pt-2">
-                  <Button
-                    variant="glow"
-                    size="lg"
-                    onClick={handleAddSkillsToRoadmap}
-                    className="w-full"
-                    icon={Plus}
-                  >
-                    {addedNotice ? '✓ Skills Injected into Roadmap!' : 'Add these skills to my roadmap'}
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
         </div>
 
-      </div>
-
+      </EditorialShell>
     </AppLayout>
   );
 };

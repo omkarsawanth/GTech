@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Trophy, 
-  Crown, 
   Flame, 
-  Sparkles, 
-  Target, 
-  TrendingUp, 
-  CheckCircle2, 
   Search, 
   UserCheck, 
-  Lock,
-  Edit3,
-  Swords,
-  Rocket,
-  Share2,
-  Copy,
-  Check,
-  ExternalLink
+  Edit3, 
+  Swords, 
+  Share2, 
+  Copy, 
+  Check, 
+  ExternalLink 
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -29,23 +21,35 @@ import {
   CartesianGrid 
 } from 'recharts';
 import { AppLayout } from '../components/layout/AppLayout';
-import { Card, Badge, Button } from '../components/common/UIComponents';
+import { 
+  EditorialShell, 
+  EditorialHeader, 
+  EditorialButton,
+  EditorialBadge
+} from '../components/common/EditorialComponents';
 import { useApp } from '../context/AppContext';
 import { fetchLeaderboardAPI, optInLeaderboardAPI } from '../services/aiService';
+import { ALL_CAREERS } from '../data/careersData';
 
+// Select primary tracks representing diverse disciplines
 const CAREER_TRACKS = [
-  { id: 'ai-engineer', label: 'AI Engineer' },
-  { id: 'ml-engineer', label: 'ML Engineer' },
-  { id: 'fullstack-developer', label: 'Full Stack' },
-  { id: 'software-engineer', label: 'Software Engineer' },
+  { id: 'software-engineer', label: '01 / SOFTWARE' },
+  { id: 'ai-engineer', label: '02 / AI & ML' },
+  { id: 'financial-analyst', label: '03 / FINANCE' },
+  { id: 'product-designer', label: '04 / DESIGN' },
+  { id: 'clinical-operations-lead', label: '05 / HEALTHCARE' },
+  { id: 'corporate-legal-analyst', label: '06 / LAW' },
+  { id: 'robotics-engineer', label: '07 / ROBOTICS' },
+  { id: 'architectural-designer', label: '08 / ARCHITECTURE' },
 ];
 
 export const LeaderboardPage = () => {
   const { user, activeCareerProfile, currentStreak } = useApp();
 
-  const [selectedCareer, setSelectedCareer] = useState(user?.targetCareer || 'ai-engineer');
+  const [selectedCareer, setSelectedCareer] = useState(user?.targetCareer || 'software-engineer');
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isChallengeModalOpen, setIsChallengeModalOpen] = useState(false);
   const [challengeCopied, setChallengeCopied] = useState(false);
@@ -59,10 +63,9 @@ export const LeaderboardPage = () => {
     setIsLoading(true);
     try {
       const res = await fetchLeaderboardAPI(career);
-      if (res && res.leaderboard) {
+      if (res && res.leaderboard && res.leaderboard.length > 0) {
         setLeaderboardData(res.leaderboard);
       } else {
-        // Fallback local list if backend query is offline
         generateFallbackList(career);
       }
     } catch (err) {
@@ -73,13 +76,16 @@ export const LeaderboardPage = () => {
   };
 
   const generateFallbackList = (career) => {
+    const activeCareerObj = ALL_CAREERS.find(c => c.id === career) || { title: 'Engineer' };
     const list = [
-      { rank: 1, handle: '@neuralninja', readiness: 88, streak: 14, tasksCompleted: 24, isCurrentUser: false },
-      { rank: 2, handle: '@asyncwizard', readiness: 85, streak: 12, tasksCompleted: 21, isCurrentUser: false },
-      { rank: 3, handle: `@${(user?.name || 'you').toLowerCase().replace(/\s+/g, '')}`, readiness: 78, streak: currentStreak || 5, tasksCompleted: 14, isCurrentUser: true },
-      { rank: 4, handle: '@tensorsflow', readiness: 76, streak: 9, tasksCompleted: 17, isCurrentUser: false },
-      { rank: 5, handle: '@promptcraft', readiness: 72, streak: 7, tasksCompleted: 15, isCurrentUser: false },
-      { rank: 6, handle: '@matrixrider', readiness: 68, streak: 4, tasksCompleted: 11, isCurrentUser: false },
+      { rank: 1, handle: '@quant_master', readiness: 92, streak: 18, tasksCompleted: 34, isCurrentUser: false },
+      { rank: 2, handle: '@axiom_builder', readiness: 87, streak: 14, tasksCompleted: 28, isCurrentUser: false },
+      { rank: 3, handle: `@${(user?.name || 'you').toLowerCase().replace(/\s+/g, '')}`, readiness: 78, streak: currentStreak || 7, tasksCompleted: 19, isCurrentUser: true },
+      { rank: 4, handle: '@vector_scribe', readiness: 75, streak: 11, tasksCompleted: 22, isCurrentUser: false },
+      { rank: 5, handle: '@systemic_lead', readiness: 71, streak: 9, tasksCompleted: 16, isCurrentUser: false },
+      { rank: 6, handle: '@benchmark_dev', readiness: 68, streak: 6, tasksCompleted: 13, isCurrentUser: false },
+      { rank: 7, handle: '@rigorous_proto', readiness: 64, streak: 5, tasksCompleted: 11, isCurrentUser: false },
+      { rank: 8, handle: '@evidence_forge', readiness: 61, streak: 3, tasksCompleted: 8, isCurrentUser: false },
     ];
     setLeaderboardData(list);
   };
@@ -96,6 +102,10 @@ export const LeaderboardPage = () => {
   };
 
   const topThree = leaderboardData.slice(0, 3);
+  const filteredData = leaderboardData.filter(item => 
+    item.handle.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const chartData = leaderboardData.slice(0, 8).map(item => ({
     name: item.handle.length > 12 ? item.handle.slice(0, 10) + '..' : item.handle,
     readiness: item.readiness,
@@ -104,416 +114,368 @@ export const LeaderboardPage = () => {
 
   return (
     <AppLayout>
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-slate-800 gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-solar-amber uppercase tracking-wider mb-1 font-mono">
-            <Trophy className="w-4 h-4 text-solar-amber" /> Global Cohort Standings
-          </div>
-          <h1 className="text-3xl font-display font-extrabold text-white tracking-tight">
-            Peer Readiness Leaderboard
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Compare verified skill mastery and consistency streaks against peers targeting the same role.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          <Button
-            variant="solar"
-            size="md"
+      <EditorialShell>
+        
+        {/* Editorial Header */}
+        <EditorialHeader
+          index="08"
+          tag="EMPIRICAL TALENT REGISTRY"
+          title="Cohort Standings."
+          subtitle="Empirical candidate benchmarks comparing verified competency readiness, consistency streaks, and completed evidence deliverables."
+        >
+          <EditorialButton
+            variant="secondary"
+            size="sm"
             onClick={() => setIsChallengeModalOpen(true)}
-            className="text-xs font-display font-bold shadow-lg shadow-rose-950/40"
+            icon={Swords}
+            iconPosition="left"
           >
-            <Swords className="w-3.5 h-3.5 mr-1.5" />
-            Challenge a Friend 🥊
-          </Button>
+            CHALLENGE PEER
+          </EditorialButton>
 
-          <Button
+          <EditorialButton
             variant="outline"
-            size="md"
+            size="sm"
             onClick={() => setIsEditModalOpen(true)}
-            className="text-xs"
+            icon={Edit3}
+            iconPosition="left"
           >
-            <Edit3 className="w-3.5 h-3.5 mr-1.5" />
-            Set My Handle
-          </Button>
-        </div>
-      </div>
+            EDIT HANDLE
+          </EditorialButton>
+        </EditorialHeader>
 
-      {/* Career Filter Pills */}
-      <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
-        {CAREER_TRACKS.map((track) => (
-          <button
-            key={track.id}
-            onClick={() => setSelectedCareer(track.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-display font-semibold transition-all whitespace-nowrap ${
-              selectedCareer === track.id
-                ? 'bg-gradient-to-r from-solar-coral to-solar-amber text-white shadow-lg shadow-rose-950/40'
-                : 'bg-dark-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
-            }`}
-          >
-            {track.label}
-          </button>
-        ))}
-      </div>
-
-      {/* PODIUM SECTION FOR TOP 3 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
-        {/* 2nd Place */}
-        {topThree[1] && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="order-2 md:order-1"
-          >
-            <Card hover className="p-6 text-center border-slate-700/60 relative overflow-hidden bg-gradient-to-b from-dark-900 via-dark-900/90 to-dark-950">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-slate-800 border border-slate-600 flex items-center justify-center text-slate-300 font-display font-extrabold text-lg shadow-lg">
-                2
-              </div>
-              <Badge variant="slate" size="sm" className="mb-2 font-mono text-[10px]">
-                SILVER TIER
-              </Badge>
-              <h3 className="text-lg font-display font-bold text-white truncate">
-                {topThree[1].handle}
-              </h3>
-              <div className="text-2xl font-bold font-mono text-slate-200 mt-2">
-                {topThree[1].readiness}%
-              </div>
-              <div className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1">
-                <Flame className="w-3.5 h-3.5 text-solar-amber" /> {topThree[1].streak} Day Streak
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* 1st Place (Winner) */}
-        {topThree[0] && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="order-1 md:order-2 md:-mt-4"
-          >
-            <Card hover className="p-7 text-center border-solar-coral/50 relative overflow-hidden bg-gradient-to-b from-solar-coral/15 via-dark-900 to-dark-950 shadow-2xl shadow-rose-950/30">
-              <div className="absolute top-2 right-2">
-                <Crown className="w-6 h-6 text-solar-amber animate-bounce" />
-              </div>
-              <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-solar-coral to-solar-amber flex items-center justify-center text-white font-display font-extrabold text-xl shadow-xl shadow-rose-950/50">
-                1
-              </div>
-              <Badge variant="coral" size="sm" className="mb-2 font-mono text-[10px] tracking-wider animate-pulse">
-                TOP COHORT LEADER
-              </Badge>
-              <h3 className="text-xl font-display font-bold text-white truncate">
-                {topThree[0].handle}
-              </h3>
-              <div className="text-3xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-solar-coral to-solar-amber mt-2">
-                {topThree[0].readiness}%
-              </div>
-              <div className="text-xs text-slate-300 mt-1 flex items-center justify-center gap-1 font-medium">
-                <Flame className="w-4 h-4 text-solar-amber" /> {topThree[0].streak} Day Streak
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* 3rd Place */}
-        {topThree[2] && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="order-3"
-          >
-            <Card hover className="p-6 text-center border-solar-amber/30 relative overflow-hidden bg-gradient-to-b from-dark-900 via-dark-900/90 to-dark-950">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-solar-amber/20 border border-solar-amber/40 flex items-center justify-center text-solar-amber font-display font-extrabold text-lg shadow-lg">
-                3
-              </div>
-              <Badge variant="amber" size="sm" className="mb-2 font-mono text-[10px]">
-                BRONZE TIER
-              </Badge>
-              <h3 className="text-lg font-display font-bold text-white truncate">
-                {topThree[2].handle}
-              </h3>
-              <div className="text-2xl font-bold font-mono text-solar-amber mt-2">
-                {topThree[2].readiness}%
-              </div>
-              <div className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1">
-                <Flame className="w-3.5 h-3.5 text-solar-amber" /> {topThree[2].streak} Day Streak
-              </div>
-            </Card>
-          </motion.div>
-        )}
-      </div>
-
-      {/* RECHARTS COMPARISON BAR CHART */}
-      <Card hover className="p-6 mb-10 border-solar-coral/20">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-lg font-display font-bold text-white flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-solar-coral" />
-              Cohort Benchmark Comparison
-            </h3>
-            <p className="text-xs text-slate-400 mt-0.5">Top 8 Candidates by Verified Readiness Score</p>
-          </div>
-          <Badge variant="coral" size="sm">Live Rankings</Badge>
-        </div>
-
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1c2333" />
-              <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={11} domain={[0, 100]} tickLine={false} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#0B0D14',
-                  borderColor: '#FF336640',
-                  borderRadius: '12px',
-                  color: '#F8FAFC',
-                  fontSize: '12px'
-                }}
-              />
-              <Bar 
-                dataKey="readiness" 
-                name="Readiness %" 
-                fill="#FF3366" 
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-
-      {/* THIS WEEK'S CLIMBERS MINI-SECTION */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <Rocket className="w-4 h-4 text-solar-coral animate-pulse" />
-          <h3 className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
-            This Week's Biggest Climbers
-          </h3>
-          <Badge variant="coral" size="sm" className="font-mono text-[9px]">SURGING</Badge>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            { handle: leaderboardData[0]?.handle || '@neuralninja', climb: '+9 spots', readiness: leaderboardData[0]?.readiness || 88, tag: '⚡ Top Accelerator' },
-            { handle: leaderboardData[1]?.handle || '@asyncwizard', climb: '+6 spots', readiness: leaderboardData[1]?.readiness || 85, tag: '🔥 Daily Habit' },
-            { handle: `@${(user?.displayHandle || user?.name || 'you').toLowerCase().replace(/^@/, '')}`, climb: '+5 spots', readiness: 78, tag: '🚀 Surging (You)', isCurrent: true }
-          ].map((climber, idx) => (
-            <div 
-              key={idx}
-              className={`p-3.5 rounded-xl border flex items-center justify-between ${
-                climber.isCurrent 
-                  ? 'bg-gradient-to-r from-solar-coral/20 to-dark-900 border-solar-coral shadow-lg shadow-rose-950/30 ring-1 ring-solar-coral/40'
-                  : 'bg-dark-900/70 border-slate-800'
+        {/* Discipline Filter Row */}
+        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 border-b border-[#1E232F]">
+          <span className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mr-2 shrink-0">
+            DISCIPLINE:
+          </span>
+          {CAREER_TRACKS.map((track) => (
+            <button
+              key={track.id}
+              onClick={() => setSelectedCareer(track.id)}
+              className={`px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors shrink-0 ${
+                selectedCareer === track.id
+                  ? 'bg-white text-black font-bold'
+                  : 'bg-[#0B0D12] text-[#8F9AA9] border border-[#1E232F] hover:border-[#384152] hover:text-white'
               }`}
             >
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-display font-bold text-white text-xs">{climber.handle}</span>
-                  {climber.isCurrent && <span className="text-[9px] px-1.5 py-0.2 rounded bg-solar-coral text-white font-mono font-bold">YOU</span>}
-                </div>
-                <div className="text-[10px] text-slate-400 mt-0.5">{climber.tag}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-0.5 justify-end">
-                  <Rocket className="w-3 h-3" /> {climber.climb}
-                </div>
-                <div className="text-[10px] text-slate-400">{climber.readiness}% score</div>
-              </div>
-            </div>
+              {track.label}
+            </button>
           ))}
         </div>
-      </div>
 
-      {/* FULL RANKINGS LIST */}
-      <div className="space-y-3">
-        <h3 className="text-base font-display font-bold text-white mb-4">Complete Cohort Standings</h3>
-
-        {leaderboardData.map((peer) => (
-          <div
-            key={peer.handle + peer.rank}
-            className={`p-4 rounded-xl border flex items-center justify-between gap-4 transition-all ${
-              peer.isCurrentUser
-                ? 'bg-gradient-to-r from-solar-coral/25 via-dark-900 to-dark-950 border-2 border-solar-coral shadow-[0_0_25px_rgba(255,51,102,0.45)] ring-1 ring-solar-coral/50'
-                : 'bg-dark-900/60 border-slate-800/80 hover:border-slate-700'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono font-bold text-sm ${
-                peer.rank === 1 ? 'bg-solar-amber text-dark-950' : peer.rank === 2 ? 'bg-slate-300 text-dark-950' : peer.rank === 3 ? 'bg-amber-600 text-white' : 'bg-dark-950 text-slate-400 border border-slate-800'
-              }`}>
-                {peer.rank}
-              </div>
-
+        {/* TOP 3 PODIUM */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          
+          {/* 2nd Place */}
+          {topThree[1] && (
+            <div className="border border-[#1E232F] bg-[#0B0D12] p-6 flex flex-col justify-between order-2 md:order-1">
               <div>
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E232F] font-mono text-[11px]">
+                  <span className="text-[#8F9AA9]">RANK 02 // SILVER</span>
+                  <span className="text-[#6B7688]">{topThree[1].tasksCompleted} TASKS</span>
+                </div>
+                <div className="font-mono text-4xl text-[#8F9AA9] font-extrabold mb-1">02</div>
+                <h3 className="font-mono text-lg font-bold text-white truncate">
+                  {topThree[1].handle}
+                </h3>
+              </div>
+              <div className="pt-6 mt-6 border-t border-[#1E232F] flex items-center justify-between font-mono text-xs">
+                <div>
+                  <div className="text-[10px] text-[#6B7688] uppercase">READINESS</div>
+                  <div className="text-2xl text-white font-bold">{topThree[1].readiness}%</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] text-[#6B7688] uppercase">CONSISTENCY</div>
+                  <div className="text-white">{topThree[1].streak}d streak</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 1st Place (Winner) */}
+          {topThree[0] && (
+            <div className="border-2 border-gorange bg-[#121622] p-6 flex flex-col justify-between order-1 md:order-2">
+              <div>
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E232F] font-mono text-[11px]">
+                  <span className="text-gorange font-bold uppercase tracking-wider">RANK 01 // LEADER</span>
+                  <span className="text-[#8F9AA9]">{topThree[0].tasksCompleted} EVIDENCE TASKS</span>
+                </div>
+                <div className="font-mono text-5xl text-gorange font-extrabold mb-1">01</div>
+                <h3 className="font-mono text-xl font-bold text-white truncate">
+                  {topThree[0].handle}
+                </h3>
+              </div>
+              <div className="pt-6 mt-6 border-t border-[#1E232F] flex items-center justify-between font-mono text-xs">
+                <div>
+                  <div className="text-[10px] text-gorange uppercase tracking-wider">READINESS</div>
+                  <div className="text-3xl text-white font-bold">{topThree[0].readiness}%</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] text-[#6B7688] uppercase">CONSISTENCY</div>
+                  <div className="text-gorange font-bold">{topThree[0].streak}d active streak</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3rd Place */}
+          {topThree[2] && (
+            <div className={`border p-6 flex flex-col justify-between order-3 ${
+              topThree[2].isCurrentUser 
+                ? 'border-[#2D3748] bg-[#0E121B]' 
+                : 'border-[#1E232F] bg-[#0B0D12]'
+            }`}>
+              <div>
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E232F] font-mono text-[11px]">
+                  <span className="text-[#8F9AA9]">RANK 03 // BRONZE</span>
+                  <span className="text-[#6B7688]">{topThree[2].tasksCompleted} TASKS</span>
+                </div>
+                <div className="font-mono text-4xl text-[#8F9AA9] font-extrabold mb-1">03</div>
                 <div className="flex items-center gap-2">
-                  <span className="font-display font-bold text-white text-sm">
-                    {peer.handle}
-                  </span>
-                  {peer.isCurrentUser && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-solar-coral text-white font-extrabold shadow-sm animate-pulse">
-                      YOU • RANK #{peer.rank}
-                    </span>
+                  <h3 className="font-mono text-lg font-bold text-white truncate">
+                    {topThree[2].handle}
+                  </h3>
+                  {topThree[2].isCurrentUser && (
+                    <span className="font-mono text-[9px] bg-gorange text-black font-bold px-1.5 py-0.5">YOU</span>
                   )}
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-3">
-                  <span>{peer.tasksCompleted || 12} tasks done</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1 text-solar-amber">
-                    <Flame className="w-3 h-3" /> {peer.streak}d streak
-                  </span>
+              </div>
+              <div className="pt-6 mt-6 border-t border-[#1E232F] flex items-center justify-between font-mono text-xs">
+                <div>
+                  <div className="text-[10px] text-[#6B7688] uppercase">READINESS</div>
+                  <div className="text-2xl text-white font-bold">{topThree[2].readiness}%</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] text-[#6B7688] uppercase">CONSISTENCY</div>
+                  <div className="text-white">{topThree[2].streak}d streak</div>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="text-right">
-              <div className="text-lg font-bold font-mono text-white">
-                {peer.readiness}%
-              </div>
-              <div className="text-[10px] text-slate-400">Readiness</div>
+        </div>
+
+        {/* CANDIDATE REGISTRY DIRECTORY TABLE */}
+        <div className="border border-[#1E232F] bg-[#0B0D12] mb-12">
+          
+          {/* Table Header Bar with Search */}
+          <div className="p-4 sm:p-6 border-b border-[#1E232F] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="font-mono text-xs uppercase tracking-wider text-white font-bold flex items-center gap-2">
+              <span className="w-2 h-2 bg-gorange inline-block" />
+              <span>CANDIDATE DIRECTORY // VERIFIED COHORT ({filteredData.length})</span>
+            </div>
+
+            <div className="w-full sm:w-64 relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="FILTER BY HANDLE..."
+                className="w-full px-3 py-1.5 bg-[#07080D] border border-[#1E232F] text-xs font-mono text-white placeholder-[#4B5565] focus:outline-none focus:border-gorange"
+              />
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Challenge a Friend Modal */}
-      {isChallengeModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/85 backdrop-blur-md">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md p-6 rounded-2xl bg-dark-900 border border-solar-coral/30 shadow-2xl relative"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase text-solar-coral font-bold">
-                <Swords className="w-4 h-4" /> Challenge a Peer
-              </div>
-              <button
-                onClick={() => setIsChallengeModalOpen(false)}
-                className="text-slate-400 hover:text-white text-sm p-1"
+          {/* Tabular Header */}
+          <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-3 border-b border-[#1E232F] font-mono text-[10px] uppercase text-[#6B7688] tracking-wider">
+            <div className="col-span-1">RANK</div>
+            <div className="col-span-4">CANDIDATE SPECIFICATION</div>
+            <div className="col-span-3">READINESS SCORE</div>
+            <div className="col-span-2">CONSISTENCY</div>
+            <div className="col-span-2 text-right">EVIDENCE DELIVERED</div>
+          </div>
+
+          {/* Table Rows */}
+          <div className="divide-y divide-[#1E232F]">
+            {filteredData.map((item) => (
+              <div
+                key={item.rank}
+                className={`grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 px-6 py-4 items-center transition-colors font-mono text-xs ${
+                  item.isCurrentUser 
+                    ? 'bg-[#121622] border-l-2 border-l-gorange' 
+                    : 'hover:bg-[#0E1118]'
+                }`}
               >
-                ✕
-              </button>
-            </div>
+                <div className="col-span-1 text-[#8F9AA9] font-bold">
+                  #{String(item.rank).padStart(2, '0')}
+                </div>
+                
+                <div className="col-span-4 flex items-center gap-2">
+                  <span className={`font-bold ${item.isCurrentUser ? 'text-gorange' : 'text-white'}`}>
+                    {item.handle}
+                  </span>
+                  {item.isCurrentUser && (
+                    <span className="text-[9px] bg-gorange text-black font-bold px-1.5 py-0.5">YOU</span>
+                  )}
+                </div>
 
-            <h3 className="text-xl font-display font-black text-white mb-1">
-              Call Out a Friend 🥊
-            </h3>
-            <p className="text-xs text-slate-400 mb-5 leading-relaxed">
-              Share your custom challenge link. When they onboard on GTech, they'll be tasked with beating your rank on the leaderboard!
-            </p>
+                <div className="col-span-3 flex items-center gap-3">
+                  <div className="w-24 h-1 bg-[#1E232F] hidden sm:block">
+                    <div
+                      className={`h-full ${item.isCurrentUser ? 'bg-gorange' : 'bg-white'}`}
+                      style={{ width: `${item.readiness}%` }}
+                    />
+                  </div>
+                  <span className="text-white font-bold">{item.readiness}%</span>
+                </div>
 
-            <div className="p-3.5 rounded-xl bg-dark-950 border border-slate-800 mb-5 space-y-2">
-              <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Your Challenge Link</div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-mono text-solar-amber truncate">
-                  {`${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=${topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3}`}
-                </span>
-                <button
-                  onClick={() => {
-                    const rankNum = topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3;
-                    const url = `${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=${rankNum}`;
-                    navigator.clipboard.writeText(url);
-                    setChallengeCopied(true);
-                    setTimeout(() => setChallengeCopied(false), 2500);
-                  }}
-                  className="px-3 py-1.5 rounded-lg bg-dark-900 border border-slate-700 hover:border-solar-coral text-xs font-mono text-white flex items-center gap-1.5 transition-all shrink-0"
-                >
-                  {challengeCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  {challengeCopied ? 'Copied!' : 'Copy'}
-                </button>
+                <div className="col-span-2 text-[#8F9AA9]">
+                  {item.streak} days active
+                </div>
+
+                <div className="col-span-2 sm:text-right text-[#8F9AA9]">
+                  {item.tasksCompleted} units verified
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
 
-            {/* Direct Social Share Buttons */}
-            <div className="space-y-2 mb-4">
-              <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-2">1-Click Share</div>
-              <div className="grid grid-cols-2 gap-2.5">
-                <a
-                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                    `🥊 Think you can beat my rank on the GTech leaderboard? I'm currently holding Rank #${
-                      topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3
-                    }! Take the challenge here: ${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=3`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-300 text-xs font-display font-semibold flex items-center justify-center gap-2 transition-all"
-                >
-                  <span>WhatsApp</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                    `🥊 Just took Rank #${
-                      topThree.findIndex(p => p.isCurrentUser) !== -1 ? topThree.findIndex(p => p.isCurrentUser) + 1 : 3
-                    } on @GTech_AI! Challenge me to see who reaches 100% readiness first: ${window.location.origin}/onboarding?ref=${encodeURIComponent((displayHandle || 'peer').replace(/^@/, ''))}&rank=3`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/30 hover:bg-sky-500/20 text-sky-300 text-xs font-display font-semibold flex items-center justify-center gap-2 transition-all"
-                >
-                  <span>Twitter / X</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsChallengeModalOpen(false)}
-              className="w-full text-xs text-slate-400"
-            >
-              Close
-            </Button>
-          </motion.div>
         </div>
-      )}
 
-      {/* Edit Handle Modal */}
+        {/* DISTRIBUTION COMPARISON CHART */}
+        <div className="border border-[#1E232F] bg-[#0B0D12] p-6 mb-16">
+          <div className="font-mono text-xs text-[#6B7688] uppercase tracking-wider pb-4 mb-6 border-b border-[#1E232F]">
+            TOP 8 READINESS DISTRIBUTION // {selectedCareer.toUpperCase()}
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1E232F" vertical={false} />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="#6B7688" 
+                  fontSize={11} 
+                  fontFamily="monospace"
+                  tickLine={false}
+                />
+                <YAxis 
+                  stroke="#6B7688" 
+                  fontSize={11} 
+                  fontFamily="monospace"
+                  domain={[0, 100]}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#07080D',
+                    borderColor: '#1E232F',
+                    borderRadius: '0px',
+                    fontFamily: 'monospace',
+                    fontSize: '12px'
+                  }}
+                  itemStyle={{ color: '#FF4D00' }}
+                />
+                <Bar 
+                  dataKey="readiness" 
+                  fill="#FF4D00" 
+                  radius={[0, 0, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+      </EditorialShell>
+
+      {/* EDIT HANDLE MODAL */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md p-6 rounded-2xl bg-dark-900 border border-solar-coral/30 shadow-2xl"
-          >
-            <h3 className="text-lg font-display font-bold text-white mb-1">Set Leaderboard Display Handle</h3>
-            <p className="text-xs text-slate-400 mb-5">Keep your identity private with a cool anonymous handle.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="border border-[#1E232F] bg-[#0B0D12] p-6 sm:p-8 max-w-md w-full">
+            <div className="font-mono text-xs text-gorange uppercase tracking-wider mb-2">
+              [ PROFILE CONFIGURATION ]
+            </div>
+            <h3 className="font-display font-bold text-2xl text-white mb-2">
+              Configure Public Handle
+            </h3>
+            <p className="text-xs text-[#8F9AA9] font-light mb-6">
+              Enter your public handle to appear in the global cohort standings.
+            </p>
 
             <form onSubmit={handleSaveHandle} className="space-y-4">
               <div>
-                <label className="block text-xs font-mono text-slate-300 mb-1.5 uppercase">Display Handle</label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">@</span>
+                <label className="block font-mono text-[10px] uppercase text-[#6B7688] tracking-widest mb-1">
+                  HANDLE / SPECIFIER
+                </label>
+                <div className="flex items-center bg-[#07080D] border border-[#1E232F] px-3 py-2">
+                  <span className="text-[#6B7688] font-mono mr-1">@</span>
                   <input
                     type="text"
                     value={displayHandle.replace(/^@/, '')}
                     onChange={(e) => setDisplayHandle(e.target.value)}
-                    placeholder="cyber_coder"
-                    className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-dark-950 border border-slate-800 text-white font-mono text-sm focus:outline-none focus:border-solar-coral"
-                    maxLength={20}
+                    className="w-full bg-transparent text-white font-mono text-xs focus:outline-none"
+                    placeholder="architect_one"
+                    required
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
-                <Button variant="secondary" size="sm" type="button" onClick={() => setIsEditModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button variant="solar" size="sm" type="submit">
-                  Save Handle
-                </Button>
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1E232F]">
+                <EditorialButton
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  CANCEL
+                </EditorialButton>
+                <EditorialButton
+                  variant="primary"
+                  size="sm"
+                  type="submit"
+                >
+                  CONFIRM HANDLE
+                </EditorialButton>
               </div>
             </form>
-          </motion.div>
+          </div>
         </div>
       )}
+
+      {/* CHALLENGE PEER MODAL */}
+      {isChallengeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="border border-[#1E232F] bg-[#0B0D12] p-6 sm:p-8 max-w-md w-full">
+            <div className="font-mono text-xs text-gorange uppercase tracking-wider mb-2">
+              [ PEER BENCHMARK CHALLENGE ]
+            </div>
+            <h3 className="font-display font-bold text-2xl text-white mb-2">
+              Challenge a Peer
+            </h3>
+            <p className="text-xs text-[#8F9AA9] font-light mb-6">
+              Share this direct benchmark invitation. Track consistency, task completion velocity, and skill scores side-by-side.
+            </p>
+
+            <div className="border border-[#1E232F] bg-[#07080D] p-3 mb-6 font-mono text-xs text-[#8F9AA9] break-all">
+              {window.location.origin}/signup?ref={(user?.name || 'peer').toLowerCase().replace(/\s+/g, '')}&track={selectedCareer}
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <EditorialButton
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsChallengeModalOpen(false)}
+              >
+                CLOSE
+              </EditorialButton>
+              <EditorialButton
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/signup?ref=${(user?.name || 'peer').toLowerCase().replace(/\s+/g, '')}&track=${selectedCareer}`);
+                  setChallengeCopied(true);
+                  setTimeout(() => setChallengeCopied(false), 2000);
+                }}
+                icon={challengeCopied ? Check : Copy}
+                iconPosition="left"
+              >
+                {challengeCopied ? 'LINK COPIED' : 'COPY INVITE LINK'}
+              </EditorialButton>
+            </div>
+          </div>
+        </div>
+      )}
+
     </AppLayout>
   );
 };

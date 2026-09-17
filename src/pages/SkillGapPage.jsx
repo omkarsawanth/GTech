@@ -1,183 +1,230 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
-  Target, 
-  CheckCircle2, 
-  AlertTriangle, 
+  ArrowRight, 
   ArrowUpRight, 
   Plus, 
-  BrainCircuit, 
-  Sparkles,
-  BookOpen
+  Check, 
+  AlertTriangle, 
+  TrendingUp, 
+  Compass, 
+  Target 
 } from 'lucide-react';
 import { AppLayout } from '../components/layout/AppLayout';
-import { Card, Badge, ProgressBar, Button } from '../components/common/UIComponents';
+import { 
+  EditorialShell, 
+  EditorialHeader, 
+  EditorialSection, 
+  EditorialPanel, 
+  EditorialButton, 
+  EditorialProgress, 
+  EditorialBadge 
+} from '../components/common/EditorialComponents';
 import { useApp } from '../context/AppContext';
 
 export const SkillGapPage = () => {
   const { activeCareerProfile, analysisResult, addSkillsToRoadmap } = useApp();
   const navigate = useNavigate();
 
-  const strongSkills = analysisResult?.strongSkills || [];
-  const developingSkills = analysisResult?.developingSkills || [];
-  const criticalGaps = analysisResult?.criticalGaps || [];
+  const skillChartData = analysisResult?.skillChartData || (activeCareerProfile?.requiredSkills || []).map(s => ({
+    skill: s.name,
+    currentLevel: s.baselineLevel || 40,
+    requiredLevel: s.requiredLevel || 85,
+    gap: Math.max(0, (s.requiredLevel || 85) - (s.baselineLevel || 40)),
+    importance: s.importance || 'High'
+  }));
+
+  const [selectedSkillIndex, setSelectedSkillIndex] = useState(0);
+  const [addedNotice, setAddedNotice] = useState(false);
+
+  const selectedSkill = skillChartData[selectedSkillIndex] || skillChartData[0];
 
   const handleAddGapToRoadmap = (skillName) => {
     addSkillsToRoadmap(skillName);
-    navigate('/roadmap');
+    setAddedNotice(true);
+    setTimeout(() => setAddedNotice(false), 2500);
   };
 
   return (
     <AppLayout>
-      
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-slate-800 gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-rose-400 uppercase tracking-wider mb-1">
-            <Target className="w-3.5 h-3.5" /> AI Skill Gap Analysis Matrix
-          </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Skill Gaps & Prerequisite Analysis
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Categorized breakdown for <span className="text-purple-300 font-semibold">{activeCareerProfile?.title || 'AI Engineer'}</span> based on your assessment results.
-          </p>
-        </div>
-
-        <Button
-          variant="glow"
-          size="md"
-          onClick={() => navigate('/roadmap')}
-          icon={ArrowUpRight}
-          iconPosition="right"
+      <EditorialShell>
+        
+        {/* Header */}
+        <EditorialHeader
+          index="03"
+          tag="SKILL GAP"
+          title="WHERE THE DISTANCE IS."
+          subtitle={`Interactive analytical breakdown comparing your current evaluated baseline against verified professional benchmarks for ${activeCareerProfile?.title}.`}
         >
-          Go to Personalized Roadmap
-        </Button>
-      </div>
+          <EditorialButton
+            variant="primary"
+            size="md"
+            onClick={() => navigate('/roadmap')}
+            icon={ArrowRight}
+          >
+            Personalized Roadmap
+          </EditorialButton>
+        </EditorialHeader>
 
-      {/* SECTION 1: YOUR BIGGEST GAPS (CRITICAL PRIORITIES) */}
-      <div className="mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white tracking-tight">Your Biggest Gaps</h2>
-              <p className="text-xs text-slate-400">High-priority skill missing requirements requiring immediate attention</p>
+        {/* Analytical Scoreboard */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10 font-mono">
+          <div className="p-4 bg-[#0B0D12] border border-[#1E232F]">
+            <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">TARGET CAREER</div>
+            <div className="text-base sm:text-lg font-bold text-white mt-1 truncate">
+              {activeCareerProfile?.title}
             </div>
           </div>
-          <Badge variant="red" size="md font-mono font-bold">{criticalGaps.length} Critical Gaps</Badge>
+
+          <div className="p-4 bg-[#0B0D12] border border-[#1E232F]">
+            <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">CURRENT READINESS</div>
+            <div className="text-2xl font-bold text-gorange mt-0.5">
+              {analysisResult?.readinessScore || 64}%
+            </div>
+          </div>
+
+          <div className="p-4 bg-[#0B0D12] border border-[#1E232F]">
+            <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">TOTAL BENCHMARKS</div>
+            <div className="text-2xl font-bold text-white mt-0.5">
+              {skillChartData.length} Competencies
+            </div>
+          </div>
+
+          <div className="p-4 bg-[#0B0D12] border border-[#1E232F]">
+            <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">EVIDENCE GOAL</div>
+            <div className="text-xs font-semibold text-white mt-1 truncate">
+              {activeCareerProfile?.evidenceType || 'Casework Artifacts'}
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {criticalGaps.map((item) => (
-            <Card key={item.skill} hover className="p-5 border-rose-500/20 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <Badge variant="red" size="sm">
-                    {item.importance || 'Critical'}
-                  </Badge>
-                  <span className="text-xs font-bold text-rose-400 font-mono">
-                    -{item.gap}% Gap
-                  </span>
+        {/* Master Comparison: Table + Selected Skill Inspection */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* Left: Full Skills Matrix Table */}
+          <div className="lg:col-span-7 space-y-2">
+            <div className="font-mono text-xs uppercase tracking-[0.2em] text-[#6B7688] pb-3 border-b border-[#1E232F] flex items-center justify-between">
+              <span>COMPETENCY EVALUATION</span>
+              <span>GAP DELTA</span>
+            </div>
+
+            <div className="space-y-2">
+              {skillChartData.map((item, idx) => {
+                const isSelected = idx === selectedSkillIndex;
+                const deficit = Math.max(0, item.requiredLevel - item.currentLevel);
+
+                return (
+                  <div
+                    key={item.skill}
+                    onClick={() => setSelectedSkillIndex(idx)}
+                    className={`p-4 border cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-[#10131A] border-gorange text-white'
+                        : 'bg-[#0B0D12] border-[#1E232F] text-[#8F9AA9] hover:border-[#2B3242] hover:text-white'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-xs mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#566173]">0{idx + 1}</span>
+                        <span className="font-sans font-semibold text-sm text-white">{item.skill}</span>
+                        <span className="text-[9px] px-1.5 py-0.5 bg-[#141822] text-[#8F9AA9] border border-[#202736]">
+                          {item.importance || 'High'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-[11px]">
+                        <span>CURRENT {item.currentLevel}%</span>
+                        <span className="text-[#566173]">|</span>
+                        <span className="text-white">REQ {item.requiredLevel}%</span>
+                        <span className="text-[#566173]">|</span>
+                        <span className={deficit > 25 ? 'text-gorange font-bold' : 'text-emerald-400 font-bold'}>
+                          -{deficit}%
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Differential Visual Line */}
+                    <div className="w-full bg-[#141822] h-1.5 border border-[#1E232F] overflow-hidden">
+                      <div
+                        className="bg-gorange h-full transition-all duration-300"
+                        style={{ width: `${Math.round((item.currentLevel / item.requiredLevel) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right: Selected Skill Deep-Dive Inspector */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-24 p-8 bg-[#0B0D12] border border-[#1E232F]">
+              <div className="font-mono text-[10px] text-gorange uppercase tracking-widest mb-2">
+                [ COMPETENCY DRILLDOWN ]
+              </div>
+
+              <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                {selectedSkill.skill}
+              </h2>
+
+              <div className="mt-4 pb-4 border-b border-[#1E232F] font-mono text-xs text-[#8F9AA9] flex items-center justify-between">
+                <span>EVALUATED GAP: <strong className="text-gorange font-bold">-{selectedSkill.gap}%</strong></span>
+                <span>PRIORITY: <strong className="text-white">{selectedSkill.importance || 'Critical'}</strong></span>
+              </div>
+
+              {/* Why it Matters */}
+              <div className="my-6">
+                <div className="font-mono text-[10px] text-[#6B7688] uppercase tracking-widest mb-1.5">
+                  WHY THIS MATTERS
                 </div>
-
-                <h3 className="text-lg font-bold text-white mb-1">{item.skill}</h3>
-                <p className="text-xs text-slate-400 mb-4">
-                  Current level {item.currentLevel}% vs required target {item.requiredLevel}%
+                <p className="text-sm text-[#C8CFDB] font-light leading-relaxed">
+                  In {activeCareerProfile?.title}, proficiency in {selectedSkill.skill} directly impacts institutional execution, regulatory credibility, and compensation tiers. Closing this {selectedSkill.gap}% delta elevates your competitive percentile.
                 </p>
+              </div>
 
-                <ProgressBar
-                  progress={Math.round((item.currentLevel / item.requiredLevel) * 100)}
-                  color="rose"
-                  showText
-                  label="Role Benchmark"
+              {/* Benchmark comparison bar */}
+              <div className="my-6 p-4 bg-[#08090E] border border-[#161B24]">
+                <EditorialProgress
+                  current={selectedSkill.currentLevel}
+                  target={selectedSkill.requiredLevel}
+                  label="EVALUATION PROGRESS"
+                  showValues
                 />
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-800">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs"
-                  onClick={() => handleAddGapToRoadmap(item.skill)}
+              {/* Notification when added to roadmap */}
+              {addedNotice && (
+                <div className="mb-4 p-3 bg-emerald-950/40 border border-emerald-800 text-emerald-300 font-mono text-xs flex items-center gap-2">
+                  <Check className="w-4 h-4" />
+                  <span>Added {selectedSkill.skill} module directly to your active roadmap.</span>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="mt-8 pt-6 border-t border-[#1E232F] flex flex-col gap-3">
+                <EditorialButton
+                  variant="primary"
+                  size="md"
+                  onClick={() => handleAddGapToRoadmap(selectedSkill.skill)}
                   icon={Plus}
                 >
-                  Add to My Roadmap
-                </Button>
+                  Add Gap Fix to Roadmap
+                </EditorialButton>
+
+                <EditorialButton
+                  variant="outline"
+                  size="md"
+                  onClick={() => navigate('/roadmap')}
+                >
+                  View Active Roadmap
+                </EditorialButton>
               </div>
-            </Card>
-          ))}
-        </div>
-      </div>
 
-      {/* SECTION 2: DEVELOPING SKILLS */}
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
-            <BrainCircuit className="w-5 h-5" />
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">Developing Skills</h2>
-            <p className="text-xs text-slate-400">Moderate proficiency — requires refinement to meet senior target standards</p>
-          </div>
+
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {developingSkills.map((item) => (
-            <Card key={item.skill} hover className="p-5 border-cyan-500/20">
-              <div className="flex items-center justify-between mb-3">
-                <Badge variant="cyan" size="sm">Developing</Badge>
-                <span className="text-xs font-semibold text-cyan-300 font-mono">
-                  {item.currentLevel}% / {item.requiredLevel}%
-                </span>
-              </div>
-              <h3 className="text-base font-bold text-white mb-2">{item.skill}</h3>
-              <ProgressBar
-                progress={Math.round((item.currentLevel / item.requiredLevel) * 100)}
-                color="cyan"
-                showText
-                label="Target Completion"
-              />
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* SECTION 3: STRONG SKILLS */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">Strong Skills</h2>
-            <p className="text-xs text-slate-400">Verified competencies meeting or exceeding target benchmarks</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {strongSkills.map((item) => (
-            <Card key={item.skill} hover className="p-5 border-emerald-500/20">
-              <div className="flex items-center justify-between mb-3">
-                <Badge variant="green" size="sm">Mastered</Badge>
-                <span className="text-xs font-semibold text-emerald-400 font-mono">
-                  {item.currentLevel}% Level
-                </span>
-              </div>
-              <h3 className="text-base font-bold text-white mb-2">{item.skill}</h3>
-              <ProgressBar
-                progress={Math.min(100, Math.round((item.currentLevel / item.requiredLevel) * 100))}
-                color="emerald"
-                showText
-                label="Proficiency"
-              />
-            </Card>
-          ))}
-        </div>
-      </div>
-
+      </EditorialShell>
     </AppLayout>
   );
 };

@@ -330,7 +330,7 @@ export const AppProvider = ({ children }) => {
     setJobAnalyses(prev => [analysisData, ...prev]);
   }, []);
 
-  const activeCareerProfile = CAREER_PROFILES[user.targetCareer] || CAREER_PROFILES['ai-engineer'];
+  const activeCareerProfile = CAREER_PROFILES[user.targetCareer] || CAREER_PROFILES['software-engineer'] || Object.values(CAREER_PROFILES)[0];
 
   return (
     <AppContext.Provider value={{

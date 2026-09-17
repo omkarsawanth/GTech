@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, BrainCircuit, Cpu, CheckCircle2, Loader2 } from 'lucide-react';
+import { Check, Loader2, Terminal } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const AIAnalysisTransitionPage = () => {
   const navigate = useNavigate();
-  const { activeCareerProfile, analysisResult } = useApp();
+  const { activeCareerProfile } = useApp();
 
   const [stepIndex, setStepIndex] = useState(0);
 
+  const careerTitle = activeCareerProfile?.title || 'Target Role';
+
   const steps = [
-    'Parsing your skill assessment responses...',
-    'Benchmarking current profiles against live job market criteria...',
-    `Calculating career readiness matrix for ${activeCareerProfile?.title || 'AI Engineer'}...`,
-    'Categorizing Strong Skills, Developing Areas & Critical Gaps...',
-    'Constructing personalized vertical learning roadmap phases...'
+    `Ingesting diagnostic response vectors for ${careerTitle}...`,
+    `Benchmarking candidate profile against empirical market criteria...`,
+    `Evaluating critical gaps and verified competencies...`,
+    `Synthesizing chronological roadmap milestones and casework...`,
+    `Compiling Career Command Center...`
   ];
 
   useEffect(() => {
@@ -26,71 +28,79 @@ export const AIAnalysisTransitionPage = () => {
           clearInterval(interval);
           setTimeout(() => {
             navigate('/dashboard');
-          }, 800);
+          }, 600);
           return prev;
         }
       });
-    }, 600);
+    }, 550);
 
     return () => clearInterval(interval);
   }, [navigate, steps.length]);
 
-  return (
-    <div className="min-h-screen bg-[#07090E] px-4 flex flex-col justify-center items-center relative overflow-hidden text-center">
-      {/* Glow pulse backdrop */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-purple-600/30 via-indigo-600/20 to-cyan-500/20 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+  const progressPercent = Math.round(((stepIndex + 1) / steps.length) * 100);
 
-      <div className="max-w-md w-full relative z-10">
+  return (
+    <div className="min-h-screen bg-[#07080D] px-4 flex flex-col justify-center items-center relative text-left">
+      <div className="max-w-xl w-full">
         
-        {/* Animated Scanner Ring */}
-        <div className="relative w-24 h-24 mx-auto mb-8">
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-400 p-1 animate-spin duration-3000">
-            <div className="w-full h-full bg-slate-950 rounded-[20px]" />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center text-purple-400">
-            <BrainCircuit className="w-10 h-10 animate-pulse" />
-          </div>
+        {/* Monospace telemetry header */}
+        <div className="font-mono text-xs text-gorange uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
+          <Terminal className="w-3.5 h-3.5 text-gorange" />
+          <span>[ TELEMETRY // CAREER INTELLIGENCE COMPILATION ]</span>
         </div>
 
-        {/* Headline */}
-        <h2 className="text-2xl font-extrabold text-white tracking-tight">
-          AI is analyzing your career readiness...
-        </h2>
-        <p className="text-xs text-slate-400 mt-2">
-          Generating instant baseline stats, radar gap matrix, and custom roadmap.
+        {/* Title */}
+        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight leading-tight mb-2">
+          Calibrating Career Readiness.
+        </h1>
+        <p className="text-sm text-[#8F9AA9] font-light mb-8">
+          Generating empirical benchmarks, competency differential, and milestone curriculum for <span className="text-white font-medium">{careerTitle}</span>.
         </p>
 
-        {/* Live Step Progress */}
-        <div className="mt-8 p-6 rounded-2xl glass-panel border border-purple-500/30 text-left space-y-3">
-          {steps.map((stepText, idx) => {
-            const isDone = idx < stepIndex;
-            const isCurrent = idx === stepIndex;
+        {/* Telemetry Console Panel */}
+        <div className="border border-[#1E232F] bg-[#0B0D12] p-6 space-y-4 mb-6">
+          <div className="font-mono text-[11px] text-[#6B7688] uppercase tracking-wider pb-3 border-b border-[#1E232F] flex justify-between">
+            <span>SYSTEM LOG</span>
+            <span className="text-gorange">{progressPercent}%</span>
+          </div>
 
-            return (
-              <div
-                key={idx}
-                className={`flex items-center gap-3 text-xs transition-opacity duration-300 ${
-                  isDone ? 'text-purple-300 font-medium' : isCurrent ? 'text-white font-bold' : 'text-slate-600'
-                }`}
-              >
-                {isDone ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                ) : isCurrent ? (
-                  <Loader2 className="w-4 h-4 text-cyan-400 animate-spin shrink-0" />
-                ) : (
-                  <div className="w-4 h-4 rounded-full border border-slate-700 shrink-0" />
-                )}
-                <span className="truncate">{stepText}</span>
-              </div>
-            );
-          })}
+          <div className="space-y-3 font-mono text-xs">
+            {steps.map((stepText, idx) => {
+              const isDone = idx < stepIndex;
+              const isCurrent = idx === stepIndex;
+
+              return (
+                <div
+                  key={idx}
+                  className={`flex items-start gap-3 transition-opacity duration-200 ${
+                    isDone 
+                      ? 'text-[#8F9AA9]' 
+                      : isCurrent 
+                      ? 'text-white font-bold' 
+                      : 'text-[#3E4756]'
+                  }`}
+                >
+                  <span className="shrink-0 mt-0.5">
+                    {isDone ? (
+                      <span className="text-emerald-400 font-bold">[✓]</span>
+                    ) : isCurrent ? (
+                      <span className="text-gorange animate-pulse">[›]</span>
+                    ) : (
+                      <span className="text-[#384152]">[ ]</span>
+                    )}
+                  </span>
+                  <span className="leading-relaxed">{stepText}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Progress percent bar */}
-        <div className="mt-6 w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+        {/* Progress Bar */}
+        <div className="w-full h-1 bg-[#1E232F]">
           <div
-            className="bg-gradient-to-r from-purple-600 to-cyan-400 h-full transition-all duration-500"
-            style={{ width: `${Math.round(((stepIndex + 1) / steps.length) * 100)}%` }}
+            className="bg-gorange h-full transition-all duration-300"
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
 

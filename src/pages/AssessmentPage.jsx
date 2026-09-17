@@ -1,174 +1,101 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  CheckCircle2, 
   ArrowRight, 
   ArrowLeft, 
-  Sparkles, 
-  BrainCircuit, 
-  Code2, 
-  BarChart3, 
-  Database, 
-  GitBranch, 
-  HelpCircle 
+  Check, 
+  Sparkles,
+  HelpCircle,
+  FileCheck2
 } from 'lucide-react';
-import { Button, Card, ProgressBar, Badge } from '../components/common/UIComponents';
+import { AppLayout } from '../components/layout/AppLayout';
+import { 
+  EditorialShell, 
+  EditorialHeader, 
+  EditorialButton, 
+  EditorialBadge 
+} from '../components/common/EditorialComponents';
 import { useApp } from '../context/AppContext';
 
 export const AssessmentPage = () => {
   const { assessment, saveAssessment, activeCareerProfile } = useApp();
   const navigate = useNavigate();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState(assessment.answers || {
-    q_python: 'Intermediate',
-    q_ml: 'Beginner',
-    q_stats: 'Basic',
-    q_sql: 'Intermediate',
-    q_git: 'Intermediate',
-    q_math: 'Basic',
-    q_dl: 'Beginner',
-    q_problem: 'Intermediate',
-    q_soft: 'Intermediate',
-    q_data: 'Basic'
-  });
+  // Dynamically derive assessment questions from the active career specification
+  const targetTitle = activeCareerProfile?.title || 'Software Engineer';
+  const skillsList = activeCareerProfile?.requiredSkills || [];
 
-  const questions = [
+  const dynamicQuestions = skillsList.length > 0
+    ? skillsList.map((skill, idx) => ({
+        id: `q_skill_${idx}`,
+        category: `${skill.category || 'Core Discipline'} // ${skill.importance || 'High'} Priority`,
+        skillName: skill.name,
+        question: `How would you evaluate your capability in ${skill.name}?`,
+        description: `Target benchmark for ${targetTitle}: ${skill.requiredLevel}% proficiency level.`,
+        benchmark: skill.requiredLevel,
+        options: [
+          { label: 'Beginner', desc: 'Novice. Conceptual understanding with limited or no practical execution.' },
+          { label: 'Basic', desc: 'Foundational. Can complete elementary tasks under guidance and reference documentation.' },
+          { label: 'Intermediate', desc: 'Autonomous. Comfortably build and troubleshoot production deliverables independently.' },
+          { label: 'Advanced', desc: 'Authority. Architect systems, establish standards, and optimize complex workflows.' }
+        ]
+      }))
+    : [
+        {
+          id: 'q_skill_0',
+          category: 'Core Discipline // Critical Priority',
+          skillName: 'Core Competency',
+          question: `How would you rate your foundations in ${targetTitle}?`,
+          description: `Baseline foundational knowledge required for industry readiness.`,
+          benchmark: 80,
+          options: [
+            { label: 'Beginner', desc: 'Learning terminology and basic syntax/principles.' },
+            { label: 'Basic', desc: 'Can execute structured assignments and basic workflows.' },
+            { label: 'Intermediate', desc: 'Autonomous practitioner building reliable solutions.' },
+            { label: 'Advanced', desc: 'Industry veteran capable of mentoring and system architecture.' }
+          ]
+        }
+      ];
+
+  // Append evidence & rigor criteria
+  const fullQuestions = [
+    ...dynamicQuestions,
     {
-      id: 'q_python',
-      category: 'Programming & Logic',
-      icon: Code2,
-      question: 'How comfortable are you with Python programming & data structures?',
-      description: 'Covers loops, dictionaries, OOP principles, decorators, and list comprehensions.',
+      id: 'q_evidence',
+      category: 'Work Evidence // Portfolio Artifacts',
+      skillName: 'Practical Evidence',
+      question: `What depth of verified casework or portfolio evidence do you have?`,
+      description: `Target proof format: ${activeCareerProfile?.evidenceType || 'Production artifacts and technical documentation'}.`,
+      benchmark: 85,
       options: [
-        { label: 'Beginner', desc: 'I am learning basic syntax and print statements.' },
-        { label: 'Basic', desc: 'I can write simple scripts, functions, and loops.' },
-        { label: 'Intermediate', desc: 'I comfortably write OOP code, use custom modules, and write clean algorithms.' },
-        { label: 'Advanced', desc: 'I write high-performance Python, async code, custom packages, and memory optimizations.' }
+        { label: 'Beginner', desc: 'No tangible portfolio items, public casework, or lab reports yet.' },
+        { label: 'Basic', desc: 'Classroom problem sets, guided tutorial clones, or initial drafts.' },
+        { label: 'Intermediate', desc: 'Multiple standalone projects, client deliverables, or public repos.' },
+        { label: 'Advanced', desc: 'Comprehensive track record with documented institutional or business impact.' }
       ]
     },
     {
-      id: 'q_ml',
-      category: 'Machine Learning',
-      icon: BrainCircuit,
-      question: 'What is your current depth of experience with Machine Learning algorithms?',
-      description: 'Covers linear/logistic regression, decision trees, cross-validation, and Scikit-Learn.',
+      id: 'q_execution',
+      category: 'Professional Rigor // Execution Standards',
+      skillName: 'Industry Standards',
+      question: `How experienced are you with domain workflows and stakeholder deadlines?`,
+      description: 'Covers cross-functional collaboration, documentation quality, and meeting hard constraints.',
+      benchmark: 75,
       options: [
-        { label: 'Beginner', desc: 'I have heard of ML concepts but never trained a model.' },
-        { label: 'Basic', desc: 'I have fit basic models using Scikit-Learn following online tutorials.' },
-        { label: 'Intermediate', desc: 'I tune hyperparameters, handle class imbalance, evaluate cross-validation, and perform feature engineering.' },
-        { label: 'Advanced', desc: 'I design custom ensemble models, build MLOps pipelines, and optimize loss functions in production.' }
-      ]
-    },
-    {
-      id: 'q_stats',
-      category: 'Statistics & Math',
-      icon: BarChart3,
-      question: 'How well do you understand Statistical Inference & Probability distributions?',
-      description: 'Covers mean/variance, standard deviations, t-tests, p-values, and Bayes theorem.',
-      options: [
-        { label: 'Beginner', desc: 'Basic arithmetic and high school statistics.' },
-        { label: 'Basic', desc: 'Understand standard normal distributions, mean, median, and variance.' },
-        { label: 'Intermediate', desc: 'Comfortable conducting hypothesis testing, A/B tests, and computing p-values.' },
-        { label: 'Advanced', desc: 'Proficient in Bayesian inference, multivariate probability models, and stochastic processes.' }
-      ]
-    },
-    {
-      id: 'q_data',
-      category: 'Data Wrangling',
-      icon: BarChart3,
-      question: 'How experienced are you with NumPy & Pandas data manipulation?',
-      description: 'Covers DataFrames, vector operations, groupby aggregations, and missing value handling.',
-      options: [
-        { label: 'Beginner', desc: 'Never used Pandas or NumPy arrays.' },
-        { label: 'Basic', desc: 'Can read CSVs and filter rows using simple Pandas boolean indexing.' },
-        { label: 'Intermediate', desc: 'Comfortable with pivot tables, multi-index joins, lambda functions, and vectorization.' },
-        { label: 'Advanced', desc: 'Expert in memory optimization, Dask parallelization, and complex data pipeline engineering.' }
-      ]
-    },
-    {
-      id: 'q_dl',
-      category: 'Deep Learning',
-      icon: BrainCircuit,
-      question: 'What is your experience level with PyTorch or TensorFlow frameworks?',
-      description: 'Covers neural network layers, backpropagation, CNNs, Transformers, and GPU training.',
-      options: [
-        { label: 'Beginner', desc: 'No experience with neural networks.' },
-        { label: 'Basic', desc: 'Understand basic forward pass concept and simple feed-forward neural nets.' },
-        { label: 'Intermediate', desc: 'Can construct CNNs / RNNs in PyTorch and debug gradient flow.' },
-        { label: 'Advanced', desc: 'Train custom Transformer architectures, fine-tune LLMs, and optimize CUDA kernels.' }
-      ]
-    },
-    {
-      id: 'q_sql',
-      category: 'Database & SQL',
-      icon: Database,
-      question: 'How proficient are you at writing SQL queries for relational databases?',
-      description: 'Covers SELECT statements, JOINs, aggregate functions, GROUP BY, and window functions.',
-      options: [
-        { label: 'Beginner', desc: 'Can write simple SELECT * FROM table queries.' },
-        { label: 'Basic', desc: 'Use WHERE clauses, INNER JOINs, and simple GROUP BY statements.' },
-        { label: 'Intermediate', desc: 'Write complex CTEs, window functions (ROW_NUMBER/RANK), and indexing optimizations.' },
-        { label: 'Advanced', desc: 'Architect database schemas, optimize execution plans, and write complex stored procedures.' }
-      ]
-    },
-    {
-      id: 'q_git',
-      category: 'DevOps & Version Control',
-      icon: GitBranch,
-      question: 'How comfortable are you with Git version control & GitHub workflows?',
-      description: 'Covers commit, branch, merge, pull requests, rebase, and merge conflict resolution.',
-      options: [
-        { label: 'Beginner', desc: 'Never used Git or GitHub.' },
-        { label: 'Basic', desc: 'Can git add, git commit, and git push to main.' },
-        { label: 'Intermediate', desc: 'Use feature branches, handle pull request reviews, and resolve merge conflicts.' },
-        { label: 'Advanced', desc: 'Master interactive rebasing, git bisect, and automated CI/CD GitHub Actions pipelines.' }
-      ]
-    },
-    {
-      id: 'q_math',
-      category: 'Linear Algebra & Calculus',
-      icon: HelpCircle,
-      question: 'What is your baseline knowledge of Linear Algebra & Vector Calculus?',
-      description: 'Covers matrix multiplication, eigenvectors, eigenvalues, matrix decompositions, and partial derivatives.',
-      options: [
-        { label: 'Beginner', desc: 'High school math foundation.' },
-        { label: 'Basic', desc: 'Understand vector dot products and simple matrix addition.' },
-        { label: 'Intermediate', desc: 'Understand matrix transformations, SVD, and gradient descent calculus.' },
-        { label: 'Advanced', desc: 'Rigorous multivariable calculus, optimization theory, and tensor math.' }
-      ]
-    },
-    {
-      id: 'q_problem',
-      category: 'Algorithms & Problem Solving',
-      icon: Code2,
-      question: 'How do you approach Data Structures & Algorithmic Problem Solving?',
-      description: 'Covers time complexity (Big-O), arrays, trees, dynamic programming, and LeetCode problems.',
-      options: [
-        { label: 'Beginner', desc: 'I code by trial and error without considering Big-O complexity.' },
-        { label: 'Basic', desc: 'Familiar with arrays and basic sorting algorithms.' },
-        { label: 'Intermediate', desc: 'Understand hash maps, trees, recursion, and Big-O efficiency tradeoffs.' },
-        { label: 'Advanced', desc: 'Solve hard LeetCode dynamic programming and graph optimization algorithms effortlessly.' }
-      ]
-    },
-    {
-      id: 'q_soft',
-      category: 'Communication & Soft Skills',
-      icon: Sparkles,
-      question: 'How effective are you at communicating technical findings to stakeholders?',
-      description: 'Covers technical presentation, writing documentation, and collaborating in team environments.',
-      options: [
-        { label: 'Beginner', desc: 'Prefer working alone without presenting work.' },
-        { label: 'Basic', desc: 'Can explain code to peers when asked.' },
-        { label: 'Intermediate', desc: 'Translate technical model results into clean summaries and slides for team leads.' },
-        { label: 'Advanced', desc: 'Regularly present executive tech briefings, lead cross-functional workshops, and mentor engineers.' }
+        { label: 'Beginner', desc: 'Primarily solo academic or casual experimentation.' },
+        { label: 'Basic', desc: 'Participated in group deliverables with standard review processes.' },
+        { label: 'Intermediate', desc: 'Routinely coordinate with teams, handle revisions, and deliver to spec.' },
+        { label: 'Advanced', desc: 'Set quality standards, review peer work, and lead stakeholder strategy.' }
       ]
     }
   ];
 
-  const currentQ = questions[currentIndex];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState(assessment?.answers || {});
+
+  const currentQ = fullQuestions[currentIndex] || fullQuestions[0];
   const currentAnswer = answers[currentQ.id] || 'Basic';
-  const progressPercent = Math.round(((currentIndex + 1) / questions.length) * 100);
+  const progressPercent = Math.round(((currentIndex + 1) / fullQuestions.length) * 100);
 
   const handleOptionSelect = (optionLabel) => {
     setAnswers(prev => ({
@@ -178,10 +105,9 @@ export const AssessmentPage = () => {
   };
 
   const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
+    if (currentIndex < fullQuestions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // Save and trigger AI analysis animation page
       saveAssessment(answers);
       navigate('/ai-analysis');
     }
@@ -193,79 +119,88 @@ export const AssessmentPage = () => {
     }
   };
 
-  const IconComponent = currentQ.icon;
-
   return (
-    <div className="min-h-screen bg-[#07090E] px-4 py-12 flex flex-col justify-center items-center relative overflow-hidden">
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[650px] h-[400px] bg-purple-600/15 rounded-full blur-[130px] pointer-events-none" />
-
-      <div className="w-full max-w-3xl relative z-10">
+    <AppLayout>
+      <EditorialShell className="max-w-4xl">
         
-        {/* Step Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider block">
-              Skill Evaluation — {activeCareerProfile?.title || 'Target Role'}
-            </span>
-            <h1 className="text-2xl font-bold text-white tracking-tight mt-1">
-              Question {currentIndex + 1} of {questions.length}
-            </h1>
+        {/* Editorial Header */}
+        <EditorialHeader
+          index="04"
+          tag="COMPETENCY AUDIT"
+          title={`Evaluating Readiness for ${targetTitle}.`}
+          subtitle={`Answer ${fullQuestions.length} rigorous diagnostic criteria to establish your empirical skill gap and roadmap.`}
+        >
+          <div className="font-mono text-xs text-[#8F9AA9] border border-[#1E232F] bg-[#0B0D12] px-3.5 py-2">
+            CRITERION <span className="text-white font-bold">{String(currentIndex + 1).padStart(2, '0')}</span> / {String(fullQuestions.length).padStart(2, '0')}
           </div>
-          <Badge variant="cyan" size="lg" className="font-mono font-bold">
-            {progressPercent}% Complete
-          </Badge>
+        </EditorialHeader>
+
+        {/* Progress Line */}
+        <div className="mb-10">
+          <div className="flex justify-between font-mono text-[11px] text-[#6B7688] uppercase tracking-widest mb-2">
+            <span>DIAGNOSTIC COMPLETION</span>
+            <span className="text-gorange font-bold">{progressPercent}%</span>
+          </div>
+          <div className="w-full h-1 bg-[#1E232F]">
+            <div 
+              className="h-full bg-gorange transition-all duration-300"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <ProgressBar progress={progressPercent} color="purple" height="h-2.5" />
-        </div>
-
-        {/* Question Card */}
-        <Card className="p-8">
+        {/* Question Panel */}
+        <div className="border border-[#1E232F] bg-[#0B0D12] p-6 sm:p-10 mb-8">
           
-          {/* Category Pill */}
-          <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400">
-              <IconComponent className="w-5 h-5" />
+          {/* Metadata pill */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-[#1E232F]">
+            <div className="font-mono text-xs text-gorange uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-gorange inline-block" />
+              <span>{currentQ.category}</span>
             </div>
-            <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-              {currentQ.category}
-            </span>
+            <div className="font-mono text-[11px] text-[#6B7688] uppercase">
+              BENCHMARK: <span className="text-white font-semibold">{currentQ.benchmark}%</span>
+            </div>
           </div>
 
           {/* Question Title & Subtext */}
-          <h2 className="text-xl font-bold text-white leading-snug mb-2">
-            {currentQ.question}
-          </h2>
-          <p className="text-xs text-slate-400 mb-8 leading-relaxed">
-            {currentQ.description}
-          </p>
+          <div className="mb-8">
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight leading-snug">
+              {currentQ.question}
+            </h2>
+            <p className="text-sm text-[#8F9AA9] mt-2 font-light leading-relaxed">
+              {currentQ.description}
+            </p>
+          </div>
 
           {/* Multiple Choice Options */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-3 mb-10">
             {currentQ.options.map((opt) => {
               const isSelected = currentAnswer === opt.label;
               return (
                 <div
                   key={opt.label}
                   onClick={() => handleOptionSelect(opt.label)}
-                  className={`cursor-pointer p-4 rounded-xl transition-all duration-200 border flex items-start gap-3 ${
+                  className={`cursor-pointer p-4 sm:p-5 border transition-all text-left flex items-start gap-4 ${
                     isSelected
-                      ? 'bg-purple-950/70 border-purple-500 text-white shadow-lg shadow-purple-950/40'
-                      : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900/60'
+                      ? 'border-gorange bg-[#121622] text-white'
+                      : 'border-[#1E232F] bg-[#07080D] hover:border-[#384152] text-[#8F9AA9]'
                   }`}
                 >
-                  <div className={`mt-0.5 w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                    isSelected ? 'border-purple-400 bg-purple-600 text-white' : 'border-slate-600 bg-slate-900'
+                  <div className={`mt-0.5 w-5 h-5 border flex items-center justify-center shrink-0 transition-colors ${
+                    isSelected 
+                      ? 'border-gorange bg-gorange text-black' 
+                      : 'border-[#384152] bg-[#0B0D12]'
                   }`}>
-                    {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                   </div>
-                  <div>
-                    <div className="text-sm font-bold flex items-center gap-2">
-                      {opt.label}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className={`font-mono text-xs uppercase tracking-wider font-bold ${isSelected ? 'text-gorange' : 'text-white'}`}>
+                        {opt.label}
+                      </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[#8F9AA9] mt-1 font-light leading-relaxed">
                       {opt.desc}
                     </p>
                   </div>
@@ -274,32 +209,33 @@ export const AssessmentPage = () => {
             })}
           </div>
 
-          {/* Back & Next Navigation Buttons */}
-          <div className="flex items-center justify-between pt-6 border-t border-slate-800">
-            <Button
+          {/* Navigation Controls */}
+          <div className="flex items-center justify-between pt-6 border-t border-[#1E232F]">
+            <EditorialButton
               variant="secondary"
               size="md"
               onClick={handlePrev}
               disabled={currentIndex === 0}
               icon={ArrowLeft}
+              iconPosition="left"
             >
-              Previous
-            </Button>
+              PREVIOUS
+            </EditorialButton>
 
-            <Button
-              variant="glow"
+            <EditorialButton
+              variant="primary"
               size="md"
               onClick={handleNext}
-              icon={currentIndex === questions.length - 1 ? Sparkles : ArrowRight}
+              icon={currentIndex === fullQuestions.length - 1 ? Sparkles : ArrowRight}
               iconPosition="right"
             >
-              {currentIndex === questions.length - 1 ? 'Analyze My Skills' : 'Next Question'}
-            </Button>
+              {currentIndex === fullQuestions.length - 1 ? 'CALCULATE READINESS' : 'NEXT CRITERION'}
+            </EditorialButton>
           </div>
 
-        </Card>
+        </div>
 
-      </div>
-    </div>
+      </EditorialShell>
+    </AppLayout>
   );
 };
