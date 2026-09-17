@@ -56,44 +56,36 @@ export const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Nav Links — Editorial Monospace Index */}
-          <div className="hidden lg:flex items-center gap-10 font-mono text-xs tracking-wider uppercase text-[#8F9AA9]">
-            <button 
-              onClick={() => handleNavClick('story-where')}
-              className="hover:text-white transition-colors flex items-center gap-2 group"
-            >
-              <span className="text-[#4E5664] group-hover:text-gorange transition-colors">01</span>
-              <span>Where Are You</span>
-            </button>
-            <button 
-              onClick={() => handleNavClick('story-target')}
-              className="hover:text-white transition-colors flex items-center gap-2 group"
-            >
-              <span className="text-[#4E5664] group-hover:text-gorange transition-colors">02</span>
-              <span>Careers</span>
-            </button>
-            <button 
-              onClick={() => handleNavClick('story-gaps')}
-              className="hover:text-white transition-colors flex items-center gap-2 group"
-            >
-              <span className="text-[#4E5664] group-hover:text-gorange transition-colors">03</span>
-              <span>Skill Matrix</span>
-            </button>
-            <button 
-              onClick={() => handleNavClick('story-roadmap')}
-              className="hover:text-white transition-colors flex items-center gap-2 group"
-            >
-              <span className="text-[#4E5664] group-hover:text-gorange transition-colors">04</span>
-              <span>Roadmap</span>
-            </button>
-            <button 
-              onClick={() => handleNavClick('story-readiness')}
-              className="hover:text-white transition-colors flex items-center gap-2 group"
-            >
-              <span className="text-[#4E5664] group-hover:text-gorange transition-colors">05</span>
-              <span>Readiness</span>
-            </button>
-          </div>
+<div className="hidden lg:flex items-center gap-10 font-mono text-xs tracking-wider uppercase text-[#8F9AA9]">
+  <button
+    onClick={() => handleNavClick('story-where')}
+    className="hover:text-white transition-colors flex items-center gap-2 group"
+  >
+    <span className="text-[#4E5664] group-hover:text-gorange transition-colors">01</span>
+    <span>INDEX</span>
+  </button>
+  <button
+    onClick={() => handleNavClick('story-target')}
+    className="hover:text-white transition-colors flex items-center gap-2 group"
+  >
+    <span className="text-[#4E5664] group-hover:text-gorange transition-colors">02</span>
+    <span>CAREERS</span>
+  </button>
+  <button
+    onClick={() => handleNavClick('story-gaps')}
+    className="hover:text-white transition-colors flex items-center gap-2 group"
+  >
+    <span className="text-[#4E5664] group-hover:text-gorange transition-colors">03</span>
+    <span>SKILLS</span>
+  </button>
+  <button
+    onClick={() => handleNavClick('story-readiness')}
+    className="hover:text-white transition-colors flex items-center gap-2 group"
+  >
+    <span className="text-[#4E5664] group-hover:text-gorange transition-colors">04</span>
+    <span>READINESS</span>
+  </button>
+</div>
 
           {/* Right Action CTAs */}
           <div className="hidden md:flex items-center gap-5">
@@ -166,21 +158,21 @@ export const Navbar = () => {
                 onClick={() => handleNavClick('story-target')}
                 className="text-left py-2 hover:text-white flex items-center justify-between border-b border-[#1E232F]"
               >
-                <span>02 — Career Selection</span>
+                <span>02 — Career Explorer</span>
                 <span className="text-gorange">→</span>
               </button>
               <button 
                 onClick={() => handleNavClick('story-gaps')}
                 className="text-left py-2 hover:text-white flex items-center justify-between border-b border-[#1E232F]"
               >
-                <span>03 — Skill Matrix</span>
+                <span>03 — Skills & Gaps</span>
                 <span className="text-gorange">→</span>
               </button>
               <button 
-                onClick={() => handleNavClick('story-roadmap')}
+                onClick={() => handleNavClick('story-actions')}
                 className="text-left py-2 hover:text-white flex items-center justify-between border-b border-[#1E232F]"
               >
-                <span>04 — Roadmap</span>
+                <span>04 — Next Actions</span>
                 <span className="text-gorange">→</span>
               </button>
               <button 

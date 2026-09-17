@@ -59,6 +59,12 @@ export default {
         display: ['Space Grotesk', 'Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
       },
+      fontSize: {
+        'display': ['clamp(48px, 6.5vw, 112px)', { lineHeight: '0.95', fontWeight: '800' }],
+        'section': ['clamp(36px, 5vw, 72px)', { lineHeight: '1.02', fontWeight: '800' }],
+        'body': ['clamp(16px, 1.8vw, 20px)', { lineHeight: '1.6', fontWeight: '400' }],
+        'meta': ['clamp(11px, 1vw, 13px)', { lineHeight: '1.4', fontWeight: '400' }],
+      },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce-soft': 'bounce 2.5s infinite',

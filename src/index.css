@@ -250,3 +250,29 @@
   background-color: #8B5CF6;
   color: white;
 }
+
+/* Editorial Typography Utility Classes */
+.text-display {
+  font-size: clamp(48px, 6.5vw, 112px);
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.text-section {
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.text-body {
+  font-size: clamp(16px, 1.8vw, 20px);
+  line-height: 1.6;
+}
+
+.text-meta {
+  font-size: clamp(11px, 1vw, 13px);
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+}

@@ -25,7 +25,7 @@ Company: Apex Innovations AI
 Location: Remote (US / Global)
 
 About the Role:
-We are searching for a high-performing AI Engineer to architect, build, and deploy next-generation LLM applications and machine learning models. 
+We are searching for a high-performing AI Engineer to architect, build, and deploy production-grade LLM applications and machine learning models. 
 
 Key Responsibilities:
 - Design and implement end-to-end Machine Learning pipelines using Python, PyTorch, and Scikit-Learn.

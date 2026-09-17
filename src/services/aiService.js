@@ -509,7 +509,7 @@ export function generateProjects(missingSkills = ['Machine Learning', 'Deep Lear
       estimatedTime: '10-12 Hours',
       skillsPracticed: ['LangChain', 'OpenAI/Gemini APIs', 'Vector Embeddings', 'FastAPI'],
       description: 'Develop a conversational AI application that parses corporate PDF manuals, stores embeddings in Pinecone, and delivers grounded answers with citations.',
-      impact: 'Cutting-Edge AI Tech'
+      impact: 'Modern AI Architecture'
     },
     'SQL': {
       title: 'Multi-Tenant E-Commerce Analytics Schema & Queries',

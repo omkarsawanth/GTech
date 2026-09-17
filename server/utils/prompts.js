@@ -6,7 +6,7 @@
 export const PROMPTS = {
 
   SKILL_GAP: ({ profile, career, assessment }) => `
-You are a world-class AI career counselor for GTech, an AI-powered career platform.
+You are a world-class AI career counselor for GTech, an intelligent career readiness platform.
 Analyze this student's skill gap for their target career.
 
 USER PROFILE:
