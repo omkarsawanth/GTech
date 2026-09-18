@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Loader2, Terminal } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { CareerConstellation } from '../components/3d/CareerConstellation';
 
 export const AIAnalysisTransitionPage = () => {
   const navigate = useNavigate();
@@ -40,8 +41,11 @@ export const AIAnalysisTransitionPage = () => {
   const progressPercent = Math.round(((stepIndex + 1) / steps.length) * 100);
 
   return (
-    <div className="min-h-screen bg-[#07080D] px-4 flex flex-col justify-center items-center relative text-left">
-      <div className="max-w-xl w-full">
+    <div className="min-h-screen bg-[#07080D] px-4 flex flex-col justify-center items-center relative text-left overflow-hidden">
+      {/* 3D Telemetry Lattice Canvas */}
+      <CareerConstellation categoryIndex={1} className="opacity-45" />
+
+      <div className="max-w-xl w-full relative z-10">
         
         {/* Monospace telemetry header */}
         <div className="font-mono text-xs text-gorange uppercase tracking-[0.2em] flex items-center gap-2 mb-4">

@@ -34,10 +34,10 @@ export const LoginPage = () => {
           <Link to="/" className="inline-flex items-center gap-3 group mb-8">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 p-0.5 shadow-lg shadow-purple-600/30">
               <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-display font-bold text-purple-400 text-lg">
-                G
+                K
               </div>
             </div>
-            <span className="text-2xl font-display font-extrabold text-white tracking-tight">GTech</span>
+            <span className="text-2xl font-display font-extrabold text-white tracking-tight">Kalpa</span>
           </Link>
 
           <h1 className="text-3xl lg:text-4xl font-display font-extrabold text-white tracking-tight leading-tight mt-6">
@@ -65,7 +65,7 @@ export const LoginPage = () => {
         </div>
 
         <div className="relative z-10 pt-12 text-xs text-slate-500">
-          © 2026 GTech AI Platform. Secured by Firebase.
+          © 2026 Kalpa AI Platform. Secured by Firebase.
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export const LoginPage = () => {
 
           <div className="mb-8">
             <h2 className="text-2xl font-display font-extrabold text-white tracking-tight">Welcome back</h2>
-            <p className="text-xs text-slate-400 mt-1">Sign in to continue to GTech AI Platform</p>
+            <p className="text-xs text-slate-400 mt-1">Sign in to continue to Kalpa AI Platform</p>
           </div>
 
           {errorMsg && (

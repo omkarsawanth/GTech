@@ -1,12 +1,12 @@
 /**
- * GTech Gemini Prompt Library
+ * Kalpa Gemini Prompt Library
  * All prompts are defined here to keep controllers/services clean.
  */
 
 export const PROMPTS = {
 
   SKILL_GAP: ({ profile, career, assessment }) => `
-You are a world-class AI career counselor for GTech, an intelligent career readiness platform.
+You are a world-class AI career counselor for Kalpa, an intelligent career readiness platform.
 Analyze this student's skill gap for their target career.
 
 USER PROFILE:
@@ -54,7 +54,7 @@ Return ONLY a valid JSON object with this exact structure:
 `,
 
   CAREER_MATCH: ({ profile }) => `
-You are a GTech AI career advisor. Analyze this user's profile and rank the best-fitting tech careers.
+You are a Kalpa AI career advisor. Analyze this user's profile and rank the best-fitting tech careers.
 
 USER PROFILE:
 Name: ${profile.name || 'Student'}
@@ -82,7 +82,7 @@ Return ONLY valid JSON:
 `,
 
   ROADMAP: ({ career, profile, skillGap }) => `
-You are a GTech AI roadmap generator. Create a personalized learning roadmap.
+You are a Kalpa AI roadmap generator. Create a personalized learning roadmap.
 
 USER PROFILE:
 Name: \${profile.name || 'Student'}
@@ -139,7 +139,7 @@ Return ONLY valid JSON with both milestones AND daily tasks:
 `,
 
   JOB_ANALYSIS: ({ jobDescription, profile, career }) => `
-You are a GTech AI job description analyzer. Analyze this job posting against the user's profile.
+You are a Kalpa AI job description analyzer. Analyze this job posting against the user's profile.
 
 JOB DESCRIPTION:
 ${jobDescription}
@@ -177,7 +177,7 @@ Return ONLY valid JSON:
 `,
 
   PROJECTS: ({ career, skills, missingSkills, experienceLevel }) => `
-You are a GTech AI project generator. Suggest portfolio projects for this developer.
+You are a Kalpa AI project generator. Suggest portfolio projects for this developer.
 
 TARGET CAREER: ${career || 'Software Engineer'}
 EXPERIENCE LEVEL: ${experienceLevel || 'Entry-Level'}
@@ -208,7 +208,7 @@ Generate 3-4 projects ranging from beginner-friendly to advanced.
 `,
 
   ASSESSMENT_ANALYSIS: ({ answers, career }) => `
-You are a GTech AI assessment analyzer. Evaluate these assessment answers.
+You are a Kalpa AI assessment analyzer. Evaluate these assessment answers.
 
 TARGET CAREER: ${career || 'Software Engineer'}
 ASSESSMENT ANSWERS:
@@ -229,7 +229,7 @@ Return ONLY valid JSON:
 `,
 
   MENTOR: ({ question, profile, career, skillGap, roadmap }) => `
-You are the GTech AI Career Mentor — a personalized AI advisor with full context about this specific user.
+You are the Kalpa AI Career Mentor — a personalized AI advisor with full context about this specific user.
 
 USER CONTEXT:
 Name: ${profile?.name || 'Student'}

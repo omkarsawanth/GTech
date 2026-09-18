@@ -25,7 +25,7 @@ const VIBE_EMOJIS = ['🔥', '💡', '🚀', '🎯', '👀'];
 const QUESTIONS = [
   {
     id: 'targetCareer',
-    botText: "Welcome to GTech. I'm your AI Career Navigator. Which professional discipline or target role are you aiming to master?",
+    botText: "Welcome to Kalpa. I'm your AI Career Navigator. Which professional discipline or target role are you aiming to master?",
     options: [
       { label: 'Software Engineer', value: 'software-engineer', badge: 'Technology' },
       { label: 'AI & Inference Engineer', value: 'ai-engineer', badge: 'Intelligence' },

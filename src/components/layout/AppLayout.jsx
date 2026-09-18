@@ -54,7 +54,7 @@ export const AppLayout = ({ children }) => {
 
           {/* Center: System Breadcrumb */}
           <div className="hidden md:flex items-center gap-2 font-mono text-[11px] text-[#6B7688] tracking-widest uppercase">
-            <span>GTECH</span>
+            <span>KALPA</span>
             <span>/</span>
             <span className="text-white">COMMAND CENTER</span>
           </div>

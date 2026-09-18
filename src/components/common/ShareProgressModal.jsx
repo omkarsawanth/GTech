@@ -37,11 +37,11 @@ export const ShareProgressModal = ({
   // Auto-generate caption based on template
   const getShareCaption = () => {
     if (activeTemplate === 'badge') {
-      return `Just unlocked the ${currentStreak}-Day Milestone Badge on GTech 🔥 Building my ${careerTitle} roadmap with 100% verified consistency! #BuildInPublic #AI`;
+      return `Just unlocked the ${currentStreak}-Day Milestone Badge on Kalpa 🔥 Building my ${careerTitle} roadmap with 100% verified consistency! #BuildInPublic #AI`;
     } else if (activeTemplate === 'gap') {
-      return `Closed ${readinessScore}% of my skill gap toward becoming an industry-ready ${careerTitle} on GTech 🚀 Roadmap in bio! #TechCareers`;
+      return `Closed ${readinessScore}% of my skill gap toward becoming an industry-ready ${careerTitle} on Kalpa 🚀 Roadmap in bio! #TechCareers`;
     }
-    return `Just hit a ${currentStreak}-day learning streak on my ${careerTitle} roadmap on GTech! 🔥 Readiness score: ${readinessScore}%. Challenge me: ${window.location.origin}`;
+    return `Just hit a ${currentStreak}-day learning streak on my ${careerTitle} roadmap on Kalpa! 🔥 Readiness score: ${readinessScore}%. Challenge me: ${window.location.origin}`;
   };
 
   const currentCaption = getShareCaption();
@@ -103,7 +103,7 @@ export const ShareProgressModal = ({
     logoGrad.addColorStop(0.5, '#FF8A00');
     logoGrad.addColorStop(1, '#8B5CF6');
     ctx.fillStyle = logoGrad;
-    ctx.fillText('GTech Solar AI', 80, 110);
+    ctx.fillText('Kalpa Solar AI', 80, 110);
 
     ctx.font = 'bold 15px monospace';
     ctx.fillStyle = '#FF8A00';
@@ -201,7 +201,7 @@ export const ShareProgressModal = ({
     // Footer Watermark
     ctx.font = '16px monospace';
     ctx.fillStyle = '#64748B';
-    ctx.fillText('VERIFIED VIA GTECH PLATFORM  •  POWERED BY GEMINI 3.6 FLASH  •  GTECH.AI', 80, 545);
+    ctx.fillText('VERIFIED VIA KALPA PLATFORM  •  POWERED BY GEMINI 3.6 FLASH  •  KALPA.AI', 80, 545);
 
     return canvas;
   };
@@ -231,7 +231,7 @@ export const ShareProgressModal = ({
     try {
       const canvas = renderCanvas();
       const link = document.createElement('a');
-      link.download = `gtech-${activeTemplate}-${careerTitle.toLowerCase().replace(/\s+/g, '-')}.png`;
+      link.download = `kalpa-${activeTemplate}-${careerTitle.toLowerCase().replace(/\s+/g, '-')}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       handleCopyCaption();
@@ -253,13 +253,13 @@ export const ShareProgressModal = ({
           return;
         }
 
-        const file = new File([blob], `gtech-progress-${currentStreak}d.png`, { type: 'image/png' });
+        const file = new File([blob], `kalpa-progress-${currentStreak}d.png`, { type: 'image/png' });
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
               files: [file],
-              title: `My GTech Progress: ${careerTitle}`,
+              title: `My Kalpa Progress: ${careerTitle}`,
               text: currentCaption,
             });
             setIsGenerating(false);
@@ -355,10 +355,10 @@ export const ShareProgressModal = ({
               <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-800/80 relative z-10">
                 <div className="flex items-center gap-2">
                   <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-solar-coral to-solar-amber flex items-center justify-center font-display font-extrabold text-white text-xs">
-                    G
+                    K
                   </span>
                   <span className="font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-solar-coral via-solar-amber to-solar-violet text-xs">
-                    GTech Solar AI
+                    Kalpa Solar AI
                   </span>
                 </div>
                 <Badge variant="coral" size="sm" className="font-mono text-[9px] tracking-wider">
@@ -444,7 +444,7 @@ export const ShareProgressModal = ({
 
               {/* Footer watermark */}
               <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 pt-3 border-t border-slate-800/80 relative z-10">
-                <span>gtech.ai/verify</span>
+                <span>kalpa.ai/verify</span>
                 <span>Gemini 3.6 Flash Engine</span>
               </div>
             </div>

@@ -62,7 +62,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen, onOpenMentor }) => {
           <div className="h-20 px-6 flex items-center justify-between border-b border-[#1E232F]">
             <NavLink to="/" className="group flex flex-col">
               <span className="font-display font-black text-xl text-white tracking-tight flex items-center gap-1.5">
-                GTECH<span className="text-gorange">.</span>
+                KALPA<span className="text-gorange">.</span>
               </span>
               <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#6B7688]">
                 CAREER INTELLIGENCE

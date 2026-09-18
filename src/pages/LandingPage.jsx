@@ -19,6 +19,7 @@ import { Navbar } from '../components/common/Navbar';
 import { InterestSelector } from '../components/common/InterestSelector';
 import { useAuth } from '../context/AuthContext';
 import { CAREER_CATEGORIES } from '../data/careersData';
+import { CareerConstellation } from '../components/3d/CareerConstellation';
 
 export const LandingPage = () => {
   const navigate = useNavigate();
@@ -64,10 +65,13 @@ export const LandingPage = () => {
       {/* =========================================================================
           01 — WHERE ARE YOU? (Universal Career Positioning)
           ========================================================================= */}
-      <section id="story-where" className="relative min-h-[92vh] border-b border-[#1E232F] flex flex-col justify-between px-6 lg:px-14 pt-16 pb-14">
+      <section id="story-where" className="relative min-h-[92vh] border-b border-[#1E232F] flex flex-col justify-between px-6 lg:px-14 pt-16 pb-14 overflow-hidden">
         
+        {/* 3D React Three Fiber Career Constellation Canvas */}
+        <CareerConstellation categoryIndex={selectedCategoryIndex} />
+
         {/* Top Monospace Meta Coordinates */}
-        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] border-b border-[#1E232F] pb-5">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] border-b border-[#1E232F] pb-5">
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 bg-gorange inline-block" />
             <span className="text-white font-semibold">01 / WHERE ARE YOU?</span>
@@ -77,12 +81,15 @@ export const LandingPage = () => {
           <div className="flex items-center gap-6">
             <span>INDEXED PATHWAYS: <strong className="text-white font-mono">{analyzedPaths.toLocaleString()}</strong></span>
             <span className="hidden md:inline">EVALUATION: MULTI-DISCIPLINARY</span>
-            <span className="text-gorange font-semibold">STATUS: LIVE</span>
+            <span className="text-gorange font-semibold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-gorange animate-pulse" />
+              SPATIAL 3D: ONLINE
+            </span>
           </div>
         </div>
 
         {/* Main Editorial Headline with Generous Spacing & High Readability */}
-        <div className="my-auto py-12 lg:py-16 max-w-[1440px]">
+        <div className="relative z-10 my-auto py-12 lg:py-16 max-w-[1440px]">
           <div className="font-mono text-xs uppercase tracking-[0.25em] text-gorange mb-6 flex items-center gap-2">
             <span>[ SYSTEM AUDIT ]</span>
             <span className="h-px w-12 bg-gorange/40" />
@@ -96,7 +103,7 @@ export const LandingPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mt-14 pt-10 border-t border-[#1E232F]">
             <div className="lg:col-span-7">
               <p className="text-xl sm:text-2xl text-[#B6BFCD] font-light leading-relaxed">
-                GTech maps your current background, skills, and interests against the verified standards of any profession you want to pursue — from software and finance to design, healthcare, law, and engineering.
+                Kalpa maps your current background, skills, and interests against the verified standards of any profession you want to pursue — from software and finance to design, healthcare, law, and engineering.
               </p>
             </div>
 
@@ -122,7 +129,7 @@ export const LandingPage = () => {
         </div>
 
         {/* Personalization Domain Selector */}
-        <div className="mb-10">
+        <div className="relative z-10 mb-10">
           <InterestSelector
             categories={CAREER_CATEGORIES}
             selectedCategoryIndex={selectedCategoryIndex}
@@ -130,8 +137,8 @@ export const LandingPage = () => {
           />
         </div>
 
-        {/* Whole-Person Archetype Display — Proving GTech Understands Any Candidate */}
-        <div className="pt-8 border-t border-[#1E232F]">
+        {/* Whole-Person Archetype Display — Proving Kalpa Understands Any Candidate */}
+        <div className="relative z-10 pt-8 border-t border-[#1E232F]">
           <div className="font-mono text-[11px] uppercase tracking-widest text-[#6B7688] mb-4">
             UNIVERSAL PROFILE AUDIT &amp; SYNTHESIS ARCHETYPE
           </div>
@@ -277,7 +284,7 @@ export const LandingPage = () => {
             })}
 
             <div className="p-5 border border-dashed border-[#1E232F] text-xs font-mono text-[#6B7688] leading-relaxed">
-              * GTech's career ontology expands across all professional sectors. Additional paths can be custom-parsed with our Job Description Parser.
+              * Kalpa's career ontology expands across all professional sectors. Additional paths can be custom-parsed with our Job Description Parser.
             </div>
           </div>
 
@@ -812,7 +819,7 @@ export const LandingPage = () => {
         {/* Universal Specification Footer */}
         <div className="mt-28 pt-12 border-t border-[#1E232F] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-xs text-[#6B7688]">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-white font-bold tracking-wider">GTECH &bull; 2026</span>
+            <span className="text-white font-bold tracking-wider">KALPA &bull; 2026</span>
             <span>&bull;</span>
             <span>UNIVERSAL CAREER INTELLIGENCE PLATFORM</span>
             <span>&bull;</span>

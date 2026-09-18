@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'GTech API is running',
+    message: 'Kalpa API is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
   });
@@ -66,7 +66,7 @@ app.use(errorHandler);
 // ── Start (Only run listen when not in serverless/Vercel environment) ──────────
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`\n🚀 GTech API running on http://localhost:${PORT}`);
+    console.log(`\n🚀 Kalpa API running on http://localhost:${PORT}`);
     console.log(`   Health: http://localhost:${PORT}/api/health\n`);
   });
 }

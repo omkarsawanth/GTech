@@ -20,7 +20,7 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState([
     {
       sender: 'mentor',
-      text: `Hello ${user?.displayName?.split(' ')[0] || 'there'}! I'm your GTech AI Career Mentor. I have full context on your target career, current skills, and learning roadmap. What would you like guidance on today?`
+      text: `Hello ${user?.displayName?.split(' ')[0] || 'there'}! I'm your Kalpa AI Career Mentor. I have full context on your target career, current skills, and learning roadmap. What would you like guidance on today?`
     }
   ]);
   const [input, setInput] = useState('');
@@ -50,7 +50,7 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
         ...prev,
         {
           sender: 'mentor',
-          text: err.message || "I'm having trouble connecting to the GTech backend AI service right now. Please ensure the server is running on port 5000 with your GEMINI_API_KEY configured."
+          text: err.message || "I'm having trouble connecting to the Kalpa backend AI service right now. Please ensure the server is running on port 5000 with your GEMINI_API_KEY configured."
         }
       ]);
     } finally {
@@ -126,7 +126,7 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
                   <Loader2 className="w-4 h-4 animate-spin" />
                 </div>
                 <div className="bg-dark-850 border border-slate-800 rounded-2xl rounded-tl-none p-3 text-xs text-rose-200 animate-pulse">
-                  Reasoning with your live GTech career profile...
+                  Reasoning with your live Kalpa career profile...
                 </div>
               </div>
             )}

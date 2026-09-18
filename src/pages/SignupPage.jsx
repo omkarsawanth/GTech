@@ -35,14 +35,14 @@ export const SignupPage = () => {
           <Link to="/" className="inline-flex items-center gap-3 group mb-8">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 p-0.5 shadow-lg shadow-purple-600/30">
               <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-display font-bold text-purple-400 text-lg">
-                G
+                K
               </div>
             </div>
-            <span className="text-2xl font-display font-extrabold text-white tracking-tight">GTech</span>
+            <span className="text-2xl font-display font-extrabold text-white tracking-tight">Kalpa</span>
           </Link>
 
           <h1 className="text-3xl lg:text-4xl font-display font-extrabold text-white tracking-tight leading-tight mt-6">
-            Create your <span className="gradient-text-cyan">GTech account.</span>
+            Create your <span className="gradient-text-cyan">Kalpa account.</span>
           </h1>
 
           <p className="mt-4 text-sm text-slate-300 max-w-md leading-relaxed">
@@ -66,7 +66,7 @@ export const SignupPage = () => {
         </div>
 
         <div className="relative z-10 pt-12 text-xs text-slate-500">
-          © 2026 GTech AI Platform. Secured by Firebase.
+          © 2026 Kalpa AI Platform. Secured by Firebase.
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export const SignupPage = () => {
         <div className="w-full max-w-md">
 
           <div className="mb-8">
-            <h2 className="text-2xl font-display font-extrabold text-white tracking-tight">Create your GTech account</h2>
+            <h2 className="text-2xl font-display font-extrabold text-white tracking-tight">Create your Kalpa account</h2>
             <p className="text-xs text-slate-400 mt-1">Start your AI-guided career transformation today</p>
           </div>
 

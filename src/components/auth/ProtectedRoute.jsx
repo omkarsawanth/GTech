@@ -12,7 +12,7 @@ export const ProtectedRoute = ({ children, publicOnly = false }) => {
         <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-4 animate-pulse">
           <Sparkles className="w-6 h-6 animate-spin" />
         </div>
-        <h3 className="text-lg font-bold text-white tracking-tight">Authenticating GTech Session...</h3>
+        <h3 className="text-lg font-bold text-white tracking-tight">Authenticating Kalpa Session...</h3>
         <p className="text-xs text-slate-400 mt-1">Connecting security protocols</p>
       </div>
     );

@@ -49,7 +49,7 @@ export const Navbar = () => {
           {/* Editorial Wordmark */}
           <Link to="/" className="flex items-baseline gap-3 group">
             <span className="font-display font-extrabold text-2xl tracking-tighter text-white uppercase">
-              GTech<span className="text-gorange text-2xl">.</span>
+              Kalpa<span className="text-gorange text-2xl">.</span>
             </span>
             <span className="hidden sm:inline-block font-mono text-[10px] tracking-[0.25em] text-[#6B7688] uppercase">
               Career Intelligence / 2026
@@ -117,7 +117,7 @@ export const Navbar = () => {
                   onClick={() => navigate('/onboarding')}
                   className="font-mono text-xs tracking-widest uppercase px-5 py-2.5 bg-gorange text-black font-bold hover:bg-[#FF6D24] transition-all flex items-center gap-2"
                 >
-                  <span>Launch GTech</span>
+                  <span>Launch Kalpa</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </>
@@ -189,7 +189,7 @@ export const Navbar = () => {
                 onClick={() => navigate('/onboarding')}
                 className="w-full py-3 bg-gorange text-black font-mono text-xs uppercase font-bold tracking-widest text-center"
               >
-                Launch GTech
+                Launch Kalpa
               </button>
               {!isAuthenticated && (
                 <Link
