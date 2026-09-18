@@ -20,6 +20,7 @@ import { InterestSelector } from '../components/common/InterestSelector';
 import { useAuth } from '../context/AuthContext';
 import { CAREER_CATEGORIES } from '../data/careersData';
 import { CareerConstellation } from '../components/3d/CareerConstellation';
+import { LiquidGlassContainer, OpticalGlassLens } from '../components/common/LiquidGlassView';
 
 export const LandingPage = () => {
   const navigate = useNavigate();
@@ -454,8 +455,29 @@ export const LandingPage = () => {
           </button>
         </div>
 
-        {/* Large Data-Led Skill Gap Visualization */}
-        <div className="border border-[#1E232F] bg-[#060709] p-6 lg:p-10">
+        {/* Optical Glass Telemetry Status Ribbon */}
+        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] text-[#6B7688] mb-4 pb-2 border-b border-[#1E232F]">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-white font-medium">OPTICAL REFRACTION ENGINE: ACTIVE</span>
+            <span className="text-[#3A4354]">—</span>
+            <span className="text-[#8F9AA9]">REAL-TIME WEBGL MULTI-PASS REFRACTION &amp; CHROMATIC ABERRATION</span>
+          </div>
+          <div className="text-gorange hidden sm:block">
+            [ DRAG THE FLOATING LENS OVER SKILL BARS TO REFRACT LIGHT ]
+          </div>
+        </div>
+
+        {/* Large Data-Led Skill Gap Visualization with LiquidGlassContainer */}
+        <LiquidGlassContainer className="border border-[#1E232F] bg-[#060709] p-6 lg:p-10 relative overflow-hidden">
+          {/* Draggable Optical Glass Lens (Direct child of LiquidGlassContainer) */}
+          <OpticalGlassLens
+            careerTitle={activeCareer.title}
+            score={calculatedReadiness}
+            category={activeCategory.name}
+            className="absolute top-8 right-8 z-30 hidden xl:block"
+          />
+
           <div className="space-y-6">
             {activeCareer.skills.map((skill, index) => {
               const gap = Math.max(0, skill.required - skill.baseline);
@@ -540,7 +562,7 @@ export const LandingPage = () => {
             
             <div>EVALUATION CONFIDENCE: 98.6%</div>
           </div>
-        </div>
+        </LiquidGlassContainer>
       </section>
 
       {/* =========================================================================
