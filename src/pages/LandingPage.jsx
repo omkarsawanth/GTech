@@ -20,6 +20,7 @@ import { InterestSelector } from '../components/common/InterestSelector';
 import { useAuth } from '../context/AuthContext';
 import { CAREER_CATEGORIES } from '../data/careersData';
 import { CareerConstellation } from '../components/3d/CareerConstellation';
+import { FluidShaderGradient } from '../components/3d/FluidShaderGradient';
 import { LiquidGlassContainer, OpticalGlassLens } from '../components/common/LiquidGlassView';
 
 export const LandingPage = () => {
@@ -793,18 +794,32 @@ export const LandingPage = () => {
           ========================================================================= */}
       <section className="relative px-6 lg:px-14 py-24 lg:py-36 bg-[#060709] overflow-hidden">
         
+        {/* 3D Fluid Shader Gradient Mesh Background (ruucm/shadergradient) */}
+        <FluidShaderGradient 
+          color1="#FF8A00" 
+          color2="#FF3366" 
+          color3="#8B5CF6" 
+          type="waterPlane" 
+          uSpeed={0.25}
+          uStrength={2.6}
+          opacity={0.35}
+        />
+
         {/* Section Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 bg-gorange inline-block" />
             <span className="text-white font-semibold">06 / START</span>
             <span className="text-[#3A4354]">—</span>
             <span>LAUNCH YOUR CAREER TRAJECTORY</span>
           </div>
-          <div>[ UNIVERSAL CAREER LAUNCHPAD ]</div>
+          <div className="flex items-center gap-2 text-gorange">
+            <span className="w-1.5 h-1.5 rounded-full bg-gorange animate-pulse" />
+            <span>SHADER GRADIENT: ONLINE</span>
+          </div>
         </div>
 
-        <div className="max-w-5xl">
+        <div className="relative z-10 max-w-5xl">
           <h2 className="font-display font-extrabold text-display text-white tracking-tight leading-[0.95]">
             Whatever you want to become. <span className="text-gorange">Start here.</span>
           </h2>
@@ -824,14 +839,14 @@ export const LandingPage = () => {
 
             <Link
               to="/career-selection"
-              className="font-mono text-xs uppercase tracking-widest px-8 py-5 border border-[#2B3242] text-white hover:border-white transition-colors"
+              className="font-mono text-xs uppercase tracking-widest px-8 py-5 border border-[#2B3242] text-white hover:border-white transition-colors backdrop-blur-sm bg-black/40"
             >
               Explore All Careers &rarr;
             </Link>
 
             <Link
               to="/job-analysis"
-              className="font-mono text-xs uppercase tracking-widest px-8 py-5 border border-[#1E232F] text-[#8F9AA9] hover:text-white hover:border-[#384255] transition-colors"
+              className="font-mono text-xs uppercase tracking-widest px-8 py-5 border border-[#1E232F] text-[#8F9AA9] hover:text-white hover:border-[#384255] transition-colors backdrop-blur-sm bg-black/40"
             >
               Run JD Parser
             </Link>
@@ -839,7 +854,7 @@ export const LandingPage = () => {
         </div>
 
         {/* Universal Specification Footer */}
-        <div className="mt-28 pt-12 border-t border-[#1E232F] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-xs text-[#6B7688]">
+        <div className="relative z-10 mt-28 pt-12 border-t border-[#1E232F] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-xs text-[#6B7688]">
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-white font-bold tracking-wider">KALPA &bull; 2026</span>
             <span>&bull;</span>
