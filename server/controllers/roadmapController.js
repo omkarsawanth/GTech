@@ -1,18 +1,21 @@
 import { generateRoadmap as genRoadmap, getCachedRoadmap, updateMilestone, completeTask as completeTaskService, getTodaysTasks as getTodaysTasksService } from '../services/roadmapService.js';
+import { RoadmapGenerationInputSchema, UpdateMilestoneInputSchema } from '../utils/validation.js';
 
 /**
  * POST /api/roadmap — generate new roadmap
  */
 export const generateRoadmap = async (req, res, next) => {
   try {
-    const { career, profile, skillGap } = req.body;
-    if (!career) {
+    const parsed = RoadmapGenerationInputSchema.safeParse(req.body);
+    if (!parsed.success) {
       return res.status(400).json({
         success: false,
-        error: { code: 'VALIDATION_ERROR', message: 'Target career is required.' },
+        error: { code: 'VALIDATION_ERROR', message: parsed.error.errors[0]?.message || 'Invalid roadmap input' },
       });
     }
-    const result = await genRoadmap(req.user.uid, { career, profile: profile || {}, skillGap });
+
+    const { career, profile, skillGap } = parsed.data;
+    const result = await genRoadmap(req.user.uid, { career, profile, skillGap });
     res.json({ success: true, data: result });
   } catch (err) { next(err); }
 };
@@ -33,8 +36,22 @@ export const getRoadmap = async (req, res, next) => {
 export const updateRoadmapMilestone = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status, progress } = req.body;
-    const result = await updateMilestone(req.user.uid, id, { status, progress });
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'VALIDATION_ERROR', message: 'Milestone ID is required' },
+      });
+    }
+
+    const parsed = UpdateMilestoneInputSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'VALIDATION_ERROR', message: parsed.error.errors[0]?.message || 'Invalid milestone update input' },
+      });
+    }
+
+    const result = await updateMilestone(req.user.uid, id, parsed.data);
     res.json({ success: true, data: result });
   } catch (err) { next(err); }
 };

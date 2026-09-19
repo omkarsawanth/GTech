@@ -1,6 +1,6 @@
 import { generateStructuredResponse } from '../services/geminiService.js';
 import { PROMPTS } from '../utils/prompts.js';
-import { AssessmentResponseSchema } from '../utils/validation.js';
+import { AssessmentResponseSchema, AssessmentInputSchema } from '../utils/validation.js';
 import { db } from '../config/firebaseAdmin.js';
 
 /**
@@ -8,13 +8,15 @@ import { db } from '../config/firebaseAdmin.js';
  */
 export const analyzeAssessment = async (req, res, next) => {
   try {
-    const { answers, career } = req.body;
-    if (!answers || typeof answers !== 'object') {
+    const parsed = AssessmentInputSchema.safeParse(req.body);
+    if (!parsed.success) {
       return res.status(400).json({
         success: false,
-        error: { code: 'VALIDATION_ERROR', message: 'Assessment answers are required.' },
+        error: { code: 'VALIDATION_ERROR', message: parsed.error.errors[0]?.message || 'Invalid assessment input' },
       });
     }
+
+    const { answers, career } = parsed.data;
 
     const prompt = PROMPTS.ASSESSMENT_ANALYSIS({ answers, career });
     const result = await generateStructuredResponse(prompt, AssessmentResponseSchema, { uid: req.user.uid, tag: 'assessment' });

@@ -204,3 +204,39 @@ export const JoinSquadInputSchema = z.object({
   inviteCode: z.string().min(4, 'Invite code is required').max(12),
 });
 
+export const AssessmentInputSchema = z.object({
+  answers: z.record(z.any()).refine(obj => Object.keys(obj).length > 0, {
+    message: 'Assessment answers are required and cannot be empty.',
+  }),
+  career: z.string().trim().min(1, 'Target career is required').optional().default('software-engineer'),
+});
+
+export const LeaderboardQuerySchema = z.object({
+  career: z.string().trim().min(1).max(100).optional().default('ai-engineer'),
+});
+
+export const LeaderboardOptInSchema = z.object({
+  displayHandle: z.string().trim().min(2, 'Handle must be at least 2 characters').max(50, 'Handle cannot exceed 50 characters').optional().nullable(),
+  optIn: z.boolean().default(true),
+});
+
+export const ProjectGenerationInputSchema = z.object({
+  career: z.string().trim().min(1).optional(),
+  skills: z.array(z.string()).optional(),
+  missingSkills: z.array(z.string()).optional(),
+  experienceLevel: z.string().trim().optional(),
+});
+
+export const RoadmapGenerationInputSchema = z.object({
+  career: z.string().trim().min(1, 'Target career is required'),
+  profile: z.record(z.any()).optional().default({}),
+  skillGap: z.record(z.any()).optional().nullable(),
+});
+
+export const UpdateMilestoneInputSchema = z.object({
+  status: z.enum(['Completed', 'In Progress', 'Locked', 'completed', 'in-progress', 'locked']).optional(),
+  progress: z.number().min(0).max(100).optional(),
+}).refine(data => data.status !== undefined || data.progress !== undefined, {
+  message: 'At least status or progress must be provided to update milestone.',
+});
+

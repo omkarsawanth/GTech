@@ -4,14 +4,21 @@
 export const errorHandler = (err, req, res, next) => {
   console.error('[GTech API Error]', err.message || err);
 
-  const statusCode = err.statusCode || 500;
+  let statusCode = err.statusCode || 500;
+  let code = err.code || 'INTERNAL_ERROR';
+  let message = err.userMessage || err.message || 'An internal server error occurred. Please try again.';
+
+  if (err.name === 'ZodError') {
+    statusCode = 400;
+    code = 'VALIDATION_ERROR';
+    message = err.errors?.map(e => e.message).join(', ') || 'Validation failed.';
+  }
 
   res.status(statusCode).json({
     success: false,
     error: {
-      code: err.code || 'INTERNAL_ERROR',
-      // Never expose raw stack traces to the client, but deliver the actionable userMessage
-      message: err.userMessage || err.message || 'An internal server error occurred. Please try again.',
+      code,
+      message,
     },
   });
 };
