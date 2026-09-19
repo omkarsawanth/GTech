@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, 
   ChevronRight, 
@@ -14,7 +15,9 @@ import {
   Trophy,
   Compass,
   AlertTriangle,
-  Play
+  Play,
+  X,
+  Sparkles
 } from 'lucide-react';
 import { AppLayout } from '../components/layout/AppLayout';
 import { 
@@ -51,7 +54,17 @@ export const DashboardPage = () => {
   const navigate = useNavigate();
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareModalTemplate, setShareModalTemplate] = useState('stats');
   const [selectedTimelineStage, setSelectedTimelineStage] = useState(0);
+
+  // Auto-dismiss milestone celebration banner/modal after 12s if not interacted with
+  useEffect(() => {
+    if (!milestoneUnlocked) return;
+    const timer = setTimeout(() => {
+      setMilestoneUnlocked(null);
+    }, 12000);
+    return () => clearTimeout(timer);
+  }, [milestoneUnlocked, setMilestoneUnlocked]);
 
   // Skill Roast State
   const [isRoastModalOpen, setIsRoastModalOpen] = useState(false);
@@ -117,73 +130,152 @@ export const DashboardPage = () => {
     <AppLayout>
       <EditorialShell>
         
-        {/* Minimal Editorial Streak & Consistency Status Banner */}
-        <div className="mb-6 pb-4 border-b border-[#1E232F] flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-          <div className="flex items-center gap-4 text-[#8F9AA9]">
-            <div className="flex items-center gap-1.5 text-white">
-              <Flame className="w-3.5 h-3.5 text-gorange" />
-              <span className="font-bold tracking-wider">{currentStreak < 10 ? `0${currentStreak}` : currentStreak} DAYS</span>
-              <span className="text-[#566173]">/ ACTIVE CONSISTENCY</span>
-            </div>
-            <span className="text-[#3A4354]">|</span>
-            <div className="flex items-center gap-1.5">
-              <Snowflake className="w-3.5 h-3.5 text-cyan-400" />
-              <span>FREEZE: {streakFreezes < 10 ? `0${streakFreezes}` : streakFreezes} AVAILABLE</span>
-            </div>
-          </div>
+        {/* Top Status Bar: Prominent Animated Streak Hero Card + Secondary Actions */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="mb-8 pb-5 border-b border-[#1E232F] flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          {/* STREAK & CONSISTENCY HERO CARD (Dominates the visual hierarchy) */}
+          <motion.div 
+            initial={{ scale: 0.96, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="relative bg-gradient-to-r from-[#160E0A] via-[#0E121A] to-[#0A0D12] border border-gorange/40 hover:border-gorange/70 p-3 sm:px-4 sm:py-3 flex items-center gap-4 shadow-xl shadow-black/60 transition-all group"
+          >
+            {/* Ambient background glow on hover */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-gorange/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity blur-sm pointer-events-none" />
 
-          <div className="flex items-center gap-3">
+            {/* Glowing Flame Icon with Pulse Animation */}
+            <div className="relative flex items-center justify-center">
+              <motion.div
+                animate={currentStreak > 0 ? {
+                  scale: [1, 1.14, 1],
+                  filter: [
+                    'drop-shadow(0 0 6px rgba(255,138,0,0.6))',
+                    'drop-shadow(0 0 16px rgba(255,138,0,0.95))',
+                    'drop-shadow(0 0 6px rgba(255,138,0,0.6))'
+                  ]
+                } : {}}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                className="w-10 h-10 rounded-none bg-gorange/10 border border-gorange/40 flex items-center justify-center"
+              >
+                <Flame className={`w-6 h-6 ${currentStreak > 0 ? 'text-gorange fill-gorange/20' : 'text-[#6B7688]'}`} />
+              </motion.div>
+            </div>
+
+            {/* Prominent Streak Numeral & Subtitle */}
+            <div className="flex flex-col pr-3.5 border-r border-[#1E2533]">
+              <div className="flex items-baseline gap-1.5 leading-none">
+                <span className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
+                  {currentStreak < 10 ? `0${currentStreak}` : currentStreak}
+                </span>
+                <span className="font-mono text-xs font-bold text-gorange uppercase tracking-wider">
+                  DAYS
+                </span>
+              </div>
+              <span className="font-mono text-[9px] text-[#7E8B9F] uppercase tracking-widest mt-0.5">
+                ACTIVE CONSISTENCY
+              </span>
+            </div>
+
+            {/* Streak Freeze Indicator */}
+            <div className="flex items-center gap-2.5 pl-1">
+              <div className="w-8 h-8 rounded-none bg-cyan-950/30 border border-cyan-800/40 flex items-center justify-center">
+                <Snowflake className="w-4 h-4 text-cyan-400" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-mono text-xs font-bold text-cyan-300 leading-tight">
+                  {streakFreezes < 10 ? `0${streakFreezes}` : streakFreezes} {streakFreezes === 1 ? 'FREEZE' : 'FREEZES'}
+                </span>
+                <span className="font-mono text-[9px] text-cyan-500/80 uppercase tracking-widest leading-tight">
+                  {streakFreezes > 0 ? 'PROTECTED' : 'DEPLETED'}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Secondary Action Links (Understated, cleanly outranked by Streak Hero) */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap font-mono text-xs">
             <button
               onClick={handleGetRoast}
-              className="text-gorange hover:text-white transition-colors flex items-center gap-1.5 text-[11px] font-bold"
+              className="px-3 py-1.5 bg-[#120E0C] hover:bg-[#1C1410] border border-gorange/40 hover:border-gorange text-gorange hover:text-white transition-all flex items-center gap-1.5 text-[11px] font-bold shadow-sm"
             >
               <Flame className="w-3.5 h-3.5 text-gorange animate-pulse" />
               <span>GET ROASTED 🔥</span>
             </button>
-            <span className="text-[#3A4354]">|</span>
+
             <button
-              onClick={() => setIsShareModalOpen(true)}
-              className="text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px]"
+              onClick={() => {
+                setShareModalTemplate('stats');
+                setIsShareModalOpen(true);
+              }}
+              className="px-3 py-1.5 bg-[#0B0D12] hover:bg-[#141820] border border-[#1E232F] hover:border-[#3A4354] text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px]"
             >
-              <Share2 className="w-3 h-3 text-gorange" />
+              <Share2 className="w-3.5 h-3.5 text-gorange" />
               <span>SHARE PROGRESS</span>
             </button>
-            <span className="text-[#3A4354]">|</span>
+
             <Link
               to="/leaderboard"
-              className="text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px]"
+              className="px-3 py-1.5 bg-[#0B0D12] hover:bg-[#141820] border border-[#1E232F] hover:border-[#3A4354] text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px]"
             >
-              <Trophy className="w-3 h-3 text-amber-400" />
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
               <span>LEADERBOARD</span>
             </Link>
           </div>
-        </div>
+        </motion.div>
 
-        {/* STREAK ALERTS (Editorial Banner Format) */}
-        {streakFreezeUsedAlert && (
-          <div className="mb-6 p-4 bg-[#0A1017] border border-cyan-800/60 flex items-center justify-between font-mono text-xs text-cyan-300">
-            <div className="flex items-center gap-2.5">
-              <Snowflake className="w-4 h-4 text-cyan-400" />
-              <span>STREAK PROTECTED: Free miss applied automatically yesterday. Continuity maintained.</span>
-            </div>
-            <span className="text-[10px] text-cyan-400 uppercase tracking-widest font-bold">1 FREEZE REMAINING</span>
-          </div>
-        )}
-
-        {streakCelebration && (
-          <div className="mb-6 p-4 bg-[#140E0A] border border-gorange/60 flex items-center justify-between font-mono text-xs text-gorange">
-            <div className="flex items-center gap-2.5">
-              <Flame className="w-4 h-4 text-gorange" />
-              <span className="font-bold text-white">DAILY TASK LOGGED. STREAK EXTENDED TO {currentStreak} DAYS.</span>
-            </div>
-            <button
-              onClick={() => setIsShareModalOpen(true)}
-              className="px-3 py-1 bg-gorange text-black font-bold uppercase tracking-wider text-[10px]"
+        {/* STREAK ALERTS (Smooth Framer-Motion Animated Banners) */}
+        <AnimatePresence>
+          {streakFreezeUsedAlert && (
+            <motion.div
+              key="freeze-alert"
+              initial={{ opacity: 0, y: -16, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -12, height: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="mb-6 p-4 bg-[#0A1017] border border-cyan-800/60 flex items-center justify-between font-mono text-xs text-cyan-300 overflow-hidden"
             >
-              Share Proof
-            </button>
-          </div>
-        )}
+              <div className="flex items-center gap-2.5">
+                <Snowflake className="w-4 h-4 text-cyan-400" />
+                <span>STREAK PROTECTED: Free miss applied automatically yesterday. Continuity maintained.</span>
+              </div>
+              <span className="text-[10px] text-cyan-400 uppercase tracking-widest font-bold">
+                {streakFreezes} {streakFreezes === 1 ? 'FREEZE' : 'FREEZES'} REMAINING
+              </span>
+            </motion.div>
+          )}
+
+          {streakCelebration && (
+            <motion.div
+              key="streak-celebration"
+              initial={{ opacity: 0, y: -20, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 450, damping: 28 }}
+              className="mb-6 p-4 bg-gradient-to-r from-[#1E120A] via-[#140E0A] to-[#1E120A] border-l-4 border-l-gorange border-y border-r border-gorange/50 flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-gorange shadow-lg shadow-gorange/10"
+            >
+              <div className="flex items-center gap-2.5">
+                <Flame className="w-4 h-4 text-gorange drop-shadow-[0_0_8px_rgba(255,138,0,0.8)]" />
+                <span className="font-bold text-white tracking-wide">
+                  DAILY TASK LOGGED. STREAK EXTENDED TO {currentStreak} DAYS.
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setShareModalTemplate('stats');
+                  setIsShareModalOpen(true);
+                }}
+                className="px-3 py-1.5 bg-gorange hover:bg-orange-400 text-black font-bold uppercase tracking-wider text-[10px] transition-transform hover:scale-105 active:scale-95 shadow-md shadow-gorange/30 flex items-center gap-1.5"
+              >
+                <Share2 className="w-3 h-3" />
+                <span>Share Proof</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* HEADER */}
         <EditorialHeader
@@ -564,6 +656,119 @@ export const DashboardPage = () => {
 
       </EditorialShell>
 
+      {/* Milestone Celebration Modal & Particle Burst */}
+      <AnimatePresence>
+        {milestoneUnlocked && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-hidden">
+            {/* Lightweight Framer-Motion Particle Burst */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {Array.from({ length: 32 }).map((_, i) => {
+                const angle = (i / 32) * 360;
+                const distance = 140 + (i % 5) * 60;
+                const rad = (angle * Math.PI) / 180;
+                const x = Math.cos(rad) * distance;
+                const y = Math.sin(rad) * distance;
+                const colors = ['#FF8A00', '#FF3366', '#FFD700', '#00F0FF', '#FFFFFF'];
+                const color = colors[i % colors.length];
+                const size = (i % 3 === 0) ? 8 : 5;
+
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ x: 0, y: 0, opacity: 1, scale: 0 }}
+                    animate={{ 
+                      x: [0, x * 0.7, x], 
+                      y: [0, y * 0.7 - 25, y + 40], 
+                      opacity: [1, 1, 0], 
+                      scale: [0, 1.4, 0.6],
+                      rotate: [0, (i % 2 === 0 ? 180 : -180)]
+                    }}
+                    transition={{ duration: 1.8 + (i % 4) * 0.2, ease: "easeOut" }}
+                    className="absolute left-1/2 top-1/2 rounded-full pointer-events-none"
+                    style={{
+                      width: size,
+                      height: size,
+                      backgroundColor: color,
+                      boxShadow: `0 0 10px ${color}`
+                    }}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Celebration Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", stiffness: 320, damping: 26 }}
+              className="relative w-full max-w-lg bg-[#0B0D12] border-2 border-gorange/80 p-6 sm:p-8 text-center shadow-2xl shadow-gorange/20"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setMilestoneUnlocked(null)}
+                className="absolute top-4 right-4 text-[#8F9AA9] hover:text-white transition-colors p-1"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Subheader */}
+              <div className="font-mono text-[11px] text-gorange tracking-[0.25em] uppercase font-bold mb-3 flex items-center justify-center gap-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>CONSISTENCY MILESTONE UNLOCKED</span>
+                <Sparkles className="w-3.5 h-3.5" />
+              </div>
+
+              {/* Animated Badge Icon Hex */}
+              <motion.div 
+                animate={{ scale: [1, 1.08, 1], rotate: [0, 2, -2, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                className="w-20 h-20 mx-auto my-4 rounded-none bg-gradient-to-b from-[#1F130A] to-[#0D1117] border-2 border-gorange flex items-center justify-center text-4xl shadow-lg shadow-gorange/40"
+              >
+                <span className="select-none">{milestoneUnlocked.icon || '🔥'}</span>
+              </motion.div>
+
+              {/* Headline */}
+              <h2 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight uppercase">
+                {milestoneUnlocked.days} DAY STREAK UNLOCKED!
+              </h2>
+
+              {/* Badge Title */}
+              <div className="inline-block mt-2 px-3 py-1 bg-gorange/20 border border-gorange/60 text-gorange font-mono text-xs font-bold uppercase tracking-wider">
+                {milestoneUnlocked.badge} • {milestoneUnlocked.title}
+              </div>
+
+              {/* Description */}
+              <p className="mt-3 font-mono text-xs text-[#8F9AA9] max-w-sm mx-auto leading-relaxed">
+                {milestoneUnlocked.desc}
+              </p>
+
+              {/* Action Buttons */}
+              <div className="mt-6 pt-6 border-t border-[#1E232F] flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => {
+                    setShareModalTemplate('badge');
+                    setIsShareModalOpen(true);
+                    setMilestoneUnlocked(null);
+                  }}
+                  className="px-5 py-2.5 bg-gorange hover:bg-orange-400 text-black font-bold uppercase font-mono tracking-wider text-xs transition-all hover:scale-105 active:scale-95 shadow-lg shadow-gorange/25 flex items-center justify-center gap-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>Share Milestone Proof</span>
+                </button>
+                <button
+                  onClick={() => setMilestoneUnlocked(null)}
+                  className="px-5 py-2.5 bg-transparent hover:bg-[#1A202C] text-[#8F9AA9] hover:text-white border border-[#2D3748] font-mono tracking-wider text-xs uppercase transition-colors"
+                >
+                  Continue Run
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Share Progress Modal */}
       {isShareModalOpen && (
         <ShareProgressModal
@@ -573,6 +778,7 @@ export const DashboardPage = () => {
           readinessScore={readinessScore}
           targetCareer={activeCareerProfile?.title || 'Professional'}
           userName={user?.displayName || 'Builder'}
+          initialTemplate={shareModalTemplate}
         />
       )}
 
