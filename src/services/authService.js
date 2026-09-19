@@ -3,7 +3,7 @@ import {
   signInWithPopup,
   signOut,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore/lite';
 import { auth, db } from '../config/firebase';
 
 const googleProvider = new GoogleAuthProvider();

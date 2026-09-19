@@ -38,7 +38,7 @@ export const generateSkillRoast = async (uid, { skills = [], targetRole = 'Softw
 
   try {
     const prompt = PROMPTS.ROAST({ skills, targetRole, missingSkills });
-    result = await generateStructuredResponse(prompt, RoastResponseSchema);
+    result = await generateStructuredResponse(prompt, RoastResponseSchema, { uid, tag: 'roast' });
   } catch (err) {
     console.warn('[roastService] AI generation failed, using curated roast fallback:', err.message);
     const randomIndex = Math.floor(Math.random() * FALLBACK_ROASTS.length);

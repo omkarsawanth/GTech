@@ -17,7 +17,7 @@ export const analyzeAssessment = async (req, res, next) => {
     }
 
     const prompt = PROMPTS.ASSESSMENT_ANALYSIS({ answers, career });
-    const result = await generateStructuredResponse(prompt, AssessmentResponseSchema);
+    const result = await generateStructuredResponse(prompt, AssessmentResponseSchema, { uid: req.user.uid, tag: 'assessment' });
 
     // Persist
     await db.collection('users').doc(req.user.uid).collection('assessment').doc('current').set({

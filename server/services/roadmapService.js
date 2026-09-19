@@ -8,7 +8,7 @@ import { db } from '../config/firebaseAdmin.js';
  */
 export const generateRoadmap = async (uid, { career, profile, skillGap }) => {
   const prompt = PROMPTS.ROADMAP({ career, profile, skillGap });
-  const result = await generateStructuredResponse(prompt, DailyRoadmapResponseSchema);
+  const result = await generateStructuredResponse(prompt, DailyRoadmapResponseSchema, { uid, tag: 'roadmap' });
 
   // Initialize tasks
   if (result.tasks && result.tasks.length > 0) {

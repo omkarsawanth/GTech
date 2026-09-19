@@ -20,7 +20,7 @@ export const generateProjects = async (req, res, next) => {
       skills: skills || userProfile.skills || [],
       missingSkills: missingSkills || [],
       experienceLevel: experienceLevel || userProfile.experienceLevel || 'Entry-Level',
-    });
+    }, req.user?.uid);
 
     res.json({ success: true, data: result });
   } catch (err) { next(err); }

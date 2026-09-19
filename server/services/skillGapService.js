@@ -8,7 +8,7 @@ import { db } from '../config/firebaseAdmin.js';
  */
 export const analyzeSkillGap = async (uid, { profile, career, assessment }) => {
   const prompt = PROMPTS.SKILL_GAP({ profile, career, assessment });
-  const result = await generateStructuredResponse(prompt, SkillGapResponseSchema);
+  const result = await generateStructuredResponse(prompt, SkillGapResponseSchema, { uid, tag: 'skill-gap' });
 
   // Persist to Firestore
   await db.collection('users').doc(uid).collection('skillGap').doc('current').set({

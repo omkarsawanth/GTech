@@ -6,13 +6,16 @@ import { genai, GEMINI_MODEL_NAME } from '../config/gemini.js';
  * @param {ZodSchema} schema - Zod schema to validate the response
  * @returns {object} Validated and parsed response data
  */
-export const generateStructuredResponse = async (prompt, schema) => {
+export const generateStructuredResponse = async (prompt, schema, metadata = {}) => {
   if (!genai) {
     const appError = new Error('GEMINI_API_KEY is not configured on the server.');
     appError.code = 'GEMINI_NOT_CONFIGURED';
     appError.userMessage = 'Gemini API key is not configured. Please add GEMINI_API_KEY to your server .env file.';
     throw appError;
   }
+  const auditUid = metadata.uid || 'anonymous';
+  const auditTag = metadata.tag || 'structured';
+  console.log(`[Gemini Audit] [${new Date().toISOString()}] uid=${auditUid} action=${auditTag} model=${GEMINI_MODEL_NAME}`);
   try {
     const response = await genai.models.generateContent({
       model: GEMINI_MODEL_NAME,
@@ -71,13 +74,16 @@ export const generateStructuredResponse = async (prompt, schema) => {
 /**
  * Simple text generation (no JSON parsing) — used for mentor responses
  */
-export const generateTextResponse = async (prompt) => {
+export const generateTextResponse = async (prompt, metadata = {}) => {
   if (!genai) {
     const appError = new Error('GEMINI_API_KEY is not configured on the server.');
     appError.code = 'GEMINI_NOT_CONFIGURED';
     appError.userMessage = 'Gemini API key is not configured. Please add GEMINI_API_KEY to your server .env file.';
     throw appError;
   }
+  const auditUid = metadata.uid || 'anonymous';
+  const auditTag = metadata.tag || 'text';
+  console.log(`[Gemini Audit] [${new Date().toISOString()}] uid=${auditUid} action=${auditTag} model=${GEMINI_MODEL_NAME}`);
   try {
     const response = await genai.models.generateContent({
       model: GEMINI_MODEL_NAME,

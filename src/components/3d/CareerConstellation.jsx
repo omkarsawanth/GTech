@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import { Color, AdditiveBlending, MathUtils } from 'three';
 
 /**
  * Category color palette mapping for dynamic visual responsiveness
@@ -29,10 +29,10 @@ function Starfield({ categoryIndex = 0 }) {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
 
-    const color1 = new THREE.Color(palette.primary);
-    const color2 = new THREE.Color(palette.secondary);
-    const color3 = new THREE.Color(palette.ambient);
-    const colorWhite = new THREE.Color('#FFFFFF');
+    const color1 = new Color(palette.primary);
+    const color2 = new Color(palette.secondary);
+    const color3 = new Color(palette.ambient);
+    const colorWhite = new Color('#FFFFFF');
 
     for (let i = 0; i < count; i++) {
       // Spherical distribution
@@ -85,7 +85,7 @@ function Starfield({ categoryIndex = 0 }) {
         opacity={0.85}
         sizeAttenuation
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={AdditiveBlending}
       />
     </points>
   );
@@ -161,7 +161,7 @@ function QuantumLattice({ categoryIndex = 0 }) {
           color={palette.primary}
           transparent
           opacity={0.3}
-          blending={THREE.AdditiveBlending}
+          blending={AdditiveBlending}
         />
       </mesh>
 
@@ -172,7 +172,7 @@ function QuantumLattice({ categoryIndex = 0 }) {
           color={palette.ambient}
           transparent
           opacity={0.22}
-          blending={THREE.AdditiveBlending}
+          blending={AdditiveBlending}
         />
       </mesh>
     </group>
@@ -191,8 +191,8 @@ function SceneRig({ categoryIndex = 0, children }) {
     const targetX = state.pointer.x * 0.35;
     const targetY = state.pointer.y * 0.25;
 
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetX, 0.04);
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, -targetY, 0.04);
+    groupRef.current.rotation.y = MathUtils.lerp(groupRef.current.rotation.y, targetX, 0.04);
+    groupRef.current.rotation.x = MathUtils.lerp(groupRef.current.rotation.x, -targetY, 0.04);
   });
 
   return <group ref={groupRef}>{children}</group>;

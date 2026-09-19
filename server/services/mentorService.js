@@ -29,7 +29,7 @@ export const askMentor = async (uid, { question }) => {
 
   const career = skillGap?.career || profile?.targetCareer || 'Software Engineer';
   const prompt = PROMPTS.MENTOR({ question, profile, career, skillGap, roadmap });
-  const answer = await generateTextResponse(prompt);
+  const answer = await generateTextResponse(prompt, { uid, tag: 'mentor' });
 
   // Save session in background if possible
   try {

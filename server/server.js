@@ -47,10 +47,12 @@ app.get('/api/health', (req, res) => {
 // General rate limiter for all /api endpoints (100 requests per 15 minutes per IP)
 app.use('/api', generalLimiter);
 
-// Specific rate limiter for Gemini-powered endpoints (20 requests per 15 minutes per IP)
+// Specific persistent rate limiter for Gemini-powered endpoints (20 requests per 15 minutes per user/IP)
 app.use('/api/ai', aiLimiter);
 app.use('/api/job/analyze', aiLimiter);
 app.use('/api/projects/generate', aiLimiter);
+app.use('/api/roadmap', aiLimiter);
+app.use('/api/assessment', aiLimiter);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/user', userRoutes);

@@ -32,7 +32,7 @@ export const careerMatch = async (req, res, next) => {
         error: { code: 'VALIDATION_ERROR', message: parsed.error.errors[0]?.message || 'Invalid input' },
       });
     }
-    const result = await matchCareers({ profile: parsed.data.profile });
+    const result = await matchCareers({ profile: parsed.data.profile }, req.user.uid);
     res.json({ success: true, data: result });
   } catch (err) { next(err); }
 };

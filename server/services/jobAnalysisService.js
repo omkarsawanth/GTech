@@ -8,7 +8,7 @@ import { db } from '../config/firebaseAdmin.js';
  */
 export const analyzeJob = async (uid, { jobDescription, profile, career }) => {
   const prompt = PROMPTS.JOB_ANALYSIS({ jobDescription, profile, career });
-  const result = await generateStructuredResponse(prompt, JobAnalysisResponseSchema);
+  const result = await generateStructuredResponse(prompt, JobAnalysisResponseSchema, { uid, tag: 'job-analysis' });
 
   // Store analysis history
   const docRef = db.collection('users').doc(uid).collection('jobAnalyses').doc();

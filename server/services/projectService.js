@@ -5,7 +5,7 @@ import { ProjectsResponseSchema } from '../utils/validation.js';
 /**
  * Generate portfolio projects via Gemini.
  */
-export const generateProjects = async ({ career, skills, missingSkills, experienceLevel }) => {
+export const generateProjects = async ({ career, skills, missingSkills, experienceLevel }, uid = null) => {
   const prompt = PROMPTS.PROJECTS({ career, skills, missingSkills, experienceLevel });
-  return await generateStructuredResponse(prompt, ProjectsResponseSchema);
+  return await generateStructuredResponse(prompt, ProjectsResponseSchema, { uid, tag: 'projects' });
 };
