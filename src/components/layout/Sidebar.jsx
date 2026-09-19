@@ -25,17 +25,20 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen, onOpenMentor }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const navItems = [
+  // Two distinct tiers: Daily Habit Loop (prominent) vs Tools & Reference (secondary)
+  const dailyNavItems = [
     { code: '01', name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { code: '02', name: 'Careers', path: '/career-selection', icon: Target },
-    { code: '03', name: 'Skills & Gaps', path: '/skill-gap', icon: Target },
-    { code: '04', name: 'Assessment', path: '/assessment', icon: ClipboardCheck },
-    { code: '05', name: 'Roadmap', path: '/roadmap', icon: Compass },
-    { code: '06', name: 'Job Analyzer', path: '/job-analysis', icon: SearchCode },
-    { code: '07', name: 'Evidence & Projects', path: '/projects', icon: FolderGit2 },
-    { code: '08', name: 'Squad Rooms', path: '/squad', icon: Users },
+    { code: '02', name: 'Roadmap', path: '/roadmap', icon: Compass },
+    { code: '03', name: 'Squad Rooms', path: '/squad', icon: Users },
+  ];
+
+  const toolsNavItems = [
+    { code: '04', name: 'Careers', path: '/career-selection', icon: Target },
+    { code: '05', name: 'Skills & Gaps', path: '/skill-gap', icon: Target },
+    { code: '06', name: 'Assessment', path: '/assessment', icon: ClipboardCheck },
+    { code: '07', name: 'Job Analyzer', path: '/job-analysis', icon: SearchCode },
+    { code: '08', name: 'Evidence & Projects', path: '/projects', icon: FolderGit2 },
     { code: '09', name: 'Leaderboard', path: '/leaderboard', icon: Trophy },
-    { code: '10', name: 'Chat Onboarding', path: '/onboarding', icon: MessageSquare },
   ];
 
   const handleLogout = async () => {
@@ -59,9 +62,9 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen, onOpenMentor }) => {
         }`}
       >
         {/* Top Brand & Directory Header */}
-        <div>
+        <div className="flex flex-col flex-1 min-h-0">
           {/* Brand Header */}
-          <div className="h-20 px-6 flex items-center justify-between border-b border-[#1E232F]">
+          <div className="h-20 px-6 flex items-center justify-between border-b border-[#1E232F] shrink-0">
             <NavLink to="/" className="group flex flex-col">
               <span className="font-display font-black text-xl text-white tracking-tight flex items-center gap-1.5">
                 KALPA<span className="text-gorange">.</span>
@@ -80,7 +83,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen, onOpenMentor }) => {
           </div>
 
           {/* Active Career Readout Tile */}
-          <div className="p-4 mx-3 my-4 bg-[#0B0D12] border border-[#1E232F]">
+          <div className="p-4 mx-3 my-3 bg-[#0B0D12] border border-[#1E232F] shrink-0">
             <div className="flex items-center justify-between text-[10px] font-mono text-[#6B7688] uppercase tracking-wider mb-1.5">
               <span>TARGET ROLE</span>
               <span className="text-gorange font-bold font-mono">
@@ -98,44 +101,90 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen, onOpenMentor }) => {
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="px-3 space-y-0.5">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMobileOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2 text-xs font-mono tracking-wider transition-all select-none border ${
-                    isActive
-                      ? 'bg-[#10131A] text-white border-[#2B3242] border-l-2 border-l-gorange font-bold'
-                      : 'bg-transparent text-[#8F9AA9] border-transparent hover:text-white hover:bg-[#0E1118]'
-                  }`
-                }
-              >
-                <div className="flex items-center gap-2.5 truncate">
-                  <span className="text-[10px] text-[#566173] font-normal">{item.code}</span>
-                  <span className="truncate">{item.name}</span>
-                </div>
-                <item.icon className="w-3.5 h-3.5 text-[#566173] shrink-0" />
-              </NavLink>
-            ))}
+          {/* Scrollable Navigation Area */}
+          <nav className="px-3 flex-1 overflow-y-auto space-y-4 pr-2 select-none">
+            {/* TIER 1: DAILY HABIT LOOP (Top, visually prominent) */}
+            <div>
+              <div className="px-3 pt-1 pb-2 font-mono text-[9px] text-gorange tracking-[0.22em] uppercase font-bold flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-gorange rounded-full animate-pulse shadow-sm shadow-gorange/80" />
+                  DAILY ROUTINE
+                </span>
+                <span className="text-[8px] text-gorange/60 font-mono">CORE LOOP</span>
+              </div>
+
+              <div className="space-y-1">
+                {dailyNavItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsMobileOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center justify-between px-3 py-2.5 text-xs font-mono tracking-wider transition-all border ${
+                        isActive
+                          ? 'bg-gradient-to-r from-[#17120C] to-[#0E121A] text-white border-gorange/50 border-l-2 border-l-gorange font-bold shadow-md shadow-black/40'
+                          : 'bg-[#0B0E14]/70 text-[#A2AEBD] border-[#1A212E] hover:text-white hover:border-[#2C374A] hover:bg-[#111622]'
+                      }`
+                    }
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      <span className="text-[10px] text-gorange/80 font-mono font-bold">{item.code}</span>
+                      <span className="truncate">{item.name}</span>
+                    </div>
+                    <item.icon className="w-4 h-4 text-gorange/90 shrink-0" />
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+
+            {/* TIER 2: TOOLS & REFERENCE (Secondary, muted reference tools) */}
+            <div>
+              <div className="px-3 pt-1 pb-2 font-mono text-[9px] text-[#5D6B7F] tracking-[0.22em] uppercase font-semibold flex items-center justify-between border-t border-[#181E29] pt-3">
+                <span>ANALYSIS & TOOLS</span>
+                <span className="text-[8px] text-[#414B5A] font-mono">ON DEMAND</span>
+              </div>
+
+              <div className="space-y-0.5">
+                {toolsNavItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsMobileOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center justify-between px-3 py-1.5 text-[11px] font-mono tracking-wider transition-all border ${
+                        isActive
+                          ? 'bg-[#10141D] text-white border-[#273042] border-l-2 border-l-[#8F9AA9] font-bold'
+                          : 'bg-transparent text-[#6E7B8C] border-transparent hover:text-slate-200 hover:bg-[#0C0F16]'
+                      }`
+                    }
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      <span className="text-[9px] text-[#454F5E] font-normal">{item.code}</span>
+                      <span className="truncate">{item.name}</span>
+                    </div>
+                    <item.icon className="w-3.5 h-3.5 text-[#566173] shrink-0" />
+                  </NavLink>
+                ))}
+              </div>
+            </div>
 
             {/* AI Career Mentor Launcher Button */}
             {onOpenMentor && (
-              <button
-                onClick={() => {
-                  setIsMobileOpen(false);
-                  onOpenMentor();
-                }}
-                className="w-full mt-2 flex items-center justify-between px-3 py-2 text-xs font-mono tracking-wider text-gorange bg-gorange/5 border border-gorange/30 hover:bg-gorange/10 transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-gorange/60">11</span>
-                  <span>AI Mentor</span>
-                </div>
-                <Sparkles className="w-3.5 h-3.5" />
-              </button>
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    onOpenMentor();
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-mono tracking-wider text-gorange bg-gorange/5 border border-gorange/30 hover:bg-gorange/10 hover:border-gorange/60 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>AI Mentor</span>
+                  </div>
+                  <span className="text-[8px] font-mono px-1.5 py-0.5 bg-gorange/20 text-gorange">LIVE</span>
+                </button>
+              </div>
             )}
           </nav>
         </div>

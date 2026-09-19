@@ -94,9 +94,27 @@ export const OnboardingChatPage = () => {
   const refUser = searchParams.get('ref');
   const refRank = searchParams.get('rank');
   const squadInviteCode = searchParams.get('squadInviteCode') || searchParams.get('squad');
+  const isRedo = searchParams.get('redo') === 'true';
 
   const { user, updateUserProfile } = useApp();
   const { user: authUser } = useAuth();
+
+  // Guard: if user has already completed onboarding/profile, redirect to /dashboard
+  // UNLESS explicitly initiated via ?redo=true (e.g. from Settings).
+  useEffect(() => {
+    const hasCompletedProfile = Boolean(
+      user?.onboarded || 
+      (Array.isArray(user?.skills) && user.skills.length > 0) || 
+      user?.weeklyHours || 
+      user?.learningStyle ||
+      (user?.degree && user?.degree.trim() !== '')
+    );
+
+    if (hasCompletedProfile && !isRedo) {
+      console.info('[OnboardingChatPage] Existing completed profile detected; redirecting to /dashboard. Use ?redo=true to recalibrate.');
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, isRedo, navigate]);
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [messages, setMessages] = useState(() => {
@@ -225,8 +243,11 @@ export const OnboardingChatPage = () => {
           }
         ]);
 
-        // Save to AppContext & backend
-        updateUserProfile(currentAnswers);
+        // Save to AppContext & backend with explicit onboarded flag
+        updateUserProfile({
+          ...currentAnswers,
+          onboarded: true,
+        });
       }, 800);
     }
   };
@@ -254,13 +275,41 @@ export const OnboardingChatPage = () => {
           </div>
         </div>
 
-        <button 
-          onClick={() => navigate('/profile')} 
-          className="text-xs text-slate-400 hover:text-white transition-colors"
-        >
-          Use Classic Form ➔
-        </button>
+        <div className="flex items-center gap-4">
+          {isRedo && (
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="text-xs font-mono text-gorange hover:text-white transition-colors"
+            >
+              Cancel Recalibration
+            </button>
+          )}
+          <button 
+            onClick={() => navigate('/profile')} 
+            className="text-xs text-slate-400 hover:text-white transition-colors"
+          >
+            Use Classic Form ➔
+          </button>
+        </div>
       </header>
+
+      {/* Recalibration Notice Banner if ?redo=true */}
+      {isRedo && (
+        <div className="py-2.5 px-6 bg-[#160E0A] border-b border-gorange/40 text-gorange text-xs font-mono flex items-center justify-between z-20 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-gorange shrink-0 animate-pulse" />
+            <span className="font-semibold tracking-wide">
+              RECALIBRATION MODE ACTIVE // Completing this interview will update your target discipline and regenerate your roadmap.
+            </span>
+          </div>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="text-[11px] underline text-[#8F9AA9] hover:text-white transition-colors shrink-0 ml-4"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      )}
 
       {/* Chat Messages Container */}
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-8 overflow-y-auto space-y-6 z-10">

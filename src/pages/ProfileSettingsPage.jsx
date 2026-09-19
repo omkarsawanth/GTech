@@ -6,7 +6,9 @@ import {
   Check, 
   X, 
   Plus, 
-  Save 
+  Save,
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 import { AppLayout } from '../components/layout/AppLayout';
 import { 
@@ -66,15 +68,26 @@ export const ProfileSettingsPage = () => {
           title="Account & Profile Preferences."
           subtitle="Manage your academic credentials, target career discipline, and verified competency inventory."
         >
-          <EditorialButton
-            variant="secondary"
-            size="sm"
-            onClick={() => navigate('/assessment')}
-            icon={RefreshCw}
-            iconPosition="left"
-          >
-            RETAKE ASSESSMENT
-          </EditorialButton>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <EditorialButton
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/onboarding?redo=true')}
+              icon={MessageSquare}
+              iconPosition="left"
+            >
+              REDO ONBOARDING CHAT
+            </EditorialButton>
+            <EditorialButton
+              variant="secondary"
+              size="sm"
+              onClick={() => navigate('/assessment')}
+              icon={RefreshCw}
+              iconPosition="left"
+            >
+              RETAKE ASSESSMENT
+            </EditorialButton>
+          </div>
         </EditorialHeader>
 
         {/* Form Container */}
@@ -248,6 +261,30 @@ export const ProfileSettingsPage = () => {
           </div>
 
         </form>
+
+        {/* Conversational Recalibration Section */}
+        <div className="border border-[#1E232F] bg-[#07090D] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-16">
+          <div className="space-y-1.5 max-w-xl">
+            <div className="font-mono text-xs text-gorange uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>CONVERSATIONAL PROFILE CALIBRATION</span>
+            </div>
+            <p className="font-mono text-xs text-[#8F9AA9] leading-relaxed">
+              Want to switch career tracks or re-align with our AI Career Navigator? Retake the 5-question conversational interview to re-synthesize your competencies, target role, and daily roadmap.
+            </p>
+          </div>
+
+          <EditorialButton
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/onboarding?redo=true')}
+            icon={MessageSquare}
+            iconPosition="left"
+            className="shrink-0"
+          >
+            REDO MY PROFILE
+          </EditorialButton>
+        </div>
 
       </EditorialShell>
     </AppLayout>
