@@ -6,10 +6,25 @@ import { ProfileInputSchema } from '../utils/validation.js';
  */
 export const getProfile = async (req, res, next) => {
   try {
-    const snap = await db.collection('users').doc(req.user.uid).get();
+    const userRef = db.collection('users').doc(req.user.uid);
+    const snap = await userRef.get();
+
+    if (!snap.exists) {
+      const initialProfile = {
+        uid: req.user.uid,
+        email: req.user.email || null,
+        displayName: req.user.displayName || null,
+        photoURL: req.user.photoURL || null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await userRef.set(initialProfile);
+      return res.json({ success: true, data: initialProfile });
+    }
+
     res.json({
       success: true,
-      data: snap.exists ? snap.data() : { uid: req.user.uid, email: req.user.email, displayName: req.user.displayName },
+      data: snap.data(),
     });
   } catch (err) { next(err); }
 };

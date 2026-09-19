@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 1. Rate Limits Collection
+    // ──────────────────────────────────────────────────────────────────────────
+    // Stores daily AI / roast consumption counters (e.g. rateLimits/{uid}_roast_{date}).
+    // CRITICAL: Must NEVER be readable or writable by client SDK.
+    // The Express backend uses firebase-admin which bypasses security rules entirely.
+    match /rateLimits/{limitId} {
+      allow read, write: if false;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 2. Users Collection & Subcollections
+    // ──────────────────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      // User can read their own profile
+      allow read: if isOwner(userId);
+
+      // Client-side user creation (e.g. initial Google Sign-In sync).
+      // Strictly restricted to verified identity fields — prevents spoofing
+      // or tampering with streaks, readiness scores, squad memberships, or roles.
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['uid', 'displayName', 'email', 'photoURL', 'createdAt', 'updatedAt'])
+        && request.resource.data.uid == userId;
+
+      // Client-side user updates (e.g. subsequent Google Sign-In sync).
+      // Only mutable identity fields can be altered by client.
+      allow update: if isOwner(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'email', 'photoURL', 'updatedAt']);
+
+      // Profile deletion forbidden via client SDK
+      allow delete: if false;
+
+      // Subcollections under users/{userId}
+      // Includes: assessment, roadmap, skillGap, roasts, jobAnalyses, mentorSessions, projects
+      // Read allowed by owner; all writes MUST pass through Express backend (Admin SDK)
+      // to enforce Zod schema validation, streak calculations, and rate limits.
+      match /{subcollection}/{docId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 3. Squads Collection
+    // ──────────────────────────────────────────────────────────────────────────
+    // Squad rooms and collaborative mission progress.
+    // Read: authenticated users.
+    // Write: completely blocked from client SDK. All room creation, joining (invite codes),
+    // 5-member capacity enforcement, and feed updates are handled by Express squadService.
+    match /squads/{squadId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 4. Default Deny Fallback
+    // ──────────────────────────────────────────────────────────────────────────
+    // Reject any collection or document path not explicitly matched above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

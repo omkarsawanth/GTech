@@ -83,8 +83,12 @@ export const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, googleProvider);
     const firebaseUser = result.user;
 
-    // Persist user data to Firestore
-    await upsertUserDocument(firebaseUser);
+    // Persist user data to Firestore (client write validated by firestore.rules; backend also auto-syncs)
+    try {
+      await upsertUserDocument(firebaseUser);
+    } catch (docErr) {
+      console.warn('[GTech Auth] Client-side Firestore sync skipped; delegating to backend:', docErr?.message || docErr);
+    }
 
     return { user: firebaseUser, error: null };
   } catch (error) {

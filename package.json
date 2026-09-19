@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/server.js",
-    "server:dev": "nodemon server/server.js"
+    "server:dev": "nodemon server/server.js",
+    "deploy:rules": "firebase deploy --only firestore:rules"
   },
   "dependencies": {
     "@google/genai": "^1.52.0",
