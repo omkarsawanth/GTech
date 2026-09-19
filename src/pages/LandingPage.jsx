@@ -19,13 +19,25 @@ import { Navbar } from '../components/common/Navbar';
 import { InterestSelector } from '../components/common/InterestSelector';
 import { useAuth } from '../context/AuthContext';
 import { CAREER_CATEGORIES } from '../data/careersData';
-import { CareerConstellation } from '../components/3d/CareerConstellation';
-import { FluidShaderGradient } from '../components/3d/FluidShaderGradient';
-import { LiquidGlassContainer, OpticalGlassLens } from '../components/common/LiquidGlassView';
+
+// Deferred 3D WebGL components — not in initial critical path
+const CareerConstellation = React.lazy(() => import('../components/3d/CareerConstellation'));
+const FluidShaderGradient = React.lazy(() => import('../components/3d/FluidShaderGradient'));
+const LiquidGlassContainer = React.lazy(() => import('../components/common/LiquidGlassView').then(m => ({ default: m.LiquidGlassContainer })));
+const OpticalGlassLens = React.lazy(() => import('../components/common/LiquidGlassView').then(m => ({ default: m.OpticalGlassLens })));
 
 export const LandingPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+
+  // Defer heavy 3D WebGL shaders ~800ms after first paint for instant initial render
+  const [load3D, setLoad3D] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoad3D(true);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Selected Category and Career State (Category -> Profession)
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
@@ -69,8 +81,12 @@ export const LandingPage = () => {
           ========================================================================= */}
       <section id="story-where" className="relative min-h-[92vh] border-b border-[#1E232F] flex flex-col justify-between px-6 lg:px-14 pt-16 pb-14 overflow-hidden">
         
-        {/* 3D React Three Fiber Career Constellation Canvas */}
-        <CareerConstellation categoryIndex={selectedCategoryIndex} />
+        {/* 3D React Three Fiber Career Constellation Canvas (Deferred, non-blocking) */}
+        {load3D && (
+          <React.Suspense fallback={<div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(ellipse_at_center,#FF8A0010,transparent_70%)]" />}>
+            <CareerConstellation categoryIndex={selectedCategoryIndex} />
+          </React.Suspense>
+        )}
 
         {/* Top Monospace Meta Coordinates */}
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] border-b border-[#1E232F] pb-5">
@@ -794,16 +810,20 @@ export const LandingPage = () => {
           ========================================================================= */}
       <section className="relative px-6 lg:px-14 py-24 lg:py-36 bg-[#060709] overflow-hidden">
         
-        {/* 3D Fluid Shader Gradient Mesh Background (ruucm/shadergradient) */}
-        <FluidShaderGradient 
-          color1="#FF8A00" 
-          color2="#FF3366" 
-          color3="#8B5CF6" 
-          type="waterPlane" 
-          uSpeed={0.25}
-          uStrength={2.6}
-          opacity={0.35}
-        />
+        {/* 3D Fluid Shader Gradient Mesh Background (Deferred, non-blocking) */}
+        {load3D && (
+          <React.Suspense fallback={<div className="absolute inset-0 pointer-events-none opacity-20 bg-gradient-to-tr from-[#FF8A00]/10 via-[#FF3366]/10 to-[#8B5CF6]/10" />}>
+            <FluidShaderGradient 
+              color1="#FF8A00" 
+              color2="#FF3366" 
+              color3="#8B5CF6" 
+              type="waterPlane" 
+              uSpeed={0.25}
+              uStrength={2.6}
+              opacity={0.35}
+            />
+          </React.Suspense>
+        )}
 
         {/* Section Header */}
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6B7688] mb-12">

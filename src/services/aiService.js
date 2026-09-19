@@ -532,3 +532,50 @@ export async function optInLeaderboardAPI(displayHandle, optIn = true) {
     throw err;
   }
 }
+
+export async function fetchSkillRoastAPI({ skills = [], targetRole = 'Software Engineer', missingSkills = [] }) {
+  try {
+    return await apiPost('/roast/generate', { skills, targetRole, missingSkills });
+  } catch (err) {
+    console.warn('[aiService] Backend /roast/generate unavailable:', err.message);
+    throw err;
+  }
+}
+
+export async function fetchCurrentSquadAPI() {
+  try {
+    return await apiGet('/squad/current');
+  } catch (err) {
+    console.warn('[aiService] Backend /squad/current unavailable:', err.message);
+    return null;
+  }
+}
+
+export async function createSquadAPI(name, careerFocus = 'Software Engineer') {
+  try {
+    return await apiPost('/squad/create', { name, careerFocus });
+  } catch (err) {
+    console.warn('[aiService] Backend /squad/create unavailable:', err.message);
+    throw err;
+  }
+}
+
+export async function joinSquadAPI(inviteCode) {
+  try {
+    return await apiPost('/squad/join', { inviteCode });
+  } catch (err) {
+    console.warn('[aiService] Backend /squad/join unavailable:', err.message);
+    throw err;
+  }
+}
+
+export async function leaveSquadAPI(squadId) {
+  try {
+    return await apiPost('/squad/leave', { squadId });
+  } catch (err) {
+    console.warn('[aiService] Backend /squad/leave unavailable:', err.message);
+    throw err;
+  }
+}
+
+

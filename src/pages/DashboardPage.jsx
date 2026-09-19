@@ -27,6 +27,8 @@ import {
   EditorialBadge 
 } from '../components/common/EditorialComponents';
 import { ShareProgressModal } from '../components/common/ShareProgressModal';
+import { RoastCard } from '../components/common/RoastCard';
+import { fetchSkillRoastAPI } from '../services/aiService';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -50,6 +52,39 @@ export const DashboardPage = () => {
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [selectedTimelineStage, setSelectedTimelineStage] = useState(0);
+
+  // Skill Roast State
+  const [isRoastModalOpen, setIsRoastModalOpen] = useState(false);
+  const [roastData, setRoastData] = useState(null);
+  const [isRoastLoading, setIsRoastLoading] = useState(false);
+  const [roastError, setRoastError] = useState(null);
+
+  const triggerRoastFetch = async () => {
+    setIsRoastLoading(true);
+    setRoastError(null);
+    try {
+      const skills = (activeCareerProfile?.skills || []).map(s => s.name || s);
+      const missingSkills = (analysisResult?.missingSkills || []).map(s => s.name || s);
+      const res = await fetchSkillRoastAPI({
+        skills,
+        targetRole: activeCareerProfile?.title || 'Software Engineer',
+        missingSkills,
+      });
+      setRoastData(res.data);
+    } catch (err) {
+      console.warn('Roast fetch error:', err);
+      setRoastError(err.message || 'Daily limit reached or service unavailable. Come back tomorrow!');
+    } finally {
+      setIsRoastLoading(false);
+    }
+  };
+
+  const handleGetRoast = () => {
+    setIsRoastModalOpen(true);
+    if (!roastData) {
+      triggerRoastFetch();
+    }
+  };
 
   const readinessScore = analysisResult?.readinessScore || 64;
   const skillsMasteredCount = analysisResult?.skillsMasteredCount || 0;
@@ -98,6 +133,14 @@ export const DashboardPage = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleGetRoast}
+              className="text-gorange hover:text-white transition-colors flex items-center gap-1.5 text-[11px] font-bold"
+            >
+              <Flame className="w-3.5 h-3.5 text-gorange animate-pulse" />
+              <span>GET ROASTED 🔥</span>
+            </button>
+            <span className="text-[#3A4354]">|</span>
             <button
               onClick={() => setIsShareModalOpen(true)}
               className="text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px]"
@@ -531,6 +574,33 @@ export const DashboardPage = () => {
           targetCareer={activeCareerProfile?.title || 'Professional'}
           userName={user?.displayName || 'Builder'}
         />
+      )}
+
+      {/* Skill Roast Modal */}
+      {isRoastModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="relative w-full max-w-2xl">
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={() => setIsRoastModalOpen(false)}
+                className="font-mono text-xs text-[#8F9AA9] hover:text-white tracking-widest uppercase transition-colors"
+              >
+                [ CLOSE ESC ]
+              </button>
+            </div>
+            <RoastCard
+              roastData={roastData}
+              onRegenerate={triggerRoastFetch}
+              isLoading={isRoastLoading}
+              targetRole={activeCareerProfile?.title || 'Target Role'}
+            />
+            {roastError && (
+              <div className="mt-3 p-3 bg-red-950/40 border border-red-800/60 font-mono text-xs text-red-300">
+                {roastError}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </AppLayout>
   );

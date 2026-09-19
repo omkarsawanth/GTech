@@ -38,6 +38,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.4.18",
     "nodemon": "^3.1.14",
+    "patch-package": "^8.0.1",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "vite": "^8.2.2"
@@ -46,6 +47,8 @@
     "esbuild@0.21.5": true,
     "@firebase/util@1.15.3": true,
     "protobufjs@7.6.6": true,
-    "@google/genai@1.52.0": true
+    "@google/genai@1.52.0": true,
+    "@ybouane/liquidglass@1.0.3": true,
+    "patch-package@8.0.1": true
   }
 }

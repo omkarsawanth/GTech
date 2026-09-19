@@ -21,6 +21,7 @@ const ProjectGeneratorPage = lazy(() => import('./pages/ProjectGeneratorPage').t
 const ProfileSettingsPage = lazy(() => import('./pages/ProfileSettingsPage').then(m => ({ default: m.ProfileSettingsPage })));
 const OnboardingChatPage = lazy(() => import('./pages/OnboardingChatPage').then(m => ({ default: m.OnboardingChatPage })));
 const LeaderboardPage = lazy(() => import('./pages/LeaderboardPage').then(m => ({ default: m.LeaderboardPage })));
+const SquadPage = lazy(() => import('./pages/SquadPage').then(m => ({ default: m.SquadPage })));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-[#07080D] flex flex-col items-center justify-center p-6 text-center">
@@ -123,6 +124,12 @@ export function App() {
               <Route path="/leaderboard" element={
                 <ProtectedRoute>
                   <LeaderboardPage />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/squad" element={
+                <ProtectedRoute>
+                  <SquadPage />
                 </ProtectedRoute>
               } />
 

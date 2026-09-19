@@ -182,3 +182,25 @@ export const JobAnalysisInputSchema = z.object({
 export const MentorInputSchema = z.object({
   question: z.string().min(5, 'Please ask a question').max(1000),
 });
+
+export const RoastResponseSchema = z.object({
+  roast: z.string(),
+  punchline: z.string().optional().default(''),
+  burnRating: z.number().min(1).max(5).default(4),
+});
+
+export const RoastInputSchema = z.object({
+  skills: z.array(z.string()).optional().default([]),
+  targetRole: z.string().min(1, 'Target role is required'),
+  missingSkills: z.array(z.string()).optional().default([]),
+});
+
+export const CreateSquadInputSchema = z.object({
+  name: z.string().min(2, 'Squad name must be at least 2 characters').max(50, 'Squad name must be under 50 characters'),
+  careerFocus: z.string().optional().default('Software Engineer'),
+});
+
+export const JoinSquadInputSchema = z.object({
+  inviteCode: z.string().min(4, 'Invite code is required').max(12),
+});
+

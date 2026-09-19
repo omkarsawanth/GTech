@@ -19,6 +19,7 @@ import { Button, Badge } from '../components/common/UIComponents';
 import { ShareProgressModal } from '../components/common/ShareProgressModal';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
+import { joinSquadAPI } from '../services/aiService';
 
 const VIBE_EMOJIS = ['🔥', '💡', '🚀', '🎯', '👀'];
 
@@ -92,6 +93,7 @@ export const OnboardingChatPage = () => {
   const [searchParams] = useSearchParams();
   const refUser = searchParams.get('ref');
   const refRank = searchParams.get('rank');
+  const squadInviteCode = searchParams.get('squadInviteCode') || searchParams.get('squad');
 
   const { user, updateUserProfile } = useApp();
   const { user: authUser } = useAuth();
@@ -99,7 +101,13 @@ export const OnboardingChatPage = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [messages, setMessages] = useState(() => {
     const initial = [];
-    if (refUser) {
+    if (squadInviteCode) {
+      initial.push({
+        sender: 'bot',
+        text: `🛡️ SQUAD INVITATION DETECTED! You have been recruited with squad passcode [${squadInviteCode.toUpperCase()}]. Complete your 5-question profile setup to lock in your squad seat automatically!`,
+        isChallengeIntro: true,
+      });
+    } else if (refUser) {
       initial.push({
         sender: 'bot',
         text: `🥊 CHALLENGE ACCEPTED! Your peer @${refUser} (Rank #${refRank || '3'} on the global leaderboard) challenged you to beat their score! Let's get your custom roadmap locked in.`,
@@ -195,13 +203,24 @@ export const OnboardingChatPage = () => {
     } else {
       // Completed all questions
       setIsTyping(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         setIsTyping(false);
+        
+        let squadJoinedNote = '';
+        if (squadInviteCode) {
+          try {
+            await joinSquadAPI(squadInviteCode.trim());
+            squadJoinedNote = ' 🛡️ You have been automatically added to your squad room!';
+          } catch (err) {
+            console.warn('Auto squad join error:', err.message);
+          }
+        }
+
         setMessages(prev => [
           ...prev,
           {
             sender: 'bot',
-            text: `Perfect! 🚀 I've synthesized your custom career trajectory for ${currentAnswers.targetCareer}. Your Day 1 Roadmap Starter is ready! Share your commitment card below or head straight into your analysis.`,
+            text: `Perfect! 🚀 I've synthesized your custom career trajectory for ${currentAnswers.targetCareer}.${squadJoinedNote} Your Day 1 Roadmap Starter is ready! Share your commitment card below or head straight into your analysis.`,
             isFinal: true,
           }
         ]);

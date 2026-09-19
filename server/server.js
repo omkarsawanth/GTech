@@ -12,6 +12,8 @@ import roadmapRoutes from './routes/roadmapRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
+import roastRoutes from './routes/roastRoutes.js';
+import squadRoutes from './routes/squadRoutes.js';
 
 dotenv.config();
 
@@ -58,6 +60,8 @@ app.use('/api/roadmap', roadmapRoutes);
 app.use('/api/job', jobRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/roast', roastRoutes);
+app.use('/api/squad', squadRoutes);
 
 // ── Error handling ────────────────────────────────────────────────────────────
 app.use(notFound);

@@ -13,6 +13,7 @@ import {
   Trophy,
   MessageSquare,
   Sparkles,
+  Users,
   X,
   ArrowUpRight
 } from 'lucide-react';
@@ -32,8 +33,9 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen, onOpenMentor }) => {
     { code: '05', name: 'Roadmap', path: '/roadmap', icon: Compass },
     { code: '06', name: 'Job Analyzer', path: '/job-analysis', icon: SearchCode },
     { code: '07', name: 'Evidence & Projects', path: '/projects', icon: FolderGit2 },
-    { code: '08', name: 'Leaderboard', path: '/leaderboard', icon: Trophy },
-    { code: '09', name: 'Chat Onboarding', path: '/onboarding', icon: MessageSquare },
+    { code: '08', name: 'Squad Rooms', path: '/squad', icon: Users },
+    { code: '09', name: 'Leaderboard', path: '/leaderboard', icon: Trophy },
+    { code: '10', name: 'Chat Onboarding', path: '/onboarding', icon: MessageSquare },
   ];
 
   const handleLogout = async () => {
@@ -129,7 +131,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen, onOpenMentor }) => {
                 className="w-full mt-2 flex items-center justify-between px-3 py-2 text-xs font-mono tracking-wider text-gorange bg-gorange/5 border border-gorange/30 hover:bg-gorange/10 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-gorange/60">10</span>
+                  <span className="text-[10px] text-gorange/60">11</span>
                   <span>AI Mentor</span>
                 </div>
                 <Sparkles className="w-3.5 h-3.5" />

@@ -38,3 +38,24 @@ export const aiLimiter = rateLimit({
     });
   },
 });
+
+/**
+ * Daily roast rate limiter: cap at 5 roasts/day/user to keep costs controlled
+ * and preserve comedic novelty.
+ */
+export const roastLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 5, // 5 roasts per user/IP per day
+  keyGenerator: (req) => req.user?.uid || req.ip,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      error: {
+        code: 'ROAST_DAILY_LIMIT_REACHED',
+        message: "You've used all 5 roasts for today. Your ego needs time to recover — come back tomorrow!",
+      },
+    });
+  },
+});
