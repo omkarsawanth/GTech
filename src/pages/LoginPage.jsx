@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Card } from '../components/common/UIComponents';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 
@@ -24,78 +23,98 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090E] flex flex-col md:flex-row relative overflow-hidden">
+    <div className="min-h-screen bg-[#07080D] flex flex-col md:flex-row relative overflow-hidden">
 
-      {/* LEFT PANEL */}
-      <div className="md:w-1/2 p-8 lg:p-16 flex flex-col justify-between relative border-b md:border-b-0 md:border-r border-slate-800/80 bg-slate-950/60">
-        <div className="absolute top-1/3 left-1/3 w-[400px] h-[300px] bg-gradient-to-tr from-purple-600/20 via-indigo-600/15 to-cyan-500/15 rounded-full blur-3xl pointer-events-none opacity-60" />
+      {/* LEFT PANEL — Brand & Value Proposition */}
+      <div className="md:w-1/2 p-8 lg:p-16 flex flex-col justify-between relative border-b md:border-b-0 md:border-r border-[#1E232F] bg-[#07080D]/95">
+        {/* Ambient Solar Flare Background Glow */}
+        <div className="absolute top-1/4 left-1/4 w-[450px] h-[350px] bg-gradient-to-tr from-gorange/15 via-solar-coral/10 to-solar-violet/10 rounded-full blur-[120px] pointer-events-none opacity-70" />
 
         <div className="relative z-10">
-          <Link to="/" className="inline-flex items-center gap-3 group mb-8">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 p-0.5 shadow-lg shadow-purple-600/30">
-              <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-display font-bold text-purple-400 text-lg">
-                K
-              </div>
-            </div>
-            <span className="text-2xl font-display font-extrabold text-white tracking-tight">Kalpa</span>
-          </Link>
+          {/* Wordmark (Matches LandingPage and Sidebar) */}
+          <div className="mb-10">
+            <Link to="/" className="group inline-flex flex-col">
+              <span className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight flex items-center gap-1.5 uppercase">
+                KALPA<span className="text-gorange text-2xl sm:text-3xl">.</span>
+              </span>
+              <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-[#6B7688] mt-0.5">
+                CAREER INTELLIGENCE / VERIFIED CONSISTENCY
+              </span>
+            </Link>
+          </div>
 
-          <h1 className="text-3xl lg:text-4xl font-display font-extrabold text-white tracking-tight leading-tight mt-6">
-            Build the career you're <span className="gradient-text">actually ready for.</span>
+          <div className="font-mono text-[10px] sm:text-xs text-gorange uppercase tracking-[0.22em] font-bold mb-3 flex items-center gap-2">
+            <span>[ ACCESS GATEWAY // CANDIDATE CALIBRATION ]</span>
+          </div>
+
+          <h1 className="text-3xl lg:text-5xl font-display font-extrabold text-white tracking-tight leading-[1.08] max-w-lg">
+            Build the career you're <span className="text-transparent bg-clip-text bg-gradient-to-r from-gorange via-solar-coral to-solar-amber">actually ready for.</span>
           </h1>
 
-          <p className="mt-4 text-sm text-slate-300 max-w-md leading-relaxed">
+          <p className="mt-4 font-mono text-xs sm:text-sm text-[#8F9AA9] max-w-md leading-relaxed">
             Connect your profile to benchmark skills, analyze live job descriptions, and unlock your AI-guided roadmap.
           </p>
 
-          <div className="mt-10 space-y-3 max-w-md">
-            <div className="flex items-center gap-3 text-xs text-slate-300">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="mt-10 space-y-3 max-w-md font-mono">
+            <div className="flex items-center gap-3 text-xs text-[#A2AEBD] p-3 bg-[#0B0E14]/80 border border-[#1A212E]">
+              <CheckCircle2 className="w-4 h-4 text-gorange shrink-0" />
               <span>Real-time skill gap analysis vs industry target roles</span>
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-300">
-              <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="flex items-center gap-3 text-xs text-[#A2AEBD] p-3 bg-[#0B0E14]/80 border border-[#1A212E]">
+              <CheckCircle2 className="w-4 h-4 text-solar-amber shrink-0" />
               <span>AI Job Description Parser &amp; match score calculator</span>
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-300">
-              <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
+            <div className="flex items-center gap-3 text-xs text-[#A2AEBD] p-3 bg-[#0B0E14]/80 border border-[#1A212E]">
+              <CheckCircle2 className="w-4 h-4 text-solar-coral shrink-0" />
               <span>Dynamic vertical roadmap with milestone project tracking</span>
             </div>
           </div>
         </div>
 
-        <div className="relative z-10 pt-12 text-xs text-slate-500">
-          © 2026 Kalpa AI Platform. Secured by Firebase.
+        <div className="relative z-10 pt-12 font-mono text-[10px] text-[#566173] uppercase tracking-widest flex items-center gap-2">
+          <span>© 2026 KALPA AI PLATFORM</span>
+          <span>•</span>
+          <span>SECURED BY FIREBASE</span>
         </div>
       </div>
 
-      {/* RIGHT PANEL — Auth */}
-      <div className="md:w-1/2 p-8 lg:p-16 flex flex-col justify-center items-center relative">
-        <div className="w-full max-w-md">
+      {/* RIGHT PANEL — Authentication Card */}
+      <div className="md:w-1/2 p-8 lg:p-16 flex flex-col justify-center items-center relative bg-[#07080D]">
+        <div className="w-full max-w-md relative z-10">
 
-          <div className="mb-8">
-            <h2 className="text-2xl font-display font-extrabold text-white tracking-tight">Welcome back</h2>
-            <p className="text-xs text-slate-400 mt-1">Sign in to continue to Kalpa AI Platform</p>
+          <div className="mb-6">
+            <div className="font-mono text-[10px] text-gorange uppercase tracking-[0.2em] font-bold mb-1.5">
+              AUTHENTICATION GATEWAY
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-white tracking-tight">
+              Welcome back<span className="text-gorange">.</span>
+            </h2>
+            <p className="font-mono text-xs text-[#8F9AA9] mt-1 tracking-wide">
+              Sign in to continue to Kalpa AI Platform
+            </p>
           </div>
 
           {errorMsg && (
             <motion.div
-              initial={{ opacity: 0, y: -5 }}
+              initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5"
+              className="mb-6 p-4 bg-red-950/40 border border-red-800/60 font-mono text-xs text-red-300 flex items-start gap-2.5"
             >
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </motion.div>
           )}
 
-          <Card className="p-8">
+          <div className="border border-[#1E232F] bg-[#0B0D12] p-8 sm:p-10 shadow-2xl shadow-black/80 relative">
+            {/* Solar Flare Top Accent Border */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gorange via-solar-coral to-transparent" />
+
             {/* Real Google OAuth button */}
             <button
               onClick={handleGoogleLogin}
               disabled={isSubmitting}
               type="button"
-              className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-gray-800 font-semibold text-sm flex items-center justify-center gap-3 transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed border border-gray-200"
+              className="w-full py-3.5 px-4 bg-white hover:bg-[#F3F4F6] text-gray-900 font-display font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-3 transition-all duration-200 shadow-md shadow-black/50 hover:shadow-lg hover:shadow-gorange/10 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed border border-white"
             >
               <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                 <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/>
@@ -103,22 +122,26 @@ export const LoginPage = () => {
                 <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12s.7 2.3 1.9 4.7l3.7-1.9z"/>
                 <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
               </svg>
-              {isSubmitting ? 'Connecting to Google...' : 'Continue with Google'}
+              <span>{isSubmitting ? 'Connecting to Google...' : 'Continue with Google'}</span>
             </button>
 
-            <p className="mt-6 text-center text-xs text-slate-400">
-              Don't have an account?{' '}
-              <Link to="/signup" className="text-purple-400 font-semibold hover:text-purple-300 transition-colors">
-                Create account
-              </Link>
-            </p>
+            <div className="mt-8 pt-6 border-t border-[#1E232F] text-center">
+              <p className="font-mono text-xs text-[#8F9AA9]">
+                Don't have an account?{' '}
+                <Link to="/signup" className="text-gorange hover:text-white font-bold transition-colors ml-1 inline-flex items-center gap-1 group">
+                  <span>Create account</span>
+                  <span className="transition-transform group-hover:translate-x-0.5">➔</span>
+                </Link>
+              </p>
 
-            <p className="mt-4 text-center text-xs text-slate-600">
-              By signing in you agree to our Terms of Service and Privacy Policy.
-            </p>
-          </Card>
+              <p className="mt-4 font-mono text-[10px] text-[#566173] uppercase tracking-wider leading-relaxed">
+                By signing in you agree to our Terms of Service and Privacy Policy.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
