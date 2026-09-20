@@ -67,7 +67,7 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="w-full max-w-2xl bg-dark-900 border border-solar-coral/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[600px] relative"
+          className="w-full max-w-2xl bg-dark-900 border border-solar-coral/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[88vh] sm:h-[600px] max-h-[88vh] relative"
         >
           {/* Header */}
           <div className="p-4 px-6 bg-dark-950 border-b border-slate-800/80 flex items-center justify-between">
@@ -153,7 +153,7 @@ export const MentorChatModal = ({ isOpen, onClose }) => {
               e.preventDefault();
               handleSend();
             }}
-            className="p-4 px-6 bg-slate-900 border-t border-slate-800 flex items-center gap-3"
+            className="p-3 sm:p-4 px-3 sm:px-6 bg-slate-900 border-t border-slate-800 flex items-center gap-2 sm:gap-3"
           >
             <input
               type="text"

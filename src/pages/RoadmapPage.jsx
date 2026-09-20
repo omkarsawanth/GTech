@@ -21,7 +21,13 @@ import {
   EditorialBadge 
 } from '../components/common/EditorialComponents';
 import { ShareProgressModal } from '../components/common/ShareProgressModal';
+import { CyberTiltCard } from '../components/common/CyberTiltCard';
+import { AnimeCounter } from '../components/common/AnimeCounter';
+import { ParticleButton } from '../components/common/ParticleButton';
+import { CyberRadarBadge } from '../components/common/CyberRadarBadge';
 import { useApp } from '../context/AppContext';
+import { cyberAudio } from '../utils/cyberAudio';
+import { triggerCyberConfetti } from '../utils/cyberConfetti';
 
 export const RoadmapPage = () => {
   const { 
@@ -39,6 +45,26 @@ export const RoadmapPage = () => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [expandedStepId, setExpandedStepId] = useState(roadmap[0]?.id || 'step-1');
 
+  const handleToggleStep = (stepId, isCurrentlyCompleted, e) => {
+    if (!isCurrentlyCompleted) {
+      cyberAudio.playSuccess();
+      if (e && e.clientX && e.clientY) {
+        triggerCyberConfetti({
+          origin: {
+            x: e.clientX / window.innerWidth,
+            y: e.clientY / window.innerHeight,
+          },
+          particleCount: 50,
+        });
+      } else {
+        triggerCyberConfetti({ particleCount: 50 });
+      }
+    } else {
+      cyberAudio.playClick();
+    }
+    toggleRoadmapStep(stepId);
+  };
+
   const completedStepsCount = (roadmap || []).filter(r => r.status === 'Completed').length;
   const totalStepsCount = (roadmap || []).length || 1;
   const overallRoadmapPercent = Math.round((completedStepsCount / totalStepsCount) * 100);
@@ -51,27 +77,40 @@ export const RoadmapPage = () => {
       <EditorialShell>
         
         {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+          <div className="font-mono text-[11px] text-[#6B7688] tracking-widest uppercase">
+            PATHWAY NAVIGATION // STAGE 05
+          </div>
+          <CyberRadarBadge 
+            label="CURRICULUM ACTIVE // REAL-TIME SYNC" 
+            status="active" 
+            variant="emerald" 
+          />
+        </div>
+
         <EditorialHeader
           index="05"
           tag="ROADMAP"
           title="CHRONOLOGICAL CAREER PATHWAY."
           subtitle={`Structured milestone roadmap calibrating your progression toward verified hiring standards for ${activeCareerProfile?.title}.`}
         >
-          <EditorialButton
+          <ParticleButton
             variant="outline"
-            size="md"
+            size="sm"
             onClick={() => setIsShareModalOpen(true)}
             icon={Share2}
+            iconPosition="left"
           >
             Share Progress
-          </EditorialButton>
-          <EditorialButton
-            variant="primary"
-            size="md"
+          </ParticleButton>
+          <ParticleButton
+            variant="solar"
+            size="sm"
             onClick={() => navigate('/dashboard')}
+            icon={ArrowRight}
           >
             Command Center
-          </EditorialButton>
+          </ParticleButton>
         </EditorialHeader>
 
         {/* Milestone Sequence & Readiness Metric Grid */}
@@ -89,10 +128,10 @@ export const RoadmapPage = () => {
                   ROADMAP PROGRESS
                 </div>
                 <div className="font-display font-black text-5xl sm:text-6xl text-white my-1 tracking-tight">
-                  {overallRoadmapPercent}%
+                  <AnimeCounter value={overallRoadmapPercent} suffix="%" />
                 </div>
                 <div className="font-mono text-xs text-white font-semibold mt-1">
-                  {completedStepsCount} of {totalStepsCount} Phases Verified
+                  <AnimeCounter value={completedStepsCount} /> of {totalStepsCount} Phases Verified
                 </div>
                 <div className="text-xs text-[#8F9AA9] mt-0.5 font-light">
                   Phases completed in active curriculum
@@ -122,7 +161,7 @@ export const RoadmapPage = () => {
                   CAREER READINESS
                 </div>
                 <div className="font-display font-black text-5xl sm:text-6xl text-white my-1 tracking-tight">
-                  {readinessScore}%
+                  <AnimeCounter value={readinessScore} suffix="%" />
                 </div>
                 <div className="font-mono text-xs text-white font-semibold mt-1">
                   Evaluated Hiring Readiness
@@ -275,13 +314,13 @@ export const RoadmapPage = () => {
                         CURRENT STATUS: <strong className="text-white">{step.status.toUpperCase()}</strong>
                       </div>
 
-                      <EditorialButton
-                        variant={isCompleted ? 'outline' : 'primary'}
-                        size="md"
-                        onClick={() => toggleRoadmapStep(step.id)}
+                      <ParticleButton
+                        variant={isCompleted ? 'outline' : 'solar'}
+                        size="sm"
+                        onClick={(e) => handleToggleStep(step.id, isCompleted, e)}
                       >
                         {isCompleted ? 'Mark Phase In Progress' : 'Mark Phase Completed ✓'}
-                      </EditorialButton>
+                      </ParticleButton>
                     </div>
 
                   </div>

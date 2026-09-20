@@ -309,13 +309,13 @@ export const ShareProgressModal = ({
           </div>
 
           {/* 3 Alternate Visual Templates Switcher */}
-          <div className="px-6 pt-4 flex items-center gap-2 border-b border-slate-800/80 pb-3">
-            <span className="text-[10px] font-mono uppercase text-slate-400 mr-2 flex items-center gap-1">
+          <div className="px-4 sm:px-6 pt-4 flex items-center gap-2 border-b border-slate-800/80 pb-3 overflow-x-auto no-scrollbar">
+            <span className="text-[10px] font-mono uppercase text-slate-400 mr-1 flex items-center gap-1 shrink-0">
               <Layers className="w-3 h-3 text-solar-coral" /> Layout:
             </span>
             <button
               onClick={() => setActiveTemplate('stats')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-display font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-display font-semibold transition-all shrink-0 ${
                 activeTemplate === 'stats'
                   ? 'bg-solar-coral text-white shadow-md shadow-rose-950/40'
                   : 'bg-dark-950 text-slate-400 hover:text-white border border-slate-800'
@@ -325,7 +325,7 @@ export const ShareProgressModal = ({
             </button>
             <button
               onClick={() => setActiveTemplate('gap')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-display font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-display font-semibold transition-all shrink-0 ${
                 activeTemplate === 'gap'
                   ? 'bg-solar-amber text-dark-950 shadow-md shadow-amber-950/40'
                   : 'bg-dark-950 text-slate-400 hover:text-white border border-slate-800'
@@ -335,7 +335,7 @@ export const ShareProgressModal = ({
             </button>
             <button
               onClick={() => setActiveTemplate('badge')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-display font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-display font-semibold transition-all shrink-0 ${
                 activeTemplate === 'badge'
                   ? 'bg-solar-violet text-white shadow-md shadow-purple-950/40'
                   : 'bg-dark-950 text-slate-400 hover:text-white border border-slate-800'

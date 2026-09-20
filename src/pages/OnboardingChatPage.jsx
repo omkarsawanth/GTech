@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
@@ -100,7 +100,7 @@ export const OnboardingChatPage = () => {
   const { user: authUser } = useAuth();
 
   // Guard: if user has already completed onboarding/profile, redirect to /dashboard
-  // UNLESS explicitly initiated via ?redo=true (e.g. from Settings).
+  // UNLESS explicitly initiated via ?redo=true (e.g. from Settings) OR has a squad invite code.
   useEffect(() => {
     const hasCompletedProfile = Boolean(
       user?.onboarded || 
@@ -111,10 +111,22 @@ export const OnboardingChatPage = () => {
     );
 
     if (hasCompletedProfile && !isRedo) {
-      console.info('[OnboardingChatPage] Existing completed profile detected; redirecting to /dashboard. Use ?redo=true to recalibrate.');
-      navigate('/dashboard', { replace: true });
+      if (squadInviteCode) {
+        console.info('[OnboardingChatPage] Existing profile detected with squad invite code. Auto-joining squad...');
+        joinSquadAPI(squadInviteCode.trim())
+          .then(() => {
+            navigate('/squad', { replace: true, state: { joinedViaInvite: true } });
+          })
+          .catch((err) => {
+            console.warn('[OnboardingChatPage] Auto squad join error:', err);
+            navigate('/squad', { replace: true, state: { joinError: err.message } });
+          });
+      } else {
+        console.info('[OnboardingChatPage] Existing completed profile detected; redirecting to /dashboard. Use ?redo=true to recalibrate.');
+        navigate('/dashboard', { replace: true });
+      }
     }
-  }, [user, isRedo, navigate]);
+  }, [user, isRedo, squadInviteCode, navigate]);
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [messages, setMessages] = useState(() => {
@@ -261,11 +273,13 @@ export const OnboardingChatPage = () => {
       {/* Top Bar */}
       <header className="py-4 px-6 border-b border-slate-800/80 bg-dark-950/80 backdrop-blur-md flex items-center justify-between z-20">
         <div className="flex items-center gap-3">
-          <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-solar-coral to-solar-amber flex items-center justify-center font-display font-extrabold text-white text-sm shadow-md shadow-rose-950/40">
-            G
-          </span>
-          <div>
-            <h1 className="text-sm font-display font-bold text-white flex items-center gap-2">
+          <Link to="/" className="group flex items-baseline gap-1.5">
+            <span className="font-display font-black text-xl text-white tracking-tight flex items-center">
+              KALPA<span className="text-gorange text-xl">.</span>
+            </span>
+          </Link>
+          <div className="border-l border-slate-800 pl-3">
+            <h1 className="text-xs sm:text-sm font-display font-bold text-white flex items-center gap-2">
               AI Career Advisor
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-solar-coral/20 text-rose-300">
                 Gemini 3.6 Flash
@@ -434,7 +448,7 @@ export const OnboardingChatPage = () => {
                       onClick={() => navigate('/ai-analysis')}
                       className="text-xs"
                     >
-                      Enter Dashboard ➔
+                      Calibrate & Enter Dashboard ➔
                     </Button>
                   </div>
                 </div>

@@ -144,10 +144,21 @@ export const completeTask = async (uid, taskId) => {
     }
   }
 
+  // Check streak milestone unlocks (e.g. 3, 7, 14, 30, 100 days)
+  const streakMilestones = {
+    3: { days: 3, badge: 'Spark Initiate', title: '3-Day Momentum Spark', desc: 'First habit loop locked in.', icon: '🔥' },
+    7: { days: 7, badge: 'Cyber Flamekeeper', title: '7-Day High Roller', desc: 'Top 10% consistency tier unlocked.', icon: '⚡' },
+    14: { days: 14, badge: 'Neural Surfer', title: '14-Day Cyber Surge', desc: '2 consecutive weeks of unstoppable build momentum.', icon: '💥' },
+    30: { days: 30, badge: 'Solar Titan', title: '30-Day Relentless', desc: 'Full month streak! Industry-ready mindset verified.', icon: '🌟' },
+    100: { days: 100, badge: 'Quantum Overlord', title: '100-Day Legend', desc: 'Elite top 0.1% disciplined tech builder.', icon: '👑' }
+  };
+  const milestoneUnlocked = streakMilestones[currentStreak] || null;
+
   const userUpdates = {
     currentStreak,
     lastCompletedDate: todayStr,
     streakFreezes,
+    ...(milestoneUnlocked && { milestoneUnlocked }),
     ...(streakSavedByFreeze && { lastFreezeUsedAt: todayStr }),
     updatedAt: new Date(),
   };
@@ -159,6 +170,7 @@ export const completeTask = async (uid, taskId) => {
     nextTask, 
     milestoneProgress, 
     currentStreak, 
+    milestoneUnlocked,
     streakIncremented, 
     streakSavedByFreeze,
     streakFreezes 

@@ -9,13 +9,18 @@
     "preview": "vite preview",
     "server": "node server/server.js",
     "server:dev": "nodemon server/server.js",
-    "deploy:rules": "firebase deploy --only firestore:rules"
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "emulators": "node scripts/start-emulators.js",
+    "test": "vitest run",
+    "test:integration": "node scripts/run-integration-tests.js"
   },
   "dependencies": {
     "@google/genai": "^1.52.0",
     "@react-three/fiber": "^8.18.0",
     "@shadergradient/react": "^2.4.20",
+    "@tailwindcss/vite": "^4.3.3",
     "@ybouane/liquidglass": "^1.0.3",
+    "animejs": "^4.5.0",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
@@ -24,6 +29,7 @@
     "firebase-admin": "^14.3.0",
     "framer-motion": "^13.2.0",
     "lucide-react": "^0.344.0",
+    "motion": "^13.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.18.3",
@@ -32,6 +38,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^6.1.1",
@@ -39,8 +46,9 @@
     "nodemon": "^3.1.14",
     "patch-package": "^8.0.1",
     "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "vite": "^8.2.2"
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.1"
   },
   "allowScripts": {
     "esbuild@0.21.5": true,

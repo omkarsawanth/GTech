@@ -106,6 +106,7 @@ export const ProfileSettingsPage = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
                 className="w-full p-3.5 bg-[#07080D] border border-[#1E232F] text-white font-mono text-xs focus:outline-none focus:border-gorange transition-colors"
                 placeholder="Candidate name"
                 required
@@ -127,6 +128,7 @@ export const ProfileSettingsPage = () => {
                   type="text"
                   value={degree}
                   onChange={(e) => setDegree(e.target.value)}
+                  autoComplete="organization-title"
                   className="w-full p-3.5 bg-[#07080D] border border-[#1E232F] text-white font-mono text-xs focus:outline-none focus:border-gorange transition-colors"
                   placeholder="e.g. B.S. Computer Science"
                 />
@@ -140,6 +142,7 @@ export const ProfileSettingsPage = () => {
                   type="text"
                   value={major}
                   onChange={(e) => setMajor(e.target.value)}
+                  autoComplete="education-level"
                   className="w-full p-3.5 bg-[#07080D] border border-[#1E232F] text-white font-mono text-xs focus:outline-none focus:border-gorange transition-colors"
                   placeholder="e.g. Distributed Computing"
                 />

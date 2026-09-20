@@ -27,9 +27,15 @@ import {
   EditorialButton,
   EditorialBadge
 } from '../components/common/EditorialComponents';
+import { CyberTiltCard } from '../components/common/CyberTiltCard';
+import { AnimeCounter } from '../components/common/AnimeCounter';
+import { ParticleButton } from '../components/common/ParticleButton';
+import { CyberRadarBadge } from '../components/common/CyberRadarBadge';
 import { useApp } from '../context/AppContext';
 import { fetchLeaderboardAPI, optInLeaderboardAPI } from '../services/aiService';
 import { ALL_CAREERS } from '../data/careersData';
+import { cyberAudio } from '../utils/cyberAudio';
+import { triggerCyberConfetti } from '../utils/cyberConfetti';
 
 // Select primary tracks representing diverse disciplines
 const CAREER_TRACKS = [
@@ -117,23 +123,34 @@ export const LeaderboardPage = () => {
       <EditorialShell>
         
         {/* Editorial Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+          <div className="font-mono text-[11px] text-[#6B7688] tracking-widest uppercase">
+            COHORT INTELLIGENCE // STAGE 08
+          </div>
+          <CyberRadarBadge 
+            label="STANDINGS LIVE // PEER BENCHMARK" 
+            status="active" 
+            variant="cyan" 
+          />
+        </div>
+
         <EditorialHeader
           index="08"
           tag="EMPIRICAL TALENT REGISTRY"
           title="Cohort Standings."
           subtitle="Empirical candidate benchmarks comparing verified competency readiness, consistency streaks, and completed evidence deliverables."
         >
-          <EditorialButton
-            variant="secondary"
+          <ParticleButton
+            variant="solar"
             size="sm"
             onClick={() => setIsChallengeModalOpen(true)}
             icon={Swords}
             iconPosition="left"
           >
             CHALLENGE PEER
-          </EditorialButton>
+          </ParticleButton>
 
-          <EditorialButton
+          <ParticleButton
             variant="outline"
             size="sm"
             onClick={() => setIsEditModalOpen(true)}
@@ -141,7 +158,7 @@ export const LeaderboardPage = () => {
             iconPosition="left"
           >
             EDIT HANDLE
-          </EditorialButton>
+          </ParticleButton>
         </EditorialHeader>
 
         {/* Discipline Filter Row */}
@@ -152,7 +169,11 @@ export const LeaderboardPage = () => {
           {CAREER_TRACKS.map((track) => (
             <button
               key={track.id}
-              onClick={() => setSelectedCareer(track.id)}
+              onClick={() => {
+                cyberAudio.playClick();
+                setSelectedCareer(track.id);
+              }}
+              onMouseEnter={() => cyberAudio.playHover()}
               className={`px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors shrink-0 ${
                 selectedCareer === track.id
                   ? 'bg-white text-black font-bold'
@@ -169,11 +190,16 @@ export const LeaderboardPage = () => {
           
           {/* 2nd Place */}
           {topThree[1] && (
-            <div className="border border-[#1E232F] bg-[#0B0D12] p-6 flex flex-col justify-between order-2 md:order-1">
+            <CyberTiltCard
+              maxTilt={6}
+              glare={true}
+              corners={true}
+              className="border border-[#1E232F] bg-[#0B0D12] p-6 flex flex-col justify-between order-2 md:order-1 shadow-xl shadow-black/80"
+            >
               <div>
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E232F] font-mono text-[11px]">
                   <span className="text-[#8F9AA9]">RANK 02 // SILVER</span>
-                  <span className="text-[#6B7688]">{topThree[1].tasksCompleted} TASKS</span>
+                  <span className="text-[#6B7688]"><AnimeCounter value={topThree[1].tasksCompleted} /> TASKS</span>
                 </div>
                 <div className="font-mono text-4xl text-[#8F9AA9] font-extrabold mb-1">02</div>
                 <h3 className="font-mono text-lg font-bold text-white truncate">
@@ -183,23 +209,31 @@ export const LeaderboardPage = () => {
               <div className="pt-6 mt-6 border-t border-[#1E232F] flex items-center justify-between font-mono text-xs">
                 <div>
                   <div className="text-[10px] text-[#6B7688] uppercase">READINESS</div>
-                  <div className="text-2xl text-white font-bold">{topThree[1].readiness}%</div>
+                  <div className="text-2xl text-white font-bold"><AnimeCounter value={topThree[1].readiness} suffix="%" /></div>
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] text-[#6B7688] uppercase">CONSISTENCY</div>
-                  <div className="text-white">{topThree[1].streak}d streak</div>
+                  <div className="text-white"><AnimeCounter value={topThree[1].streak} />d streak</div>
                 </div>
               </div>
-            </div>
+            </CyberTiltCard>
           )}
 
           {/* 1st Place (Winner) */}
           {topThree[0] && (
-            <div className="border-2 border-gorange bg-[#121622] p-6 flex flex-col justify-between order-1 md:order-2">
+            <CyberTiltCard
+              maxTilt={7}
+              glare={true}
+              corners={true}
+              borderBeam={true}
+              className="border-2 border-gorange bg-[#121622] p-6 flex flex-col justify-between order-1 md:order-2 shadow-2xl shadow-gorange/20"
+            >
               <div>
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E232F] font-mono text-[11px]">
-                  <span className="text-gorange font-bold uppercase tracking-wider">RANK 01 // LEADER</span>
-                  <span className="text-[#8F9AA9]">{topThree[0].tasksCompleted} EVIDENCE TASKS</span>
+                  <span className="text-gorange font-bold uppercase tracking-wider flex items-center gap-1">
+                    <span>👑 RANK 01 // LEADER</span>
+                  </span>
+                  <span className="text-[#8F9AA9]"><AnimeCounter value={topThree[0].tasksCompleted} /> EVIDENCE TASKS</span>
                 </div>
                 <div className="font-mono text-5xl text-gorange font-extrabold mb-1">01</div>
                 <h3 className="font-mono text-xl font-bold text-white truncate">
@@ -209,27 +243,32 @@ export const LeaderboardPage = () => {
               <div className="pt-6 mt-6 border-t border-[#1E232F] flex items-center justify-between font-mono text-xs">
                 <div>
                   <div className="text-[10px] text-gorange uppercase tracking-wider">READINESS</div>
-                  <div className="text-3xl text-white font-bold">{topThree[0].readiness}%</div>
+                  <div className="text-3xl text-white font-bold"><AnimeCounter value={topThree[0].readiness} suffix="%" /></div>
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] text-[#6B7688] uppercase">CONSISTENCY</div>
-                  <div className="text-gorange font-bold">{topThree[0].streak}d active streak</div>
+                  <div className="text-gorange font-bold"><AnimeCounter value={topThree[0].streak} />d active streak</div>
                 </div>
               </div>
-            </div>
+            </CyberTiltCard>
           )}
 
           {/* 3rd Place */}
           {topThree[2] && (
-            <div className={`border p-6 flex flex-col justify-between order-3 ${
-              topThree[2].isCurrentUser 
-                ? 'border-[#2D3748] bg-[#0E121B]' 
-                : 'border-[#1E232F] bg-[#0B0D12]'
-            }`}>
+            <CyberTiltCard
+              maxTilt={6}
+              glare={true}
+              corners={true}
+              className={`border p-6 flex flex-col justify-between order-3 shadow-xl shadow-black/80 ${
+                topThree[2].isCurrentUser 
+                  ? 'border-[#2D3748] bg-[#0E121B]' 
+                  : 'border-[#1E232F] bg-[#0B0D12]'
+              }`}
+            >
               <div>
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E232F] font-mono text-[11px]">
                   <span className="text-[#8F9AA9]">RANK 03 // BRONZE</span>
-                  <span className="text-[#6B7688]">{topThree[2].tasksCompleted} TASKS</span>
+                  <span className="text-[#6B7688]"><AnimeCounter value={topThree[2].tasksCompleted} /> TASKS</span>
                 </div>
                 <div className="font-mono text-4xl text-[#8F9AA9] font-extrabold mb-1">03</div>
                 <div className="flex items-center gap-2">
@@ -244,14 +283,14 @@ export const LeaderboardPage = () => {
               <div className="pt-6 mt-6 border-t border-[#1E232F] flex items-center justify-between font-mono text-xs">
                 <div>
                   <div className="text-[10px] text-[#6B7688] uppercase">READINESS</div>
-                  <div className="text-2xl text-white font-bold">{topThree[2].readiness}%</div>
+                  <div className="text-2xl text-white font-bold"><AnimeCounter value={topThree[2].readiness} suffix="%" /></div>
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] text-[#6B7688] uppercase">CONSISTENCY</div>
-                  <div className="text-white">{topThree[2].streak}d streak</div>
+                  <div className="text-white"><AnimeCounter value={topThree[2].streak} />d streak</div>
                 </div>
               </div>
-            </div>
+            </CyberTiltCard>
           )}
 
         </div>
@@ -419,13 +458,13 @@ export const LeaderboardPage = () => {
                 >
                   CANCEL
                 </EditorialButton>
-                <EditorialButton
-                  variant="primary"
+                <ParticleButton
+                  variant="solar"
                   size="sm"
                   type="submit"
                 >
                   CONFIRM HANDLE
-                </EditorialButton>
+                </ParticleButton>
               </div>
             </form>
           </div>
@@ -458,10 +497,12 @@ export const LeaderboardPage = () => {
               >
                 CLOSE
               </EditorialButton>
-              <EditorialButton
-                variant="primary"
+              <ParticleButton
+                variant="solar"
                 size="sm"
                 onClick={() => {
+                  cyberAudio.playSuccess();
+                  triggerCyberConfetti({ particleCount: 50 });
                   navigator.clipboard.writeText(`${window.location.origin}/signup?ref=${(user?.name || 'peer').toLowerCase().replace(/\s+/g, '')}&track=${selectedCareer}`);
                   setChallengeCopied(true);
                   setTimeout(() => setChallengeCopied(false), 2000);
@@ -470,7 +511,7 @@ export const LeaderboardPage = () => {
                 iconPosition="left"
               >
                 {challengeCopied ? 'LINK COPIED' : 'COPY INVITE LINK'}
-              </EditorialButton>
+              </ParticleButton>
             </div>
           </div>
         </div>

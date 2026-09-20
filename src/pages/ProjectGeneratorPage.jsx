@@ -176,7 +176,7 @@ export const ProjectGeneratorPage = () => {
                 </div>
 
                 {/* Footer Action */}
-                <div className="pt-6 border-t border-[#1E232F] flex items-center justify-between gap-4">
+                <div className="pt-6 border-t border-[#1E232F] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                   <span className="font-mono text-xs text-gorange uppercase tracking-wider font-semibold">
                     {proj.impact || 'High Industry Relevance'}
                   </span>
@@ -187,6 +187,7 @@ export const ProjectGeneratorPage = () => {
                     onClick={() => handleAddProject(proj.title, proj.skillsPracticed)}
                     icon={isAdded ? Check : Plus}
                     iconPosition="left"
+                    className="w-full sm:w-auto"
                   >
                     {isAdded ? 'INJECTED TO ROADMAP' : 'INJECT TO ROADMAP'}
                   </EditorialButton>

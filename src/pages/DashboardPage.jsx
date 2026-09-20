@@ -31,9 +31,15 @@ import {
 } from '../components/common/EditorialComponents';
 import { ShareProgressModal } from '../components/common/ShareProgressModal';
 import { RoastCard } from '../components/common/RoastCard';
+import { CyberTiltCard } from '../components/common/CyberTiltCard';
+import { AnimeCounter } from '../components/common/AnimeCounter';
+import { ParticleButton } from '../components/common/ParticleButton';
+import { CyberRadarBadge } from '../components/common/CyberRadarBadge';
 import { fetchSkillRoastAPI } from '../services/aiService';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
+import { cyberAudio } from '../utils/cyberAudio';
+import { triggerCyberConfetti } from '../utils/cyberConfetti';
 
 export const DashboardPage = () => {
   const { 
@@ -57,9 +63,19 @@ export const DashboardPage = () => {
   const [shareModalTemplate, setShareModalTemplate] = useState('stats');
   const [selectedTimelineStage, setSelectedTimelineStage] = useState(0);
 
+  // Audio & Confetti Celebrations
+  useEffect(() => {
+    if (streakCelebration) {
+      cyberAudio.playSuccess();
+      triggerCyberConfetti({ particleCount: 50 });
+    }
+  }, [streakCelebration]);
+
   // Auto-dismiss milestone celebration banner/modal after 12s if not interacted with
   useEffect(() => {
     if (!milestoneUnlocked) return;
+    cyberAudio.playSuccess();
+    triggerCyberConfetti({ particleCount: 75 });
     const timer = setTimeout(() => {
       setMilestoneUnlocked(null);
     }, 12000);
@@ -138,11 +154,12 @@ export const DashboardPage = () => {
           className="mb-8 pb-5 border-b border-[#1E232F] flex flex-col md:flex-row md:items-center justify-between gap-4"
         >
           {/* STREAK & CONSISTENCY HERO CARD (Dominates the visual hierarchy) */}
-          <motion.div 
-            initial={{ scale: 0.96, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative bg-gradient-to-r from-[#160E0A] via-[#0E121A] to-[#0A0D12] border border-gorange/40 hover:border-gorange/70 p-3 sm:px-4 sm:py-3 flex items-center gap-4 shadow-xl shadow-black/60 transition-all group"
+          <CyberTiltCard
+            maxTilt={5}
+            glare={true}
+            corners={true}
+            soundOnHover={true}
+            className="relative bg-gradient-to-r from-[#160E0A] via-[#0E121A] to-[#0A0D12] border border-gorange/40 hover:border-gorange/80 p-3 sm:px-4 sm:py-3 flex items-center gap-4 shadow-xl shadow-black/60 transition-all group"
           >
             {/* Ambient background glow on hover */}
             <div className="absolute -inset-0.5 bg-gradient-to-r from-gorange/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity blur-sm pointer-events-none" />
@@ -165,12 +182,14 @@ export const DashboardPage = () => {
               </motion.div>
             </div>
 
-            {/* Prominent Streak Numeral & Subtitle */}
+            {/* Prominent Streak Numeral & Subtitle with Anime.js Counter */}
             <div className="flex flex-col pr-3.5 border-r border-[#1E2533]">
               <div className="flex items-baseline gap-1.5 leading-none">
-                <span className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
-                  {currentStreak < 10 ? `0${currentStreak}` : currentStreak}
-                </span>
+                <AnimeCounter
+                  value={currentStreak}
+                  padZero
+                  className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight"
+                />
                 <span className="font-mono text-xs font-bold text-gorange uppercase tracking-wider">
                   DAYS
                 </span>
@@ -187,41 +206,50 @@ export const DashboardPage = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-mono text-xs font-bold text-cyan-300 leading-tight">
-                  {streakFreezes < 10 ? `0${streakFreezes}` : streakFreezes} {streakFreezes === 1 ? 'FREEZE' : 'FREEZES'}
+                  <AnimeCounter value={streakFreezes} padZero /> {streakFreezes === 1 ? 'FREEZE' : 'FREEZES'}
                 </span>
                 <span className="font-mono text-[9px] text-cyan-500/80 uppercase tracking-widest leading-tight">
                   {streakFreezes > 0 ? 'PROTECTED' : 'DEPLETED'}
                 </span>
               </div>
             </div>
-          </motion.div>
+          </CyberTiltCard>
 
-          {/* Secondary Action Links (Understated, cleanly outranked by Streak Hero) */}
+          {/* Secondary Action Links with KokonutUI/Refero particle buttons */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap font-mono text-xs">
-            <button
-              onClick={handleGetRoast}
-              className="px-3 py-1.5 bg-[#120E0C] hover:bg-[#1C1410] border border-gorange/40 hover:border-gorange text-gorange hover:text-white transition-all flex items-center gap-1.5 text-[11px] font-bold shadow-sm"
-            >
-              <Flame className="w-3.5 h-3.5 text-gorange animate-pulse" />
-              <span>GET ROASTED 🔥</span>
-            </button>
-
-            <button
+            <ParticleButton
+              variant="outline"
+              size="sm"
               onClick={() => {
+                cyberAudio.playEnergy();
+                handleGetRoast();
+              }}
+              icon={Flame}
+              iconPosition="left"
+            >
+              <span>GET ROASTED 🔥</span>
+            </ParticleButton>
+
+            <ParticleButton
+              variant="glass"
+              size="sm"
+              onClick={() => {
+                cyberAudio.playClick();
                 setShareModalTemplate('stats');
                 setIsShareModalOpen(true);
               }}
-              className="px-3 py-1.5 bg-[#0B0D12] hover:bg-[#141820] border border-[#1E232F] hover:border-[#3A4354] text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px]"
+              icon={Share2}
+              iconPosition="left"
             >
-              <Share2 className="w-3.5 h-3.5 text-gorange" />
               <span>SHARE PROGRESS</span>
-            </button>
+            </ParticleButton>
 
             <Link
               to="/leaderboard"
-              className="px-3 py-1.5 bg-[#0B0D12] hover:bg-[#141820] border border-[#1E232F] hover:border-[#3A4354] text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px]"
+              onMouseEnter={() => cyberAudio.playHover()}
+              className="px-3 py-2 bg-[#0B0D12] hover:bg-[#141820] border border-[#1E232F] hover:border-solar-amber/60 text-[#8F9AA9] hover:text-white transition-colors flex items-center gap-1.5 text-[11px] font-mono tracking-wider uppercase"
             >
-              <Trophy className="w-3.5 h-3.5 text-amber-400" />
+              <Trophy className="w-3.5 h-3.5 text-solar-amber" />
               <span>LEADERBOARD</span>
             </Link>
           </div>
@@ -284,29 +312,44 @@ export const DashboardPage = () => {
           title="YOUR CAREER COMMAND CENTER."
           subtitle={`A live analytical view of your current position, verified competencies, and next milestones for ${activeCareerProfile?.title}.`}
         >
-          <EditorialButton
-            variant="outline"
+          <div className="hidden lg:flex items-center mr-2">
+            <CyberRadarBadge 
+              status="CALIBRATED" 
+              node="CORE-SYS" 
+              latency="14ms" 
+              variant="orange" 
+            />
+          </div>
+          <ParticleButton
+            variant="glass"
             size="md"
             onClick={() => navigate('/career-selection')}
           >
             Change Role
-          </EditorialButton>
-          <EditorialButton
-            variant="primary"
+          </ParticleButton>
+          <ParticleButton
+            variant="solar"
             size="md"
             onClick={() => navigate('/roadmap')}
             icon={ArrowRight}
+            iconPosition="right"
           >
             Full Roadmap
-          </EditorialButton>
+          </ParticleButton>
         </EditorialHeader>
 
         {/* PRIMARY MODULE: CAREER READINESS OVERVIEW (Coherent Integrated System) */}
-        <div className="mb-14 p-8 bg-[#0B0D12] border border-[#1E232F]">
+        <CyberTiltCard
+          maxTilt={3}
+          glare={true}
+          corners={true}
+          className="mb-14 p-8 bg-[#0B0D12] border border-[#1E232F] shadow-2xl shadow-black/80"
+        >
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-[#1E232F]">
             <div>
-              <div className="font-mono text-xs uppercase tracking-[0.2em] text-gorange mb-2">
-                OVERALL POSITION BENCHMARK
+              <div className="font-mono text-xs uppercase tracking-[0.2em] text-gorange mb-2 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-gorange rounded-full animate-ping" />
+                <span>OVERALL POSITION BENCHMARK</span>
               </div>
               <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
                 {activeCareerProfile?.title || 'Target Role'}
@@ -320,9 +363,11 @@ export const DashboardPage = () => {
 
             <div className="lg:text-right">
               <div className="flex items-baseline gap-3 lg:justify-end">
-                <div className="font-display font-black text-6xl sm:text-7xl text-white tracking-tighter">
-                  {readinessScore}%
-                </div>
+                <AnimeCounter
+                  value={readinessScore}
+                  suffix="%"
+                  className="font-display font-black text-6xl sm:text-7xl text-white tracking-tighter"
+                />
                 <div className="font-mono text-xs text-gorange font-bold uppercase tracking-wider">
                   CAREER READINESS
                 </div>
@@ -333,24 +378,27 @@ export const DashboardPage = () => {
             </div>
           </div>
 
-          {/* Core Benchmark Metrics Row */}
+          {/* Core Benchmark Metrics Row with Anime.js Counters */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 font-mono">
             <div>
               <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">VERIFIED SKILLS</div>
               <div className="text-2xl font-bold text-white mt-1">
-                {skillsMasteredCount} <span className="text-[#566173] text-sm">/ {totalSkillsCount}</span>
+                <AnimeCounter value={skillsMasteredCount} /> <span className="text-[#566173] text-sm">/ {totalSkillsCount}</span>
               </div>
             </div>
             <div>
               <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">CRITICAL GAPS</div>
               <div className="text-2xl font-bold text-gorange mt-1">
-                {criticalGapsCount}
+                <AnimeCounter value={criticalGapsCount} />
               </div>
             </div>
             <div>
               <div className="text-[10px] text-[#6B7688] uppercase tracking-wider">ROADMAP PROGRESS</div>
               <div className="text-2xl font-bold text-white mt-1">
-                {Math.round(((roadmap || []).filter(r => r.status === 'Completed').length / Math.max(1, (roadmap || []).length)) * 100)}%
+                <AnimeCounter 
+                  value={Math.round(((roadmap || []).filter(r => r.status === 'Completed').length / Math.max(1, (roadmap || []).length)) * 100)} 
+                  suffix="%" 
+                />
                 <span className="text-[#566173] text-sm ml-1.5 font-normal">
                   ({(roadmap || []).filter(r => r.status === 'Completed').length}/{(roadmap || []).length || 4} PHASES)
                 </span>
@@ -363,7 +411,7 @@ export const DashboardPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </CyberTiltCard>
 
         {/* TWO-COLUMN ANALYTICAL GRID: THE GAP & NEXT ACTION */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-14">
@@ -388,7 +436,7 @@ export const DashboardPage = () => {
                   const deficit = Math.max(0, item.requiredLevel - item.currentLevel);
 
                   return (
-                    <div key={item.skill} className="p-4 bg-[#0B0D12] border border-[#1E232F]">
+                    <div key={item.skill} className="p-4 bg-[#0B0D12] border border-[#1E232F] hover:border-[#2E374A] transition-colors">
                       <div className="flex items-center justify-between font-mono text-xs mb-2">
                         <span className="text-white font-medium">{item.skill}</span>
                         <div className="flex items-center gap-3">
@@ -423,10 +471,17 @@ export const DashboardPage = () => {
               title="High-Leverage Execution"
               subtitle="The single most impactful move to close your largest competency deficit."
             >
-              <div className="p-6 bg-[#0B0D12] border border-gorange/40 flex flex-col justify-between h-[calc(100%-48px)]">
+              <CyberTiltCard
+                maxTilt={6}
+                glare={true}
+                corners={true}
+                borderBeam={true}
+                className="p-6 bg-[#0B0D12] border border-gorange/50 flex flex-col justify-between h-[calc(100%-48px)] shadow-xl shadow-black/80"
+              >
                 <div>
-                  <div className="font-mono text-[10px] text-gorange uppercase tracking-widest font-bold mb-2">
-                    [ {nextMove.badge || 'PRIMARY INTERVENTION'} ]
+                  <div className="font-mono text-[10px] text-gorange uppercase tracking-widest font-bold mb-2 flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-gorange" />
+                    <span>[ {nextMove.badge || 'PRIMARY INTERVENTION'} ]</span>
                   </div>
                   
                   <h3 className="font-display font-bold text-xl text-white tracking-tight mt-1">
@@ -454,13 +509,16 @@ export const DashboardPage = () => {
                   <EditorialButton
                     variant="primary"
                     size="md"
-                    onClick={() => navigate('/roadmap')}
+                    onClick={() => {
+                      cyberAudio.playClick();
+                      navigate('/roadmap');
+                    }}
                     icon={ArrowRight}
                   >
                     Start Action
                   </EditorialButton>
                 </div>
-              </div>
+              </CyberTiltCard>
             </EditorialSection>
           </div>
 
@@ -579,7 +637,20 @@ export const DashboardPage = () => {
                     >
                       <div className="flex items-start sm:items-center gap-3">
                         <button
-                          onClick={() => markTaskComplete(task.id)}
+                          onClick={(e) => {
+                            if (!isDone) {
+                              cyberAudio.playSuccess();
+                              triggerCyberConfetti({
+                                origin: {
+                                  x: e.clientX ? e.clientX / window.innerWidth : 0.5,
+                                  y: e.clientY ? e.clientY / window.innerHeight : 0.5,
+                                },
+                                particleCount: 40,
+                              });
+                            }
+                            markTaskComplete(task.id);
+                          }}
+                          onMouseEnter={() => cyberAudio.playHover()}
                           className="mt-0.5 sm:mt-0 text-[#6B7688] hover:text-gorange transition-colors shrink-0"
                           title={isDone ? 'Task Completed' : 'Mark Complete'}
                         >
@@ -611,6 +682,7 @@ export const DashboardPage = () => {
                             href={task.resourceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onMouseEnter={() => cyberAudio.playHover()}
                             className="text-[#8F9AA9] hover:text-white flex items-center gap-1 text-[11px]"
                           >
                             <span>Resource</span>
@@ -620,8 +692,19 @@ export const DashboardPage = () => {
 
                         {!isDone && (
                           <button
-                            onClick={() => markTaskComplete(task.id)}
-                            className="px-3 py-1 bg-white text-black font-bold uppercase tracking-wider text-[10px] hover:bg-gorange transition-colors"
+                            onClick={(e) => {
+                              cyberAudio.playSuccess();
+                              triggerCyberConfetti({
+                                origin: {
+                                  x: e.clientX ? e.clientX / window.innerWidth : 0.5,
+                                  y: e.clientY ? e.clientY / window.innerHeight : 0.5,
+                                },
+                                particleCount: 45,
+                              });
+                              markTaskComplete(task.id);
+                            }}
+                            onMouseEnter={() => cyberAudio.playHover()}
+                            className="px-3 py-1 bg-white hover:bg-gorange text-black hover:text-black font-bold uppercase tracking-wider text-[10px] transition-all shadow-md shadow-white/10 hover:shadow-gorange/40 hover:scale-105 active:scale-95"
                           >
                             Done ✓
                           </button>
@@ -776,7 +859,7 @@ export const DashboardPage = () => {
           onClose={() => setIsShareModalOpen(false)}
           currentStreak={currentStreak}
           readinessScore={readinessScore}
-          targetCareer={activeCareerProfile?.title || 'Professional'}
+          careerTitle={activeCareerProfile?.title || 'Professional'}
           userName={user?.displayName || 'Builder'}
           initialTemplate={shareModalTemplate}
         />
@@ -801,8 +884,9 @@ export const DashboardPage = () => {
               targetRole={activeCareerProfile?.title || 'Target Role'}
             />
             {roastError && (
-              <div className="mt-3 p-3 bg-red-950/40 border border-red-800/60 font-mono text-xs text-red-300">
-                {roastError}
+              <div className="mt-3 p-3.5 bg-[#120D06]/90 border border-solar-amber/40 text-solar-amber font-mono text-xs flex items-center gap-2.5 shadow-lg shadow-black/60">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-solar-amber animate-pulse" />
+                <span>{roastError}</span>
               </div>
             )}
           </div>

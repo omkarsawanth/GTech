@@ -58,11 +58,14 @@ service cloud.firestore {
     // 3. Squads Collection
     // ──────────────────────────────────────────────────────────────────────────
     // Squad rooms and collaborative mission progress.
-    // Read: authenticated users.
+    // Read: authenticated users who are members of the squad.
     // Write: completely blocked from client SDK. All room creation, joining (invite codes),
     // 5-member capacity enforcement, and feed updates are handled by Express squadService.
     match /squads/{squadId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() && (
+        resource.data.createdBy == request.auth.uid ||
+        (resource.data.memberUids != null && request.auth.uid in resource.data.memberUids)
+      );
       allow write: if false;
     }
 

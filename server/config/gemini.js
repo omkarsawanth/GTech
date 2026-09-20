@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Ensure GEMINI_API_KEY is the single source of truth and purge ambient OS GOOGLE_API_KEY
+delete process.env.GOOGLE_API_KEY;
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 

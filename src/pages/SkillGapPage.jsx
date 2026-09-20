@@ -21,6 +21,9 @@ import {
   EditorialBadge 
 } from '../components/common/EditorialComponents';
 import { useApp } from '../context/AppContext';
+import { CyberTiltCard } from '../components/common/CyberTiltCard';
+import { cyberAudio } from '../utils/cyberAudio';
+import { triggerCyberConfetti } from '../utils/cyberConfetti';
 
 export const SkillGapPage = () => {
   const { activeCareerProfile, analysisResult, addSkillsToRoadmap } = useApp();
@@ -39,7 +42,19 @@ export const SkillGapPage = () => {
 
   const selectedSkill = skillChartData[selectedSkillIndex] || skillChartData[0];
 
-  const handleAddGapToRoadmap = (skillName) => {
+  const handleAddGapToRoadmap = (skillName, e) => {
+    cyberAudio.playSuccess();
+    if (e && e.clientX && e.clientY) {
+      triggerCyberConfetti({
+        origin: {
+          x: e.clientX / window.innerWidth,
+          y: e.clientY / window.innerHeight,
+        },
+        particleCount: 45,
+      });
+    } else {
+      triggerCyberConfetti({ particleCount: 45 });
+    }
     addSkillsToRoadmap(skillName);
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 2500);
@@ -157,9 +172,15 @@ export const SkillGapPage = () => {
 
           {/* Right: Selected Skill Deep-Dive Inspector */}
           <div className="lg:col-span-5">
-            <div className="sticky top-24 p-8 bg-[#0B0D12] border border-[#1E232F]">
-              <div className="font-mono text-[10px] text-gorange uppercase tracking-widest mb-2">
-                [ COMPETENCY DRILLDOWN ]
+            <CyberTiltCard
+              maxTilt={5}
+              glare={true}
+              corners={true}
+              className="sticky top-24 p-8 bg-[#0B0D12] border border-[#1E232F] shadow-2xl shadow-black/80"
+            >
+              <div className="font-mono text-[10px] text-gorange uppercase tracking-widest mb-2 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-gorange rounded-full animate-ping" />
+                <span>[ COMPETENCY DRILLDOWN ]</span>
               </div>
 
               <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
@@ -193,7 +214,7 @@ export const SkillGapPage = () => {
 
               {/* Notification when added to roadmap */}
               {addedNotice && (
-                <div className="mb-4 p-3 bg-emerald-950/40 border border-emerald-800 text-emerald-300 font-mono text-xs flex items-center gap-2">
+                <div className="mb-4 p-3 bg-emerald-950/40 border border-emerald-800 text-emerald-300 font-mono text-xs flex items-center gap-2 animate-bounce">
                   <Check className="w-4 h-4" />
                   <span>Added {selectedSkill.skill} module directly to your active roadmap.</span>
                 </div>
@@ -204,7 +225,7 @@ export const SkillGapPage = () => {
                 <EditorialButton
                   variant="primary"
                   size="md"
-                  onClick={() => handleAddGapToRoadmap(selectedSkill.skill)}
+                  onClick={(e) => handleAddGapToRoadmap(selectedSkill.skill, e)}
                   icon={Plus}
                 >
                   Add Gap Fix to Roadmap
@@ -213,13 +234,16 @@ export const SkillGapPage = () => {
                 <EditorialButton
                   variant="outline"
                   size="md"
-                  onClick={() => navigate('/roadmap')}
+                  onClick={() => {
+                    cyberAudio.playClick();
+                    navigate('/roadmap');
+                  }}
+                  icon={ArrowRight}
                 >
-                  View Active Roadmap
+                  View Full Roadmap
                 </EditorialButton>
               </div>
-
-            </div>
+            </CyberTiltCard>
           </div>
 
         </div>

@@ -16,6 +16,7 @@ import roastRoutes from './routes/roastRoutes.js';
 import squadRoutes from './routes/squadRoutes.js';
 
 dotenv.config();
+delete process.env.GOOGLE_API_KEY;
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,12 +70,14 @@ app.use('/api/squad', squadRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-// ── Start (Only run listen when not in serverless/Vercel environment) ──────────
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  app.listen(PORT, () => {
+// ── Start (Only run listen when not in test or serverless/Vercel environment) ──
+let server;
+if (process.env.NODE_ENV !== 'test' && (process.env.NODE_ENV !== 'production' || !process.env.VERCEL)) {
+  server = app.listen(PORT, () => {
     console.log(`\n🚀 Kalpa API running on http://localhost:${PORT}`);
     console.log(`   Health: http://localhost:${PORT}/api/health\n`);
   });
 }
 
+export { server };
 export default app;

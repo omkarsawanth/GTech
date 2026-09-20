@@ -28,6 +28,7 @@ export const createSquad = async (uid, { name, careerFocus = 'Software Engineer'
     inviteCode,
     createdBy: uid,
     maxMembers: 5,
+    memberUids: [uid],
     members: [
       {
         uid,
@@ -106,6 +107,7 @@ export const joinSquad = async (uid, { inviteCode }) => {
       role: 'Member',
     }
   ];
+  const updatedMemberUids = Array.from(new Set([...(squad.memberUids || squad.members.map(m => m.uid)), uid]));
 
   const updatedFeed = [
     {
@@ -118,6 +120,7 @@ export const joinSquad = async (uid, { inviteCode }) => {
   ];
 
   await squadDoc.ref.update({
+    memberUids: updatedMemberUids,
     members: updatedMembers,
     activityFeed: updatedFeed,
     updatedAt: now.toISOString(),
@@ -148,11 +151,13 @@ export const leaveSquad = async (uid, squadId) => {
 
   const squad = squadSnap.data();
   const updatedMembers = squad.members.filter((m) => m.uid !== uid);
+  const updatedMemberUids = (squad.memberUids || squad.members.map((m) => m.uid)).filter((id) => id !== uid);
 
   if (updatedMembers.length === 0) {
     await squadRef.delete();
   } else {
     await squadRef.update({
+      memberUids: updatedMemberUids,
       members: updatedMembers,
       updatedAt: new Date().toISOString(),
     });

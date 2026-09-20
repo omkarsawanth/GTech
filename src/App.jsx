@@ -32,11 +32,14 @@ const PageLoader = () => (
   </div>
 );
 
+import { CyberCursor } from './components/common/CyberCursor';
+
 export function App() {
   return (
     <AuthProvider>
       <AppProvider>
         <ErrorBoundary>
+          <CyberCursor />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public Routes */}

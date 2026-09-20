@@ -44,11 +44,13 @@ Requirements:
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
   const [addedNotice, setAddedNotice] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const handleAnalyze = async () => {
     if (!jobText.trim()) return;
     setIsAnalyzing(true);
     setAddedNotice(false);
+    setErrorMsg(null);
     try {
       let res;
       if (backendAvailable) {
@@ -59,7 +61,7 @@ Requirements:
       setResult(res);
       saveJobAnalysis(res);
     } catch (err) {
-      alert(err.message || 'Error analyzing job description.');
+      setErrorMsg(err.message || 'Error analyzing job description. Please try again.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -94,6 +96,14 @@ Requirements:
             LOAD SAMPLE SPEC
           </EditorialButton>
         </EditorialHeader>
+
+        {/* Error Banner */}
+        {errorMsg && (
+          <div className="mb-6 p-4 bg-[#160D0A] border border-solar-amber/40 text-solar-amber font-mono text-xs flex items-center gap-2.5 shadow-lg shadow-black/60">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-solar-amber animate-pulse" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
 
         {/* Workspace Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">

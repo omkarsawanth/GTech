@@ -1,16 +1,139 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Custom Animations */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Tailwind CSS v4 Custom Theme Configuration
+   Exact tokens preserved from tailwind.config.js
+   ========================================================================== */
+@theme {
+  /* Colors: Dark */
+  --color-dark-950: #07080D;
+  --color-dark-900: #0B0D14;
+  --color-dark-850: #10131E;
+  --color-dark-800: #161A29;
+  --color-dark-750: #1D2236;
+  --color-dark-700: #252C45;
+  --color-dark-600: #384366;
+
+  /* Colors: Editorial */
+  --color-editorial-bg: #060709;
+  --color-editorial-surface: #0B0D12;
+  --color-editorial-card: #10131A;
+  --color-editorial-border: #1E232F;
+  --color-editorial-border-light: #2B3242;
+  --color-editorial-borderLight: #2B3242;
+  --color-editorial-muted: #6B7688;
+  --color-editorial-chalk: #E4E7EC;
+
+  /* Colors: Gorange */
+  --color-gorange: #FF5500;
+  --color-gorange-DEFAULT: #FF5500;
+  --color-gorange-hover: #E04B00;
+  --color-gorange-light: #FF6D24;
+  --color-gorange-faint: rgba(255, 85, 0, 0.08);
+  --color-gorange-glow: rgba(255, 85, 0, 0.25);
+
+  /* Colors: Solar */
+  --color-solar-violet: #8B5CF6;
+  --color-solar-purple: #A855F7;
+  --color-solar-coral: #FF3366;
+  --color-solar-rose: #F43F5E;
+  --color-solar-amber: #FF8A00;
+  --color-solar-gold: #F59E0B;
+  --color-solar-cyan: #06B6D4;
+  --color-solar-emerald: #10B981;
+
+  /* Colors: Brand */
+  --color-brand-purple: #8B5CF6;
+  --color-brand-indigo: #6366F1;
+  --color-brand-violet: #A855F7;
+  --color-brand-coral: #FF3366;
+  --color-brand-rose: #F43F5E;
+  --color-brand-amber: #FF8A00;
+  --color-brand-cyan: #06B6D4;
+  --color-brand-emerald: #10B981;
+
+  /* Typography: Font Family Stacks */
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Space Grotesk", Inter, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+
+  /* Typography: Fluid Font Sizes */
+  --text-display: clamp(48px, 6.5vw, 112px);
+  --text-display--line-height: 0.95;
+  --text-display--font-weight: 800;
+
+  --text-section: clamp(36px, 5vw, 72px);
+  --text-section--line-height: 1.02;
+  --text-section--font-weight: 800;
+
+  --text-body: clamp(16px, 1.8vw, 20px);
+  --text-body--line-height: 1.6;
+  --text-body--font-weight: 400;
+
+  --text-meta: clamp(11px, 1vw, 13px);
+  --text-meta--line-height: 1.4;
+  --text-meta--font-weight: 400;
+
+  /* Animations */
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bounce-soft: bounce 2.5s infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-fast: float 3.5s ease-in-out infinite;
+  --animate-float-reverse: floatReverse 7s ease-in-out infinite;
+  --animate-gradient-shift: gradientShift 5s ease infinite;
+  --animate-pulse-glow: pulseGlow 2.5s ease-in-out infinite;
+  --animate-spin-slow: spin 12s linear infinite;
+  --animate-shimmer: shimmer 3s linear infinite;
+  --animate-blob: blob 10s ease-in-out infinite;
+  --animate-solar-pulse: solarPulse 4s ease-in-out infinite;
+
+  /* Blur & Shadows */
+  --blur-xs: 2px;
+  --backdrop-blur-xs: 2px;
+
+  --drop-shadow-solar-glow: 0 0 20px rgba(255, 51, 102, 0.45);
+  --drop-shadow-amber-glow: 0 0 20px rgba(255, 138, 0, 0.45);
+  --drop-shadow-violet-glow: 0 0 25px rgba(139, 92, 246, 0.45);
+}
+
+/* Keyframes Definitions */
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(180deg); }
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(2deg); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(14px) rotate(-2deg); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 15px rgba(255, 51, 102, 0.35); }
+  50% { opacity: 0.75; box-shadow: 0 0 35px rgba(139, 92, 246, 0.55); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%, 100% { opacity: 1; box-shadow: 0 0 15px rgba(255, 51, 102, 0.35); }
+  50% { opacity: 0.75; box-shadow: 0 0 35px rgba(139, 92, 246, 0.55); }
+}
+
+@keyframes solarPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.15); }
+  66% { transform: translate(-25px, 25px) scale(0.9); }
 }
 
 @keyframes shimmer {
@@ -23,29 +146,9 @@
   to { transform: rotate(360deg); }
 }
 
-@keyframes ripple {
-  var(--from-x, 50%) var(--from-y, 50%) {
-    top: var(--from-y);
-    left: var(--from-x);
-  }
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
 @keyframes textGlow {
   0%, 100% { text-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(99, 102, 241, 0.3); }
   50% { text-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 40px rgba(99, 102, 241, 0.5); }
-}
-
-@keyframes blob {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(-20px, -20px) scale(1.1); }
-  50% { transform: translate(-20px, 20px) scale(1); }
-  75% { transform: translate(20px, 20px) scale(1.1); }
 }
 
 @layer base {
@@ -174,13 +277,31 @@
   pointer-events: none;
 }
 
-/* Floating Animation Classes */
+/* Floating & Keyframe Animation Utilities */
+.animate-float,
 .float-slow {
   animation: float 6s ease-in-out infinite;
 }
 
+.animate-float-fast,
 .float-fast {
-  animation: float 3s ease-in-out infinite;
+  animation: float 3.5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 7s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce-soft {
+  animation: bounce 2.5s infinite;
+}
+
+.animate-solar-pulse {
+  animation: solarPulse 4s ease-in-out infinite;
 }
 
 .pulse-glow {

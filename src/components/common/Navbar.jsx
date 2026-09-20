@@ -88,7 +88,7 @@ export const Navbar = () => {
 </div>
 
           {/* Right Action CTAs */}
-          <div className="hidden md:flex items-center gap-5">
+          <div className="hidden lg:flex items-center gap-5">
             {isAuthenticated ? (
               <>
                 <button

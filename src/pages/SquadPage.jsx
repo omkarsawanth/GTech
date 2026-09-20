@@ -18,6 +18,10 @@ import {
 } from 'lucide-react';
 import { AppLayout } from '../components/layout/AppLayout';
 import { Button, Card, Badge } from '../components/common/UIComponents';
+import { CyberTiltCard } from '../components/common/CyberTiltCard';
+import { AnimeCounter } from '../components/common/AnimeCounter';
+import { ParticleButton } from '../components/common/ParticleButton';
+import { CyberRadarBadge } from '../components/common/CyberRadarBadge';
 import { useAuth } from '../context/AuthContext';
 import { 
   fetchCurrentSquadAPI, 
@@ -26,6 +30,8 @@ import {
   leaveSquadAPI 
 } from '../services/aiService';
 import { exportSquadInvitePNG } from '../utils/canvasExport';
+import { cyberAudio } from '../utils/cyberAudio';
+import { triggerCyberConfetti } from '../utils/cyberConfetti';
 
 export const SquadPage = () => {
   const { user } = useAuth();
@@ -71,6 +77,8 @@ export const SquadPage = () => {
       setSquad(res?.data);
       setShowCreateModal(false);
       setNewSquadName('');
+      cyberAudio.playSuccess();
+      triggerCyberConfetti({ particleCount: 65 });
     } catch (err) {
       setErrorMsg(err.message || 'Failed to create squad room.');
     } finally {
@@ -88,6 +96,8 @@ export const SquadPage = () => {
       setSquad(res?.data);
       setShowJoinModal(false);
       setInviteCodeInput('');
+      cyberAudio.playSuccess();
+      triggerCyberConfetti({ particleCount: 65 });
     } catch (err) {
       setErrorMsg(err.message || 'Failed to join squad with that code.');
     } finally {
@@ -101,6 +111,7 @@ export const SquadPage = () => {
     try {
       await leaveSquadAPI(squad.id);
       setSquad(null);
+      cyberAudio.playClick();
     } catch (err) {
       setErrorMsg(err.message || 'Failed to leave squad.');
     }
@@ -108,6 +119,7 @@ export const SquadPage = () => {
 
   const handleCopyCode = () => {
     if (!squad?.inviteCode) return;
+    cyberAudio.playClick();
     navigator.clipboard.writeText(squad.inviteCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
@@ -115,6 +127,7 @@ export const SquadPage = () => {
 
   const handleCopyInviteLink = () => {
     if (!squad?.inviteCode) return;
+    cyberAudio.playClick();
     const url = `${window.location.origin}/onboarding?squadInviteCode=${squad.inviteCode}`;
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
@@ -123,6 +136,7 @@ export const SquadPage = () => {
 
   const handleExportInviteCard = () => {
     if (!squad) return;
+    cyberAudio.playClick();
     exportSquadInvitePNG({
       squadName: squad.name,
       inviteCode: squad.inviteCode,
@@ -135,15 +149,19 @@ export const SquadPage = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto space-y-8 pb-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 pb-16">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1E232F] pb-6">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-3 mb-1">
               <Badge variant="warning" size="sm" className="font-mono text-[10px] uppercase tracking-wider">
                 PEER SYNERGY // RETENTION PROTOCOL
               </Badge>
-              <span className="text-xs font-mono text-[#6B7688]">ROOM LIMIT: 5 SEATS</span>
+              <CyberRadarBadge 
+                label="5-SEAT SECURE POD" 
+                status="active" 
+                variant="amber" 
+              />
             </div>
             <h1 className="font-display font-black text-2xl md:text-3xl text-white tracking-tight flex items-center gap-3">
               Squad Rooms
@@ -159,45 +177,45 @@ export const SquadPage = () => {
           <div className="flex items-center gap-3">
             {!squad ? (
               <>
-                <Button 
+                <ParticleButton 
                   variant="outline" 
                   size="sm" 
                   onClick={() => setShowJoinModal(true)}
-                  className="font-mono text-xs border-[#2B3242] hover:border-white"
+                  icon={UserPlus}
+                  iconPosition="left"
                 >
-                  <UserPlus className="w-3.5 h-3.5 mr-1.5 text-[#8F9AA9]" />
                   Enter Passcode
-                </Button>
-                <Button 
+                </ParticleButton>
+                <ParticleButton 
                   variant="solar" 
                   size="sm" 
                   onClick={() => setShowCreateModal(true)}
-                  className="font-mono text-xs font-bold shadow-lg shadow-rose-950/40"
+                  icon={Sparkles}
+                  iconPosition="left"
                 >
-                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                   Create Squad
-                </Button>
+                </ParticleButton>
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <Button
+                <ParticleButton
                   variant="outline"
                   size="sm"
                   onClick={handleExportInviteCard}
-                  className="font-mono text-xs border-[#2B3242] hover:border-gorange text-white"
+                  icon={Share2}
+                  iconPosition="left"
                 >
-                  <Share2 className="w-3.5 h-3.5 mr-1.5 text-gorange" />
                   Export Invite Card PNG
-                </Button>
-                <Button
+                </ParticleButton>
+                <ParticleButton
                   variant="outline"
                   size="sm"
                   onClick={handleLeaveSquad}
-                  className="font-mono text-xs border-rose-900/40 text-rose-400 hover:bg-rose-950/30"
+                  icon={LogOut}
+                  iconPosition="left"
                 >
-                  <LogOut className="w-3.5 h-3.5 mr-1" />
                   Leave
-                </Button>
+                </ParticleButton>
               </div>
             )}
           </div>
@@ -365,11 +383,11 @@ export const SquadPage = () => {
                   <div className="flex items-center gap-4 text-[#8F9AA9]">
                     <div className="flex items-center gap-1.5">
                       <Flame className="w-4 h-4 text-gorange" />
-                      <span className="text-white font-bold">{squad.totalStreak}d</span> pooled streak
+                      <span className="text-white font-bold"><AnimeCounter value={squad.totalStreak} />d</span> pooled streak
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Award className="w-4 h-4 text-violet-400" />
-                      <span className="text-white font-bold">{squad.avgReadiness}%</span> avg readiness
+                      <span className="text-white font-bold"><AnimeCounter value={squad.avgReadiness} suffix="%" /></span> avg readiness
                     </div>
                   </div>
 
