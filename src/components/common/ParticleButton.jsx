@@ -1,11 +1,10 @@
 import React, { useRef } from 'react';
-import { motion } from 'motion/react';
-import { animate, random } from 'animejs';
+import { motion, animate } from 'framer-motion';
 import { cyberAudio } from '../../utils/cyberAudio';
 
 /**
  * ParticleButton — KokonutUI & Refero inspired interactive particle button
- * Powered by Motion for React (spring physics) and Anime.js (kinetic sparkles).
+ * Powered by Framer Motion (spring physics & kinetic sparkles).
  */
 export const ParticleButton = ({
   children,
@@ -51,17 +50,22 @@ export const ParticleButton = ({
       const destX = Math.cos(angle) * dist;
       const destY = Math.sin(angle) * dist;
 
-      animate(p, {
-        translateX: destX,
-        translateY: destY,
-        opacity: [1, 0],
-        scale: [1, 0.2],
-        duration: Math.random() * 400 + 350,
-        ease: 'outExpo',
-        onComplete: () => {
-          if (p.parentNode) p.parentNode.removeChild(p);
+      animate(
+        p,
+        {
+          x: destX,
+          y: destY,
+          opacity: [1, 0],
+          scale: [1, 0.2],
+        },
+        {
+          duration: (Math.random() * 400 + 350) / 1000,
+          ease: [0.16, 1, 0.3, 1],
+          onComplete: () => {
+            if (p.parentNode) p.parentNode.removeChild(p);
+          },
         }
-      });
+      );
     }
   };
 

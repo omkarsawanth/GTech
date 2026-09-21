@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { animate } from 'animejs';
+import { animate } from 'framer-motion';
 
 /**
- * AnimeCounter — Precision numeric counter powered by Anime.js
+ * AnimeCounter — Precision numeric counter powered by Framer Motion
  * Interpolates smoothly from previous value to target value with exponential easing.
  */
 export const AnimeCounter = ({
@@ -22,15 +22,13 @@ export const AnimeCounter = ({
 
     const startVal = prevValueRef.current;
     const targetVal = Number(value) || 0;
-    const counterObj = { val: startVal };
 
-    const anim = animate(counterObj, {
-      val: targetVal,
-      duration: duration,
-      ease: 'outExpo',
-      onUpdate: () => {
+    const controls = animate(startVal, targetVal, {
+      duration: duration / 1000,
+      ease: [0.16, 1, 0.3, 1], // easeOutExpo
+      onUpdate: (latest) => {
         if (!targetNode) return;
-        const rounded = Math.round(counterObj.val);
+        const rounded = Math.round(latest);
         const formatted = padZero && rounded < 10 && rounded >= 0 ? `0${rounded}` : rounded;
         targetNode.textContent = `${prefix}${formatted}${suffix}`;
       },
@@ -40,7 +38,7 @@ export const AnimeCounter = ({
     });
 
     return () => {
-      if (anim && anim.pause) anim.pause();
+      if (controls && controls.stop) controls.stop();
     };
   }, [value, duration, prefix, suffix, padZero]);
 

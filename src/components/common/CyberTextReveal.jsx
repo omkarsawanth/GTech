@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { animate, stagger } from 'animejs';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 /**
- * CyberTextReveal — Kinetic typography stagger reveal powered by Anime.js
- * Slices text into animated spans with 3D translation, opacity, and spring-like easing.
+ * CyberTextReveal — Kinetic typography stagger reveal powered by Framer Motion
+ * Slices text into animated spans with 3D translation, opacity, and spring/easeOutExpo easing.
  */
 export const CyberTextReveal = ({
   text = '',
@@ -13,50 +13,61 @@ export const CyberTextReveal = ({
   highlightWords = [],
   highlightClassName = 'text-transparent bg-clip-text bg-gradient-to-r from-gorange via-solar-coral to-solar-amber',
 }) => {
-  const rootRef = useRef(null);
+  const words = text ? text.split(' ') : [];
 
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.045,
+        delayChildren: delay / 1000,
+      },
+    },
+  };
 
-    const words = root.querySelectorAll('.cyber-reveal-word');
-    if (!words.length) return;
-
-    const anim = animate(words, {
-      translateY: [24, 0],
-      opacity: [0, 1],
-      rotateX: [35, 0],
-      duration: duration,
-      delay: stagger(45, { start: delay }),
-      ease: 'outExpo',
-    });
-
-    return () => {
-      if (anim && anim.pause) anim.pause();
-    };
-  }, [text, delay, duration]);
-
-  const words = text.split(' ');
+  const wordVariants = {
+    hidden: {
+      opacity: 0,
+      y: 24,
+      rotateX: 35,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      transition: {
+        duration: duration / 1000,
+        ease: [0.16, 1, 0.3, 1], // easeOutExpo
+      },
+    },
+  };
 
   return (
-    <span ref={rootRef} className={`inline-block ${className}`} style={{ perspective: '600px' }}>
+    <motion.span
+      className={`inline-block ${className}`}
+      style={{ perspective: '600px' }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {words.map((word, i) => {
         const clean = word.toLowerCase().replace(/[^a-z0-9]/g, '');
         const isHighlighted = highlightWords.some(hw => hw.toLowerCase() === clean);
 
         return (
-          <span
-            key={i}
+          <motion.span
+            key={`${word}-${i}`}
+            variants={wordVariants}
             className={`cyber-reveal-word inline-block will-change-transform mr-[0.25em] ${
               isHighlighted ? highlightClassName : ''
             }`}
-            style={{ opacity: 0, transform: 'translateY(24px) rotateX(35deg)' }}
           >
             {word}
-          </span>
+          </motion.span>
         );
       })}
-    </span>
+    </motion.span>
   );
 };
 
